@@ -33,3 +33,10 @@ yarn-error.*
 
 # typescript
 *.tsbuildinfo
+
+# IDEs
+.idea
+.vscode
+
+# Secrets
+secrets/*
