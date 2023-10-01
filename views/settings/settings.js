@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, View, Text, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View, Text, Pressable } from '../../components/elements.js';
 import { CallbackButton } from '../../components/callbackButton.js';
 
 /* This is the home page of the app. It will need to:
@@ -9,14 +10,14 @@ import { CallbackButton } from '../../components/callbackButton.js';
   4. Allow the user to select a car and view its details
  */
 
-class Account extends React.Component {
+class Settings extends React.Component {
   render() {
     return (
       <View style={pageStyles.container}>
         <Text>Open up App.js to start working on your app!!!</Text>
         <Text>Test Firebase Data</Text>
         <CallbackButton
-          title="Account"
+          title="Settings"
           onPress={(callback) => {
             console.log("Button pressed");
             callback();
@@ -27,7 +28,7 @@ class Account extends React.Component {
   }
 }
 
-export { Account };
+export { Settings };
 
 const pageStyles = StyleSheet.create({
   container: {

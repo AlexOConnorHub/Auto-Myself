@@ -2,10 +2,13 @@ import React from 'react';
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import { StyleSheet, View, Text, Modal, Pressable } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { View, Text, Modal, Pressable } from '../../components/elements.js';
 import { CallbackButton } from '../../components/callbackButton.js';
-import { Account } from './account.js';
-import { AddCarModal } from '../../components/addCarModal.js';
+import { AddCarModal } from './addCarModal.js';
+import { ListCars } from './listCars.js';
+import { style } from '../../components/style.js';
+import Sample from '../../components/sample.js';
 
 /* This is the home page of the app. It will need to:
   1. If logged in, sync the remote DB with the local DB, and push updates if needed
@@ -22,8 +25,9 @@ class Home extends React.Component {
   render() {
     return (
       <View style={pageStyles.container}>
-        <this.Stack.Navigator screenOptions={{ headerShown: false }}>
-          <this.Stack.Screen name="Account" component={Account} />
+        <Sample/>
+        <this.Stack.Navigator screenOptions={ pageStyles.navigatorScreenOptions }>
+          <this.Stack.Screen name="ListCars" component={ListCars} />
         </this.Stack.Navigator>
         <AddCarModal/>
       </View>
@@ -35,6 +39,13 @@ export { Home };
 
 const pageStyles = StyleSheet.create({
   container: {
-    flex: 1,
+    height: '100%',
+    // backgroundColor: colors.background,
+  },
+  navigatorScreenOptions: {
+    headerShown: false,
+    cardStyle: {
+      backgroundColor: style.colors.background,
+    },
   },
 });

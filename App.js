@@ -1,50 +1,53 @@
 import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { StyleSheet, View } from 'react-native';
-import Constants from 'expo-constants';
-import { Account } from './views/pages/account.js';
-import { Home } from './views/pages/home.js';
-import { Settings } from './views/pages/settings.js';
-import { FontAwesome } from '@expo/vector-icons';
+import { StyleSheet, Platform } from 'react-native';
+import { View, FontAwesome, StatusBar } from './components/elements.js';
+import { Account } from './views/account/account.js';
+import { Home } from './views/home/home.js';
+import { Settings } from './views/settings/settings.js';
+import { style } from './components/style.js';
+import { database, adapter } from './database/database.js';
 
 const Tab = createBottomTabNavigator();
 
 export default class App extends React.Component { 
   render() {
     return (
-      <NavigationContainer>
-        <View style={ appStyles.statusBar } />
-        <Tab.Navigator screenOptions={ appStyles.screenDefault } backBehavior='initialRoute' initialRouteName='Home'>
-          <Tab.Screen name='Account' component={ Account } options={ appStyles.accountOptions }/>
-          <Tab.Screen name='Home' component={ Home } options={ appStyles.homeOptions }/>
-          <Tab.Screen name='Settings' component={ Settings } options={ appStyles.settingsOptions }/>
-        </Tab.Navigator>
-      </NavigationContainer>
+      <View style={{height: "100%"}}>
+        <NavigationContainer>
+          <StatusBar/>
+          <Tab.Navigator screenOptions={ appStyles.navigatorScreenOptions } backBehavior='initialRoute' initialRouteName='Home'>
+            <Tab.Screen name='Account' component={ Account } options={ appStyles.screenOptionsAccount }/>
+            <Tab.Screen name='Home' component={ Home } options={ appStyles.screenOptionsHome }/>
+            <Tab.Screen name='Settings' component={ Settings } options={ appStyles.screenOptionsSettings }/>
+          </Tab.Navigator>
+        </NavigationContainer>
+      </View>
     );
   }
 }
 
 const appStyles = StyleSheet.create({
-  statusBar: {
-    height: Constants.statusBarHeight,
-  },
-  screenDefault: {
+  navigatorScreenOptions: {
     headerShown: false,
-    tabBarInactiveBackgroundColor: '#C69749',
-    tabBarActiveBackgroundColor: '#735F32',
+    tabBarInactiveBackgroundColor: style.colors.primary,
+    tabBarActiveBackgroundColor: style.colors.background,
     tabBarShowLabel: false,
+    tabBarStyle: {
+      borderTopWidth: 0,
+    },
   },
-  accountOptions: {
-    tabBarIcon: () => {return <FontAwesome size={40} color='white' name='user'/>},
+  screenOptionsAccount: {
+    tabBarIcon: () => { return <FontAwesome size={40} name='user'/> },
     tabBarAccessibilityLabel: 'Account',
   },
-  homeOptions: {
-    tabBarIcon: () => {return <FontAwesome size={40} color='white' name='car'/>},
+  screenOptionsHome: {
+    tabBarIcon: () => {return < FontAwesome size={40} name='car'/> },
     tabBarAccessibilityLabel: 'Home',
   },
-  settingsOptions: {
-    tabBarIcon: () => {return <FontAwesome size={40} color='white' name='gear'/>},
+  screenOptionsSettings: {
+    tabBarIcon: () => {return < FontAwesome size={40} name='gear'/> },
     tabBarAccessibilityLabel: 'Settings',
   },
 });

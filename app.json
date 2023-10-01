@@ -21,10 +21,29 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.anonymous.MyCarTotalControl"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.6.10",
+            "compileSdkVersion": 33,
+            "targetSdkVersion": 33,
+            "packagingOptions": {
+              "pickFirst": [
+                "**/libc++_shared.so"
+              ]
+            }
+          }
+        }
+      ],
+      "@skam22/watermelondb-expo-plugin"
+    ]
   }
 }
