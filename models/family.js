@@ -1,15 +1,11 @@
-import { Model, Q } from '@nozbe/watermelondb';
-import { field, text, children } from '@nozbe/watermelondb/decorators';
+import { Model } from '@nozbe/watermelondb';
+import { children } from '@nozbe/watermelondb/decorators';
+import { tables } from '../database/tables';
 
-class Family extends Model {
-  static table = 'families';
+export default class Family extends Model {
+  static table = tables.families;
   static associations = {
     familyMembers: { type: 'has_many', foreignKey: 'family_id' },
-    cars: { type: 'has_many', foreignKey: 'family_id' },
   };
-
-  @children('familyMembers') familyMembers;
-  @children('cars') cars;
+  @children(tables.family_members) familyMember;
 }
-
-export { Family };

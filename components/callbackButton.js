@@ -12,8 +12,7 @@ class CallbackButton extends React.Component {
   render() {
     return (
       <Button
-        title={this.props.title}
-        disabled={this.state.disabled}
+        {...this.props}
         onPress={() => {
           this.setState({ disabled: true });
           this.props.onPress(this.callback.bind(this));

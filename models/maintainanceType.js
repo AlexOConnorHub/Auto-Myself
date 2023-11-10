@@ -1,18 +1,15 @@
-import { Model, Q } from '@nozbe/watermelondb';
-import { field, text, children } from '@nozbe/watermelondb/decorators';
+import { Model } from '@nozbe/watermelondb';
+import { text, children } from '@nozbe/watermelondb/decorators';
+import { tables } from '../database/tables';
 
-class MaintainanceType extends Model {
-  static table = 'maintainance_types';
+export default class MaintainanceType extends Model {
+  static table = tables.maintainance_types;
   static associations = {
     carMaintainanceIntervals: { type: 'has_many', foreignKey: 'maintainance_type_id' },
     maintainanceRecords: { type: 'has_many', foreignKey: 'maintainance_type_id' },
   };
-
-  @field('name') name;
+  @text('name') name;
   // @field('description') description;
-
-  @children('carMaintainanceIntervals') carMaintainanceIntervals;
-  @children('maintainanceRecords') maintainanceRecords;
+  @children(tables.car_maintainance_intervals) carMaintainanceIntervals;
+  @children(tables.maintainance_records) maintainanceRecords;
 }
-
-export { MaintainanceType };

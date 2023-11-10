@@ -4,14 +4,10 @@ import { View, Text, TextInput } from "./elements.js";
 
 class FormElement extends React.Component {
   constructor(props) {
+    super(props);
     if (props.onChangeText === undefined) {
       throw new Error("FormElement requires an onChangeText prop");
     }
-    super(props);
-    this.value = (this.props.value === undefined ? "" : this.props.value);
-    this.state = {
-      onChangeText: this.props.onChangeText,
-    };
   }
   render() {
     return (

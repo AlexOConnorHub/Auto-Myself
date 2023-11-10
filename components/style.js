@@ -1,3 +1,5 @@
+import { Platform } from "react-native";
+
 const darkColors = {
   background: '#282A3A',
   secondaryBackground: '#3D4153',
@@ -53,7 +55,10 @@ const style = {
   },
   statusBar: {
     barStyle: `${colors.theme}-content`,
-  }
+  },
+  keyboardAvoidingView: {
+    behavior: Platform.OS === 'ios' ? 'padding' : 'height',
+  },
 }
 
 export { style };

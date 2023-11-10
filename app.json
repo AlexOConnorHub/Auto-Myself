@@ -32,7 +32,7 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "1.6.10",
+            "kotlinVersion": "1.8.10",
             "compileSdkVersion": 33,
             "targetSdkVersion": 33,
             "packagingOptions": {
@@ -40,7 +40,16 @@
                 "**/libc++_shared.so"
               ]
             }
-          }
+          },
+					"ios": {
+						"extraPods": [
+							{
+								"name": "simdjson",
+								"path": "../node_modules/@nozbe/simdjson",
+								"modular_headers": true
+							}
+						]
+					}
         }
       ],
       "@skam22/watermelondb-expo-plugin"

@@ -18,9 +18,9 @@ export default class App extends React.Component {
         <NavigationContainer>
           <StatusBar/>
           <Tab.Navigator screenOptions={ appStyles.navigatorScreenOptions } backBehavior='initialRoute' initialRouteName='Home'>
-            <Tab.Screen name='Account' component={ Account } options={ appStyles.screenOptionsAccount }/>
-            <Tab.Screen name='Home' component={ Home } options={ appStyles.screenOptionsHome }/>
-            <Tab.Screen name='Settings' component={ Settings } options={ appStyles.screenOptionsSettings }/>
+            <Tab.Screen name='Account' options={ appStyles.screenOptionsAccount } component={ Account }/>
+            <Tab.Screen name='Home' options={ appStyles.screenOptionsHome } children={ () => <Home database={ database }/> }/>
+            <Tab.Screen name='Settings' options={ appStyles.screenOptionsSettings } children={ () => <Settings database={ database }/> }/>
           </Tab.Navigator>
         </NavigationContainer>
       </View>

@@ -1,20 +1,18 @@
-import { Model, Q } from '@nozbe/watermelondb';
-import { field, text, children } from '@nozbe/watermelondb/decorators';
+import { Model } from '@nozbe/watermelondb';
+import { field, date, relation, readonly } from '@nozbe/watermelondb/decorators';
+import { tables } from '../database/tables';
 
-class MaintainanceRecord extends Model {
-  static table = 'maintainance_records';
+export default class MaintainanceRecord extends Model {
+  static table = tables.maintainance_records;
   static associations = {
     car: { type: 'belongs_to', key: 'car_id' },
-    maintainance_type: { type: 'belongs_to', key: 'maintainance_type_id' },
+    maintainanceType: { type: 'belongs_to', key: 'maintainance_type_id' },
   };
-
-  @field('created_at') date;
+  @date('created_at') date;
   @field('odometer') mileage;
   @field('cost') cost;
   @field('notes') notes;
-
-  @children('car') car;
-  @children('maintainance_type') maintainance_type;
+  @readonly @field('created_at') createdAt;
+  @relation(tables.cars, 'car_id') car;
+  @relation(tables.maintainance_types, 'maintainance_type_id') maintainanceType;
 }
-
-export { MaintainanceRecord };

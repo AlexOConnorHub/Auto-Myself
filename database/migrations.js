@@ -1,8 +1,6 @@
 import { schemaMigrations } from '@nozbe/watermelondb/Schema/migrations'
 
-const Migrations = schemaMigrations({
+export default schemaMigrations({
   migrations: [
   ],
 });
-
-export { Migrations };
