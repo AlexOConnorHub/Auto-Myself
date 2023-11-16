@@ -1,7 +1,7 @@
 import React from "react";
 import {
   Button as ButtonRN,
-  KeyboardAvoidingView as KeyboardAvoidingViewRN,
+  FlatList as FlatListRN,
   Modal as ModalRN,
   Pressable as PressableRN,
   ScrollView as ScrollViewRN,
@@ -14,117 +14,81 @@ import {
   FontAwesome as FontAwesomeRN,
   Feather as FeatherRN,
 } from "@expo/vector-icons";
-import { style } from "./style";
+import { style, colors } from "./style";
+import { KeyboardScrollView as KeyboardScrollViewPkg} from '@rlemasquerier/react-native-keyboard-scrollview';
 
-class Button extends React.Component {
-  render() {
-    return (
-      <ButtonRN color={ style.button.color }  { ... this.props }>
-        { this.props.children }
-      </ButtonRN>
-    )
-  }
-}
+let Button = (props) => (
+  <ButtonRN color={ style.button.color }  { ... props }>
+    { props.children }
+  </ButtonRN>
+);
 
-class FontAwesome extends React.Component {
-  render() {
-    return (
-      <FontAwesomeRN  color={ style.icon.color } { ... this.props }/>
-    )
-  }
-}
-  
-class Feather extends React.Component {
-  render() {
-    return (
-      <FeatherRN color={ style.icon.color } { ... this.props } />
-    )
-  }
-}
+let Feather = (props) => (
+  <FeatherRN color={ style.icon.color } { ... props } />
+);
 
-class KeyboardAvoidingView extends React.Component {
-  render() {
-    return (
-      <KeyboardAvoidingViewRN behavior={ style.keyboardAvoidingView.behavior } { ... this.props }>
-        { this.props.children }
-      </KeyboardAvoidingViewRN>
-    )
-  }
+let FlatList = (props) => (
+  <FlatListRN { ... props } style={[ style.flatList.style, props.style ]}/>
+);
+
+let FontAwesome = (props) => (
+  <FontAwesomeRN color={ style.icon.color } { ... props }/>
+);
+
+let KeyboardScrollView = (props) => {
+  return (
+    <KeyboardScrollViewPkg { ... props }>
+      { props.children }
+    </KeyboardScrollViewPkg>
+  );
 }
 
-class Modal extends React.Component {
-  render() {
-    return (
-      <ModalRN { ... this.props }>
-        { this.props.children }
-      </ModalRN>
-    )
-  }
-}
+let Modal = (props) => (
+  <ModalRN { ... props }>
+    { props.children }
+  </ModalRN>
+);
 
-class Pressable extends React.Component {
-  render() {
-    return (
-      <PressableRN { ... this.props } style={[ style.pressable.style, this.props.style ]}>
-        { this.props.children }
-      </PressableRN>
-    )
-  }
-}
+let Pressable = (props) => (
+  <PressableRN { ... props } style={[ style.pressable.style, props.style ]}>
+    { props.children }
+  </PressableRN>
+);
 
-class ScrollView extends React.Component {
-  render() {
-    return (
-      <ScrollViewRN { ... this.props }>
-        { this.props.children }
-      </ScrollViewRN>
-    )
-  }
-}
-  
-class StatusBar extends React.Component {
-  render() {
-    return (
-      <StatusBarRN backgroundColor={ style.colors.background } barStyle={ style.statusBar.barStyle } { ... this.props } />
-    )
-  }
-}
+let ScrollView = (props) => (
+  <ScrollViewRN { ... props }>
+    { props.children }
+  </ScrollViewRN>
+);
 
-class Text extends React.Component {
-  render() {
-    return (
-      <TextRN { ... this.props } style={[ style.text.style, this.props.style ]}>
-        { this.props.children }
-      </TextRN>
-    )
-  }
-}
+let StatusBar = (props) => (
+  <StatusBarRN backgroundColor={ style.statusBar.backgroundColor } barStyle={ style.statusBar.barStyle } { ... props } />
+);
 
-class TextInput extends React.Component {
-  render() {
-    return (
-      <TextInputRN { ... this.props } style={[ style.textInput.style, this.props.style ]}>
-        { this.props.children }
-      </TextInputRN>
-    )
-  }
-}
+let Text = (props) => (
+  <TextRN { ... props } style={[ style.text.style, props.style ]}>
+    { props.children }
+  </TextRN>
+);
 
-class View extends React.Component {
-  render() {
-    return (
-      <ViewRN { ... this.props } style={[ style.view.style, this.props.style ]}>
-        { this.props.children }
-      </ViewRN>
-    )
-  }
-}
+let TextInput = (props) => (
+  <TextInputRN { ... props } style={[ style.textInput.style, props.style ]}>
+    { props.children }
+  </TextInputRN>
+);
+
+let View = (props) => (
+  <ViewRN { ... props } style={[ style.view.style, props.style ]}>
+    { props.children }
+  </ViewRN>
+);
     
 export {
   Button,
   Feather,
+  FlatList,
   FontAwesome,
-  KeyboardAvoidingView,
+  KeyboardScrollView,
   Modal,
   Pressable,
   ScrollView,

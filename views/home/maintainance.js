@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { View, Text, TextInput } from "./elements";
+import { View, Text, TextInput } from "../../components/elements";
 
 class FormElement extends React.Component {
   constructor(props) {

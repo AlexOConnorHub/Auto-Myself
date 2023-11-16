@@ -1,8 +1,8 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { View, Text, TextInput } from "./elements";
+import { View, Text, TextInput } from "../../components/elements";
 
-class FormElement extends React.Component {
+class MaintainanceRecord extends React.Component {
   constructor(props) {
     super(props);
     if (props.onChangeText === undefined) {
@@ -19,7 +19,7 @@ class FormElement extends React.Component {
   }
 }
 
-export { FormElement };
+export { MaintainanceRecord };
 
 const pageStyles = StyleSheet.create({
   formElementInputSection: {

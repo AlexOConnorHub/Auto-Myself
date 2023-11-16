@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, Pressable } from '../../components/elements.js';
-import { CallbackButton } from '../../components/callbackButton.js';
+import { View, Text, Pressable } from '../../components/elements';
+import { CallbackButton } from '../../components/callbackButton';
 
 /* This is the home page of the app. It will need to:
   1. If logged in, sync the remote DB with the local DB, and push updates if needed
@@ -14,7 +14,7 @@ class Settings extends React.Component {
   render() {
     return (
       <View style={pageStyles.container}>
-        <Text>Open up App.js to start working on your app!!!</Text>
+        <Text>Open up App to start working on your app!!!</Text>
         <Text>Test Firebase Data</Text>
         <CallbackButton
           title="Settings"

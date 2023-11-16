@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button } from './elements.js';
+import { Button } from './elements';
 
 class CallbackButton extends React.Component {
   constructor(props) {

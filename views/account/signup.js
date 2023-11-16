@@ -1,9 +1,9 @@
 import React from "react";
 import { Alert, StyleSheet } from "react-native";
-import { CallbackButton } from "../../components/callbackButton.js";
+import { CallbackButton } from "../../components/callbackButton";
 import { View, Text, Pressable, Modal, FontAwesome, Feather } from "../../components/elements";
-import { FormElement } from "../../components/formElement.js";
-import { auth } from "../../helpers/firebase.js";
+import { FormElement } from "../../components/formElement";
+import { auth } from "../../helpers/firebase";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 
 export class Signup extends React.Component {

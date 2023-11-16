@@ -41,8 +41,8 @@ export default class Car extends Model {
       car.year = newCar.year;
       car.vin = newCar.vin;
       car.lpn = newCar.lpn;
-      car.nickname = this.nickname;
-      car.annualMileage = this.annualMileage;
+      car.nickname = newCar.nickname;
+      car.annualMileage = newCar.annualMileage;
     });
   }
 

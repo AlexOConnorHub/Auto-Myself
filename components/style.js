@@ -3,26 +3,30 @@ import { Platform } from "react-native";
 const darkColors = {
   background: '#282A3A',
   secondaryBackground: '#3D4153',
-  primary: '#C69749',
-  secondary: '#735F32',
+  primary: '#A67729',
+  secondary: '#FFFF66',
   text: '#FFFFFF',
-  theme: 'light',
+  theme: 'light', // Theme for status bar
 };
 
 const lightColors = {
-  background: '#EFEFEF',
-  primary: '#735F32',
-  secondary: '#C69749',
+  background: '#EEEEEE',
   secondaryBackground: '#3D4153',
+  primary: '#C69749',
+  secondary: '#000000',
   text: '#000000',
-  theme: 'dark',
+  theme: 'dark', // Theme for status bar
 };
 
 const colors = (true ? darkColors : lightColors);
 
 const style = {
-  colors: colors,
   view: {
+    style: {
+      backgroundColor: colors.background,
+    }
+  },
+  flatList: {
     style: {
       backgroundColor: colors.background,
     }
@@ -55,10 +59,11 @@ const style = {
   },
   statusBar: {
     barStyle: `${colors.theme}-content`,
+    backgroundColor: colors.background,
   },
   keyboardAvoidingView: {
     behavior: Platform.OS === 'ios' ? 'padding' : 'height',
   },
 }
 
-export { style };
+export { style, colors };

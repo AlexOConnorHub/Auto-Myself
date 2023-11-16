@@ -1,10 +1,10 @@
 import React from 'react';
 import { Alert, StyleSheet } from 'react-native';
-import { View, Text } from '../../components/elements.js';
-import { CallbackButton } from '../../components/callbackButton.js';
-import { Signup } from './signup.js';
-import { Login } from './login.js';
-import { auth } from '../../helpers/firebase.js';
+import { View, Text } from '../../components/elements';
+import { CallbackButton } from '../../components/callbackButton';
+import { Signup } from './signup';
+import { Login } from './login';
+import { auth } from '../../helpers/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 
 /* This is the home page of the app. It will need to:
