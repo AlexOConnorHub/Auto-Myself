@@ -36,11 +36,9 @@ class Account extends React.Component {
           title="Logout"
           onPress={(callback) => {
             signOut(auth).then(() => {
-              console.log('Signed out');
               this.setState({ loggedIn: false });
             }).catch((error) => {
               Alert.alert('Error signing out');
-              console.log(error);
             }).finally(() => {
               callback();
             });

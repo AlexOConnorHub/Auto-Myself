@@ -5,8 +5,8 @@ import { tables } from '../database/tables';
 export default class FamilyMember extends Model {
   static table = tables.family_members;
   static associations = {
-    family: { type: 'belongs_to', key: 'family_id' },
-    user: { type: 'belongs_to', key: 'user_id' },
+    [tables.families]: { type: 'belongs_to', key: 'family_id' },
+    [tables.users]: { type: 'belongs_to', key: 'user_id' },
   };
   @relation(tables.families, 'family_id') family;
   @relation(tables.users, 'user_id') user;

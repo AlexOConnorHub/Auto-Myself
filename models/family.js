@@ -5,7 +5,7 @@ import { tables } from '../database/tables';
 export default class Family extends Model {
   static table = tables.families;
   static associations = {
-    familyMembers: { type: 'has_many', foreignKey: 'family_id' },
+    [tables.family_members]: { type: 'has_many', foreignKey: 'family_id' },
   };
   @children(tables.family_members) familyMember;
 }

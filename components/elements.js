@@ -1,38 +1,57 @@
-import React from "react";
 import {
-  Button as ButtonRN,
-  FlatList as FlatListRN,
-  Modal as ModalRN,
-  Pressable as PressableRN,
-  ScrollView as ScrollViewRN,
-  StatusBar as StatusBarRN,
-  Text as TextRN,
-  TextInput as TextInputRN,
-  View as ViewRN,
-} from "react-native";
-import {
-  FontAwesome as FontAwesomeRN,
-  Feather as FeatherRN,
+  FontAwesome as FontAwesomePkg,
+  Feather as FeatherPkg,
 } from "@expo/vector-icons";
-import { style, colors } from "./style";
+import {
+  Button as ButtonPkg,
+  FlatList as FlatListPkg,
+  Modal as ModalPkg,
+  Pressable as PressablePkg,
+  ScrollView as ScrollViewPkg,
+  StatusBar as StatusBarPkg,
+  Text as TextPkg,
+  TextInput as TextInputPkg,
+  View as ViewPkg,
+} from "react-native";
+import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
 import { KeyboardScrollView as KeyboardScrollViewPkg} from '@rlemasquerier/react-native-keyboard-scrollview';
+import { style, colors } from "./style";
 
 let Button = (props) => (
-  <ButtonRN color={ style.button.color }  { ... props }>
+  <ButtonPkg color={ style.button.color }  { ... props }>
     { props.children }
-  </ButtonRN>
+  </ButtonPkg>
+);
+
+let Dropdown = (props) => (
+  <DropdownPkg 
+    placeholder="Select..."
+    searchPlaceholder="Search..."
+    labelField="label"
+    valueField="value"
+    searchField="label"
+    search={ true }
+    activeColor={ colors.background }
+    { ... props }
+    placeholderStyle={ [style.dropdown.placeholderStyle, props.placeholderStyle] }
+    selectedTextStyle={ [style.dropdown.selectedTextStyle, props.selectedTextStyle] }
+    flatListProps={{ style: [style.dropdown.flatListProps, props.flatListProps] }}
+    itemTextStyle={ [style.dropdown.itemTextStyle, props.itemTextStyle] }
+    inputSearchStyle={ [style.dropdown.inputSearchStyle, props.inputSearchStyle] }
+    containerStyle={ [style.dropdown.view, props.containerStyle] }
+    style={[ style.dropdown.style, props.style ]}/>
 );
 
 let Feather = (props) => (
-  <FeatherRN color={ style.icon.color } { ... props } />
+  <FeatherPkg color={ style.icon.color } { ... props } />
 );
 
 let FlatList = (props) => (
-  <FlatListRN { ... props } style={[ style.flatList.style, props.style ]}/>
+  <FlatListPkg { ... props } style={[ style.flatList.style, props.style ]}/>
 );
 
 let FontAwesome = (props) => (
-  <FontAwesomeRN color={ style.icon.color } { ... props }/>
+  <FontAwesomePkg color={ style.icon.color } { ... props }/>
 );
 
 let KeyboardScrollView = (props) => {
@@ -44,47 +63,48 @@ let KeyboardScrollView = (props) => {
 }
 
 let Modal = (props) => (
-  <ModalRN { ... props }>
+  <ModalPkg { ... props }>
     { props.children }
-  </ModalRN>
+  </ModalPkg>
 );
 
 let Pressable = (props) => (
-  <PressableRN { ... props } style={[ style.pressable.style, props.style ]}>
+  <PressablePkg { ... props } style={[ style.pressable.style, props.style ]}>
     { props.children }
-  </PressableRN>
+  </PressablePkg>
 );
 
 let ScrollView = (props) => (
-  <ScrollViewRN { ... props }>
+  <ScrollViewPkg { ... props }>
     { props.children }
-  </ScrollViewRN>
+  </ScrollViewPkg>
 );
 
 let StatusBar = (props) => (
-  <StatusBarRN backgroundColor={ style.statusBar.backgroundColor } barStyle={ style.statusBar.barStyle } { ... props } />
+  <StatusBarPkg backgroundColor={ style.statusBar.backgroundColor } barStyle={ style.statusBar.barStyle } { ... props } />
 );
 
 let Text = (props) => (
-  <TextRN { ... props } style={[ style.text.style, props.style ]}>
+  <TextPkg ellipsizeMode='tail' numberOfLines={1} { ... props } style={[ style.text.style, props.style ]}>
     { props.children }
-  </TextRN>
+  </TextPkg>
 );
 
 let TextInput = (props) => (
-  <TextInputRN { ... props } style={[ style.textInput.style, props.style ]}>
+  <TextInputPkg { ... props } style={[ style.textInput.style, props.style ]}>
     { props.children }
-  </TextInputRN>
+  </TextInputPkg>
 );
 
 let View = (props) => (
-  <ViewRN { ... props } style={[ style.view.style, props.style ]}>
+  <ViewPkg { ... props } style={[ style.view.style, props.style ]}>
     { props.children }
-  </ViewRN>
+  </ViewPkg>
 );
     
 export {
   Button,
+  Dropdown,
   Feather,
   FlatList,
   FontAwesome,

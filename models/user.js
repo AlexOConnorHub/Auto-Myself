@@ -5,8 +5,8 @@ import { tables } from '../database/tables';
 export default class User extends Model {
   static table = tables.users;
   static associations = {
-    owners: { type: 'has_many', foreignKey: 'user_id' },
-    familyMembers: { type: 'has_many', foreignKey: 'user_id' },
+    [tables.owners]: { type: 'has_many', foreignKey: 'user_id' },
+    [tables.family_members]: { type: 'has_many', foreignKey: 'user_id' },
   };
   @text('first_name') first_name;
   @text('last_name') last_name;

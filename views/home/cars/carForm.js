@@ -1,23 +1,11 @@
 import React from "react";
-import { Alert, Keyboard, StyleSheet } from "react-native";
-import { View, Text, KeyboardScrollView } from "../../components/elements";
-import { FormElement } from "../../components/formElement";
-import { CallbackButton } from "../../components/callbackButton";
-import { tables } from "../../database/tables";
-import Car from "../../models/car";
+import { Keyboard, StyleSheet } from "react-native";
+import { View, Text, KeyboardScrollView } from "../../../components/elements";
+import { FormElement } from "../../../components/formElement";
+import { CallbackButton } from "../../../components/callbackButton";
+import { tables } from "../../../database/tables";
 
 class CarForm extends React.Component {
-  constructor(props) {
-    super(props);
-    if (props.route.params !== undefined && props.route.params.carId !== undefined) {
-      this.new = false;
-    }
-  }
-  componentDidMount() {
-    if (!this.new) {
-      this.postConstruct();
-    }
-  }
   car = null
   new = true
   state = {
@@ -66,6 +54,17 @@ class CarForm extends React.Component {
       keyboardType: 'numeric',
     },
   ]
+  constructor(props) {
+    super(props);
+    if (props.route.params !== undefined && props.route.params.carId !== undefined) {
+      this.new = false;
+    }
+  }
+  componentDidMount() {
+    if (!this.new) {
+      this.postConstruct();
+    }
+  }
   async postConstruct() {
     this.car = await this.props.database.get(tables.cars).find(this.props.route.params.carId);
     this.setState( this.formData.reduce((state, data) => {
@@ -80,15 +79,9 @@ class CarForm extends React.Component {
           <CallbackButton
             title="Back"
             onPress={ this.goBack.bind(this) } />
-          { this.new ? 
-            <Text style={ pageStyles.headerText }>
-              Add Car
-            </Text>
-            :
-            <CallbackButton
-              title="Delete"
-              onPress={ this.delete.bind(this) } />
-          }
+          <Text style={ pageStyles.headerText }>
+            { this.new ? 'Add' : 'Edit' } Car
+          </Text>
           <CallbackButton
             title={ 'Save' }
             onPress={ this.save.bind(this) } />
@@ -113,35 +106,22 @@ class CarForm extends React.Component {
       return state;
     }, {});
     if (this.new) {
-      let newCar = new Car(this.props.database.get(tables.cars), formStates);
-      await newCar.addCar();
+      this.car = await this.props.database.write(async () => {
+        return await this.props.database.get(tables.cars).create((record) => {
+          for (let key in formStates) {
+            record[key] = formStates[key];
+          }
+        });
+      });
     } else {
-      await this.car.updateCar(formStates);
+      await this.car.updateRecord(formStates);
     }
     this.goBack(callback);
   }
-  async delete(callback) {
-    Alert.alert(
-      "Delete Car",
-      "Are you sure you want to delete this car?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        { text: "Delete", style: 'destructive', onPress: async () => {
-            await this.car.deleteCar();
-            this.goBack(callback);
-          }
-        }
-      ],
-      { cancelable: false }
-    );
-  }
   goBack(callback) {
     Keyboard.dismiss();
-    callback();
     this.props.navigation.goBack();
+    callback();
   }
 }
 

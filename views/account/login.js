@@ -43,14 +43,11 @@ export class Login extends React.Component {
                   } else {
                     signInWithEmailAndPassword(auth, this.values.email, this.values.password).then((userCredential) => {
                       const user = userCredential.user;
-                      console.log(user);
                       Alert.alert("Logged in");
                       this.setState({ modalVisible: false });
                     }).catch((error) => {
                       const errorCode = error.code;
                       const errorMessage = error.message;
-                      console.log(errorCode);
-                      console.log(errorMessage);
                       Alert.alert(errorMessage); // Consider "Try again later error"
                     }).finally(() => {
                       callback();

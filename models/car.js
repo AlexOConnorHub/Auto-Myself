@@ -5,9 +5,9 @@ import { tables } from '../database/tables';
 export default class Car extends Model {
   static table = tables.cars;
   static associations = {
-    carMaintainanceIntervals: { type: 'has_many', foreignKey: 'car_id' },
-    maintainanceRecords: { type: 'has_many', foreignKey: 'car_id' },
-    owners: { type: 'has_many', foreignKey: 'car_id' },
+    [tables.car_maintainance_intervals]: { type: 'has_many', foreignKey: 'car_id' },
+    [tables.maintainance_records]: { type: 'has_many', foreignKey: 'car_id' },
+    [tables.owners]: { type: 'has_many', foreignKey: 'car_id' },
   };
   @text('make') make;
   @text('model') model;
@@ -22,31 +22,15 @@ export default class Car extends Model {
   @children(tables.maintainance_records) maintainanceRecords;
   @children(tables.owners) owners;
 
-  @writer async addCar() {
-    return await this.collections.get(this.table).create((car) => {
-      car.make = this.make;
-      car.model = this.model;
-      car.year = this.year;
-      car.vin = this.vin;
-      car.lpn = this.lpn;
-      car.nickname = this.nickname;
-      car.annualMileage = this.annualMileage;
-    });
-  }
-
-  @writer async updateCar(newCar) {
+  @writer async updateRecord(newRecord) {
     return await this.update((car) => {
-      car.make = newCar.make;
-      car.model = newCar.model;
-      car.year = newCar.year;
-      car.vin = newCar.vin;
-      car.lpn = newCar.lpn;
-      car.nickname = newCar.nickname;
-      car.annualMileage = newCar.annualMileage;
+      for (const key in newRecord) {
+        car[key] = newRecord[key];
+      }
     });
   }
 
-  @writer async deleteCar() {
+  @writer async deleteRecord() {
     return await this.destroyPermanently(); // TODO: Make sure to not actually delete if synced
   }
 }

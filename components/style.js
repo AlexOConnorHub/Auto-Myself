@@ -21,15 +21,57 @@ const lightColors = {
 const colors = (true ? darkColors : lightColors);
 
 const style = {
-  view: {
+  button: {
+    color: colors.primary,
+  },
+  dropdown: {
     style: {
+      backgroundColor: colors.secondaryBackground,
+      color: colors.text,
+    },
+    placeholderStyle: {
+      color: colors.text,
+    },
+    selectedTextStyle: {
+      color: colors.text,
+    },
+    flatListProps: {
+      backgroundColor: colors.secondaryBackground,
+    },
+    itemTextStyle: {
+      color: colors.text,
+    },
+    inputSearchStyle: {
+      color: colors.text,
+      backgroundColor: colors.secondaryBackground,
+      borderWidth: 0,
+    },
+    view: {
       backgroundColor: colors.background,
-    }
+      borderWidth: 1.5,
+      borderColor: colors.primary,
+    },
+  },
+  icon: {
+    color: colors.secondary,
   },
   flatList: {
     style: {
       backgroundColor: colors.background,
     }
+  },
+  keyboardAvoidingView: {
+    behavior: Platform.OS === 'ios' ? 'padding' : 'height',
+  },
+  pressable: {
+    style: {
+      backgroundColor: colors.primary,
+      borderRadius: 30,
+    },
+  },
+  statusBar: {
+    barStyle: `${colors.theme}-content`,
+    backgroundColor: colors.background,
   },
   text: {
     button: {
@@ -45,24 +87,10 @@ const style = {
       color: colors.text,
     },
   },
-  button: {
-    color: colors.primary,
-  },
-  pressable: {
+  view: {
     style: {
-      backgroundColor: colors.primary,
-      borderRadius: 30,
-    },
-  },
-  icon: {
-    color: colors.secondary,
-  },
-  statusBar: {
-    barStyle: `${colors.theme}-content`,
-    backgroundColor: colors.background,
-  },
-  keyboardAvoidingView: {
-    behavior: Platform.OS === 'ios' ? 'padding' : 'height',
+      backgroundColor: colors.background,
+    }
   },
 }
 

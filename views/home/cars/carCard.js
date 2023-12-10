@@ -1,13 +1,13 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Text, Pressable } from "../../components/elements";
-import { ConditionalText } from "../../components/conditionalText";
-import { colors } from "../../components/style";
+import { Text, Pressable } from "../../../components/elements";
+import { ConditionalText } from "../../../components/conditionalText";
+import { colors } from "../../../components/style";
 
 class CarCard extends React.Component {
   render() {
     return (
-      <Pressable onPress={() => this.onPress() } style={ pageStyles.pressable }>
+      <Pressable onPress={() => this.onPress() } style={ pageStyles.pressable } onLongPress={() => this.props.triggerModal(this.props.car.id)}>
         <Text style={ [pageStyles.title, pageStyles.cardRow] }>
           { this.props.car.nickname }
           { (this.props.car.year) ? ` (${this.props.car.year})` : '' }
@@ -28,7 +28,7 @@ class CarCard extends React.Component {
     );
   }
   onPress() {
-    this.props.navigation.navigate('CarForm', { carId: this.props.car.id });
+    this.props.navigation.navigate('MaintainanceRecordList', { carId: this.props.car.id });
   }
 }
 
