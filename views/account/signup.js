@@ -3,21 +3,16 @@ import { Alert, StyleSheet } from "react-native";
 import { CallbackButton } from "../../components/callbackButton";
 import { View, Text, Pressable, Modal, FontAwesome, Feather } from "../../components/elements";
 import { FormElement } from "../../components/formElement";
-import { auth } from "../../helpers/firebase";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import 'react-native-url-polyfill/auto'
+import { supabase } from "../../helpers/supabase";
 
 export class Signup extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modalVisible: false
-    };
-    this.values = {
-      email: "",
-      confirmEmail: "",
-      password: "",
-      confirmPassword: "",
-    };
+  state = {
+    modalVisible: false,
+    email: "",
+    confirmEmail: "",
+    password: "",
+    confirmPassword: "",
   }
   render() {
     return (
@@ -35,37 +30,35 @@ export class Signup extends React.Component {
               <Text style={ pageStyles.modalHeaderText }>Signup</Text>
               <CallbackButton
                 title="Signup"
-                onPress={(callback) => {
-                  let email = this.values.email;
-                  let confirmEmail = this.values.confirmEmail;
-                  let password = this.values.password;
-                  let confirmPassword = this.values.confirmPassword;
+                onPress={async (callback) => {
+                  let email = this.state.email;
+                  let confirmEmail = this.state.confirmEmail;
+                  let password = this.state.password;
+                  let confirmPassword = this.state.confirmPassword;
                   if (email !== confirmEmail) {
                     Alert.alert("Emails do not match");
-                    callback();
                 } else if (password !== confirmPassword) {
                     Alert.alert("Passwords do not match");
-                    callback();
                   } else {
-                    createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
-                      const user = userCredential.user;
+                    const { error } = await supabase.auth.signUp({
+                      email: email,
+                      password: password,
+                    });
+                    if (error) {
+                      Alert.alert(error.message);
+                    } else {
                       Alert.alert("Account created");
                       this.setState({ modalVisible: false });
-                    }).catch((error) => {
-                      const errorCode = error.code;
-                      const errorMessage = error.message;
-                      Alert.alert(errorMessage); // Consider "Try again later error"
-                    }).finally(() => {
-                      callback();
-                    });
+                    }
                   }
+                  callback();
                 }} />
             </View>
             <View style={ pageStyles.modalBody }>
-              <FormElement onChangeText={(text) => { this.values.email = text; }}>E-Mail</FormElement>
-              <FormElement onChangeText={(text) => { this.values.confirmEmail = text; }}>Confirm E-Mail</FormElement>
-              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => { this.values.password = text; }}>Password</FormElement>
-              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => { this.values.confirmPassword = text; }}>Confirm Password</FormElement>
+              <FormElement onChangeText={(text) => { this.setState({ email: text }); }}>E-Mail</FormElement>
+              <FormElement onChangeText={(text) => { this.setState({ confirmEmail: text }); }}>Confirm E-Mail</FormElement>
+              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => { this.setState({ password: text }); }}>Password</FormElement>
+              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => { this.setState({ confirmPassword: text }); }}>Confirm Password</FormElement>
             </View>
           </View>
         </Modal>

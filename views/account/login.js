@@ -3,19 +3,13 @@ import { Alert, StyleSheet } from "react-native";
 import { CallbackButton } from "../../components/callbackButton";
 import { View, Text, Pressable, Modal, FontAwesome, Feather } from "../../components/elements";
 import { FormElement } from "../../components/formElement";
-import { auth } from "../../helpers/firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { supabase } from "../../helpers/supabase";
 
 export class Login extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      modalVisible: false
-    };
-    this.values = {
-      email: "",
-      password: "",
-    };
+  state = {
+    modalVisible: false,
+    email: "",
+    password: "",
   }
   render() {
     return (
@@ -33,31 +27,29 @@ export class Login extends React.Component {
               <Text style={ pageStyles.modalHeaderText }>Login</Text>
               <CallbackButton
                 title="Login"
-                onPress={(callback) => {
-                  if (this.values.email === "") {
+                onPress={ async (callback) => {
+                  if (this.state.email === "") {
                     Alert.alert("Email cannot be blank");
-                    callback();
-                  } else if (this.values.password === "") {
+                  } else if (this.state.password === "") {
                     Alert.alert("Password cannot be blank");
-                    callback();
                   } else {
-                    signInWithEmailAndPassword(auth, this.values.email, this.values.password).then((userCredential) => {
-                      const user = userCredential.user;
+                    const {data: { session }, error} = await supabase.auth.signInWithPassword({
+                      email: this.state.email,
+                      password: this.state.password,
+                    });
+                    if (error) {
+                      Alert.alert(error.message);
+                    } else {
                       Alert.alert("Logged in");
                       this.setState({ modalVisible: false });
-                    }).catch((error) => {
-                      const errorCode = error.code;
-                      const errorMessage = error.message;
-                      Alert.alert(errorMessage); // Consider "Try again later error"
-                    }).finally(() => {
-                      callback();
-                    });
+                    }
                   }
+                  callback();
                 }} />
             </View>
             <View style={ pageStyles.modalBody }>
-              <FormElement onChangeText={(text) => { this.values.email = text; }}>E-Mail</FormElement>
-              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => { this.values.password = text; }}>Password</FormElement>
+              <FormElement onChangeText={(text) => { this.setState({ email: text }); }}>E-Mail</FormElement>
+              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => {this.setState({ password: text }); }}>Password</FormElement>
             </View>
           </View>
         </Modal>

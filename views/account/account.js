@@ -4,8 +4,7 @@ import { View, Text } from '../../components/elements';
 import { CallbackButton } from '../../components/callbackButton';
 import { Signup } from './signup';
 import { Login } from './login';
-import { auth } from '../../helpers/firebase';
-import { onAuthStateChanged, signOut } from 'firebase/auth';
+import { supabase } from '../../helpers/supabase';
 
 /* This is the home page of the app. It will need to:
   1. If logged in, sync the remote DB with the local DB, and push updates if needed
@@ -17,16 +16,25 @@ import { onAuthStateChanged, signOut } from 'firebase/auth';
 class Account extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      loggedIn: false, // Assume false, once onAuthStateChanged is called, it will update this
-    };
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+        if (session) {
+          this.setState({ loggedIn: true });
+        } else {
+          this.setState({ loggedIn: false });
+        }
+      }
+    );
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth state changed");
+      if (event === "SIGNED_IN") {
         this.setState({ loggedIn: true });
-      } else {
+      } else if (event === "SIGNED_OUT") {
         this.setState({ loggedIn: false });
       }
     });
+  }
+  state = {
+    loggedIn: false
   }
   render() {
     return (
@@ -35,13 +43,8 @@ class Account extends React.Component {
         <CallbackButton
           title="Logout"
           onPress={(callback) => {
-            signOut(auth).then(() => {
-              this.setState({ loggedIn: false });
-            }).catch((error) => {
-              Alert.alert('Error signing out');
-            }).finally(() => {
-              callback();
-            });
+            supabase.auth.signOut();
+            callback();
           }}
         /> :
         <View style={ pageStyles.authButtons }>
