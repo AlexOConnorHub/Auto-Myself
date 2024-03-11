@@ -5,10 +5,13 @@ import { CallbackButton } from "../../../components/callbackButton";
 import { KeyboardScrollView } from "../../../components/elements";
 import { FormElement } from "../../../components/formElement";
 import { Q } from "@nozbe/watermelondb";
-import { colors } from "../../../components/style";
 import { tables } from "../../../database/tables";
+import { OptionButtons } from "../../../components/optionButtons";
+import { SettingsContext } from "../../../helpers/settingsContext";
+import { convertIntervalForDisplay, convertIntervalForStorage } from "../../../helpers/functions";
 
 class MaintainanceRecordForm extends React.Component {
+  static contextType = SettingsContext;
   maintainanceType = null
   maintainanceInterval = null
   car = null
@@ -19,8 +22,8 @@ class MaintainanceRecordForm extends React.Component {
     maintainanceTypeId: '',
     maintainanceTypes: [],
     new_maintainanceType: '',
-    timeBetween: '',
-    maintainanceIntervalType: 'weeks',
+    interval: '',
+    intervalUnit: '',
     odometer: '',
     cost: '$',
     notes: '',
@@ -63,11 +66,11 @@ class MaintainanceRecordForm extends React.Component {
     this.carMaintainanceIntervalId = this.maintainanceInterval.id;
     this.car = await this.maintainanceRecord.car.fetch();
     this.setState({ maintainanceTypeId: this.maintainanceType.id });
-    this.setState({ timeBetween: this.maintainanceInterval.frequency });
+    this.setState({ interval: convertIntervalForDisplay(this.maintainanceInterval.interval, this.maintainanceInterval.intervalUnit, this.context.distanceUnit) });
+    this.setState({ intervalUnit: this.maintainanceInterval.intervalUnit });
     this.setState({ odometer: this.maintainanceRecord.odometer });
     this.setState({ cost: this.maintainanceRecord.cost });
     this.setState({ notes: this.maintainanceRecord.notes });
-    this.setState({ maintainanceIntervalType: this.car.maintainanceIntervalType });
   }
   render() {
     return (
@@ -84,53 +87,64 @@ class MaintainanceRecordForm extends React.Component {
             onPress={ this.save.bind(this) } />
         </View>
         <KeyboardScrollView>
-          <View style={ pageStyles.formField }>
-            <Text style={ pageStyles.text }>Maintainance Type</Text>
+          <FormElement label="Maintainance Type">
             <Dropdown
               label="Maintainance Type"
               data={this.state.maintainanceTypes}
               value={ this.state.maintainanceTypeId }
               onChange={ this.onDropdownChange.bind(this) }/>
-          </View>
+          </FormElement>
           { // TODO: Animate this in instead of crude render
             this.state.maintainanceTypeId === 'new' &&
-            <View style={ pageStyles.formField }>
-              <Text style={ pageStyles.text }>Maintainance Type</Text>
+            <FormElement label="New Maintainance Type">
               <TextInput
                 style={ pageStyles.textInput }
                 value={ this.state.new_maintainanceType }
                 onChangeText={(text) => this.setState({ new_maintainanceType: text })} />
-            </View>
+            </FormElement>
           }
           { // TODO: Animate this in instead of crude render
             this.state.maintainanceTypeId !== '' &&
-            <View style={ pageStyles.formField }>
-              <Text style={ pageStyles.text }>Maintainance Interval</Text>
+            <FormElement label="Maintainance Interval">
               <TextInput
                 style={ pageStyles.textInput }
-                value={ this.state.timeBetween }
-                onChangeText={(text) => this.setState({ timeBetween: text })}
+                value={ this.state.interval }
+                onChangeText={(text) => this.setState({ interval: text })}
                 keyboardType="numeric" />
-            </View>
+            </FormElement>
+          }
+          { // TODO: Animate this in instead of crude render
+            this.state.maintainanceTypeId !== '' &&
+            <FormElement label="Interval Unit">
+            <OptionButtons
+              options={ [
+                { key: 'dist', label: this.context.distanceUnit },
+                { key: 'weeks', label: 'Weeks' },
+                { key: 'months', label: 'Months' },
+                { key: 'years', label: 'Years' },
+              ] }
+              direction="vertical"
+              value={ this.state.intervalUnit }
+              onSelect={(key) => this.setState({ intervalUnit: key })} />
+          </FormElement>
           }
           { this.formData.map((item) => (
-            <FormElement
-              key={ item.model }
-              value={ this.state[item.model] }
-              onChangeText={(text) => this.setState({ [item.model]: text })}
-              textInputProps={{keyboardType: item.keyboardType}}>
-                { item.label }
+            <FormElement label={ item.label }
+              key={ item.model }>
+              <TextInput
+                value={ this.state[item.model] }
+                onChangeText={(text) => this.setState({ [item.model]: text })}
+                keyboardType={ item.keyboardType } />
             </FormElement>
           )) }
-          <View style={ pageStyles.formField }>
-            <Text style={ pageStyles.text }>Notes</Text>
+          <FormElement label="Notes">
             <TextInput
               style={ pageStyles.textInput }
               value={ this.state.notes }
               onChangeText={(text) => this.setState({ notes: text })}
               multiline={ true }
               numberOfLines={ 4 } />
-          </View>
+          </FormElement>
           { !this.new &&
             <CallbackButton
               title="Delete"
@@ -146,7 +160,7 @@ class MaintainanceRecordForm extends React.Component {
   }
   async getCarMaintainanceInterval() {
     if (this.state.maintainanceTypeId === 'new') {
-      this.setState({ timeBetween: '' });
+      this.setState({ interval: '' });
       return;
     }
     this.maintainanceInterval = await this.props.database.get(tables.car_maintainance_intervals).query(
@@ -158,10 +172,10 @@ class MaintainanceRecordForm extends React.Component {
     }
     if (this.maintainanceInterval.length === 1) {
       this.carMaintainanceIntervalId = this.maintainanceInterval[0].id;
-      this.setState({ timeBetween: this.maintainanceInterval[0].weeksBetween });
+      this.setState({ interval: convertIntervalForDisplay(this.maintainanceInterval[0].interval, this.maintainanceInterval[0].intervalUnit, this.context.distanceUnit) });
     } else {
       this.carMaintainanceIntervalId = null;
-      this.setState({ timeBetween: '' });
+      this.setState({ interval: '' });
     }
   }
   async save(callback) {
@@ -175,7 +189,12 @@ class MaintainanceRecordForm extends React.Component {
     } else if (!this.maintainanceType) {
       this.maintainanceType = await this.props.database.get(tables.maintainance_types).find(this.state.maintainanceTypeId);
     }
-    this.maintainanceInterval = await this.maintainanceType.ensureCarMaintainanceInterval(this.props.route.params.carId, this.carMaintainanceIntervalId, this.state.timeBetween, this.state.maintainanceIntervalType === 'weeks');
+    this.maintainanceInterval = await this.maintainanceType.ensureCarMaintainanceInterval({
+      carId: this.props.route.params.carId,
+      carMaintainanceIntervalId: this.carMaintainanceIntervalId,
+      interval: convertIntervalForStorage(this.state.interval, this.state.intervalUnit, this.context.distanceUnit),
+      intervalUnit: this.state.intervalUnit,
+    });
     if (this.new) {
       await this.maintainanceType.createMaintainanceRecord({
         carId: this.props.route.params.carId,
@@ -206,7 +225,7 @@ export { MaintainanceRecordForm };
 
 const pageStyles = StyleSheet.create({
   container: {
-    height: '100%',
+    flex: 1,
   },
   heaader: {
     flexDirection: 'row',
@@ -227,7 +246,6 @@ const pageStyles = StyleSheet.create({
   },
   textInput: {
     fontSize: 16,
-    color: colors.text,
     textAlignVertical: 'top',
   },
   deleteButton: {

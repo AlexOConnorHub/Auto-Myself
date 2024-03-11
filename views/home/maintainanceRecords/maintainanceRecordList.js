@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet, Keyboard } from "react-native";
-import withObservables from "@nozbe/with-observables";
+import { withObservables } from '@nozbe/watermelondb/react'
 import { Q } from '@nozbe/watermelondb';
 import { View, Text, FlatList, Pressable } from "../../../components/elements";
 import { CallbackButton } from "../../../components/callbackButton";
@@ -10,7 +10,7 @@ import { MaintainanceRecordCard } from "./maintainanceRecordCard";
 class MaintainanceRecordList extends React.Component {
   RenderMaintainanceCard = (maintainanceRecord) =>
     <MaintainanceRecordCard key={ maintainanceRecord.id } maintainanceRecord={ maintainanceRecord } navigation={ this.props.navigation } database={ this.props.database }/>
-  RenderMaintainanceList = ({ car, maintainanceRecords }) => (
+  RenderMaintainanceList = ({ maintainanceRecords }) => (
     <View style={ pageStyles.container }>
       <View style={ pageStyles.heaader }>
         <CallbackButton
@@ -20,7 +20,7 @@ class MaintainanceRecordList extends React.Component {
       </View>
       <View style={ pageStyles.container }>
         <FlatList
-          data={ maintainanceRecords }
+          data={ maintainanceRecords.sort((a, b) => b.createdAt - a.createdAt) }
           renderItem={({ item }) => this.RenderMaintainanceCard(item) }
           ListEmptyComponent={() => (
             <Text style={ pageStyles.emptyText }>No maintainance history</Text>
@@ -33,7 +33,6 @@ class MaintainanceRecordList extends React.Component {
     </View>
   );
   enhance = withObservables(['carId'], ({ carId, database }) => ({
-    car: database.get(tables.cars).findAndObserve(carId),
     maintainanceRecords: database.collections.get(tables.maintainance_records).query(Q.where('car_id', carId)),
   }));
   EnhancedMaintainanceList = this.enhance(this.RenderMaintainanceList);

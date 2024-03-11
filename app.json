@@ -7,9 +7,9 @@
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/transparent-background.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#A67729"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -19,8 +19,8 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/transparent-background.png",
+        "backgroundColor": "#A67729"
       },
       "package": "com.anonymous.MyCarTotalControl"
     },
@@ -41,15 +41,15 @@
               ]
             }
           },
-					"ios": {
-						"extraPods": [
-							{
-								"name": "simdjson",
-								"path": "../node_modules/@nozbe/simdjson",
-								"modular_headers": true
-							}
-						]
-					}
+          "ios": {
+            "extraPods": [
+              {
+                "name": "simdjson",
+                "path": "../node_modules/@nozbe/simdjson",
+                "modular_headers": true
+              }
+            ]
+          }
         }
       ],
       "@skam22/watermelondb-expo-plugin"

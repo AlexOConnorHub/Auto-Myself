@@ -1,6 +1,6 @@
 import React from "react";
 import { Keyboard, StyleSheet } from "react-native";
-import { View, Text, KeyboardScrollView } from "../../../components/elements";
+import { View, Text, KeyboardScrollView, TextInput } from "../../../components/elements";
 import { FormElement } from "../../../components/formElement";
 import { CallbackButton } from "../../../components/callbackButton";
 import { tables } from "../../../database/tables";
@@ -88,12 +88,11 @@ class CarForm extends React.Component {
         </View>
         <KeyboardScrollView>
           { this.formData.map((item) => (
-            <FormElement
-              key={ item.model }
-              value={ this.state[item.model] }
-              onChangeText={(text) => this.setState({ [item.model]: text })}
-              textInputProps={{keyboardType: item.keyboardType}}>
-                { item.label }
+            <FormElement label={ item.label }
+              key={ item.model }>
+              <TextInput
+                onChangeText={(text) => { this.setState({ [item.model]: text }); }}
+                keyboardType={ item.keyboardType } />
             </FormElement>
           )) }
         </KeyboardScrollView>
@@ -129,7 +128,7 @@ export { CarForm };
 
 const pageStyles = StyleSheet.create({
   container: {
-    height: '100%',
+    flex: 1,
   },
   heaader: {
     flexDirection: 'row',

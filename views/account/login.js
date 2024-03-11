@@ -1,7 +1,7 @@
 import React from "react";
 import { Alert, StyleSheet } from "react-native";
 import { CallbackButton } from "../../components/callbackButton";
-import { View, Text, Pressable, Modal, FontAwesome, Feather } from "../../components/elements";
+import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from "../../components/elements";
 import { FormElement } from "../../components/formElement";
 import { supabase } from "../../helpers/supabase";
 
@@ -48,8 +48,18 @@ export class Login extends React.Component {
                 }} />
             </View>
             <View style={ pageStyles.modalBody }>
-              <FormElement onChangeText={(text) => { this.setState({ email: text }); }}>E-Mail</FormElement>
-              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => {this.setState({ password: text }); }}>Password</FormElement>
+              <FormElement label="E-Mail">
+                <TextInput
+                  onChangeText={(text) => { this.setState({ email: text }); }}
+                  // keyboardType="email-address" TODO, maybe???
+                />
+              </FormElement>
+              <FormElement label="Password">
+                <TextInput
+                  onChangeText={(text) => { this.setState({ password: text }); }}
+                  secureTextEntry={true}
+                />
+              </FormElement>
             </View>
           </View>
         </Modal>
@@ -62,9 +72,9 @@ const pageStyles = StyleSheet.create({
   showModalPressable: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',    
+    alignSelf: 'center',
     padding: 10,
-    
+
     width: "95%"
   },
   showModalText: {

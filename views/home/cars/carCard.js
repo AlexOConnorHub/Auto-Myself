@@ -2,26 +2,27 @@ import React from "react";
 import { StyleSheet } from "react-native";
 import { Text, Pressable } from "../../../components/elements";
 import { ConditionalText } from "../../../components/conditionalText";
-import { colors } from "../../../components/style";
+import { SettingsContext } from "../../../helpers/settingsContext";
 
 class CarCard extends React.Component {
+  static contextType = SettingsContext;
   render() {
     return (
-      <Pressable onPress={() => this.onPress() } style={ pageStyles.pressable } onLongPress={() => this.props.triggerModal(this.props.car.id)}>
-        <Text style={ [pageStyles.title, pageStyles.cardRow] }>
+      <Pressable onPress={() => this.onPress() } style={ pageStyles.pressable } onLongPress={() => this.props.triggerModal(this.props.car)}>
+        <Text style={ [pageStyles.title, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
           { this.props.car.nickname }
           { (this.props.car.year) ? ` (${this.props.car.year})` : '' }
         </Text>
-        <Text style={ [pageStyles.title, pageStyles.cardRow] }>
+        <Text style={ [pageStyles.title, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
           { this.props.car.make } { this.props.car.model }
         </Text>
-        <ConditionalText condition={ this.props.car.vin } style={ [pageStyles.data, pageStyles.cardRow] }>
+        <ConditionalText condition={ this.props.car.vin } style={ [pageStyles.data, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
           VIN: { this.props.car.vin }
         </ConditionalText>
-        <ConditionalText condition={ this.props.car.lpn } style={ [pageStyles.data, pageStyles.cardRow] }>
+        <ConditionalText condition={ this.props.car.lpn } style={ [pageStyles.data, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
           License Plate: { this.props.car.lpn }
         </ConditionalText>
-        <ConditionalText condition={ this.props.car.annualMileage } style={ [pageStyles.data, pageStyles.cardRow] }>
+        <ConditionalText condition={ this.props.car.annualMileage } style={ [pageStyles.data, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
           Estimated Annual Mileage: { this.props.car.annualMileage }
         </ConditionalText>
       </Pressable>
@@ -43,7 +44,6 @@ const pageStyles = StyleSheet.create({
     alignSelf: 'center',
   },
   cardRow: {
-    backgroundColor: colors.primary,
     marginHorizontal: 10,
   },
   title: {

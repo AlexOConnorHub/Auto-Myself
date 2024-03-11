@@ -22,35 +22,25 @@ export default class MaintainanceType extends Model {
     });
   }
 
-  @writer async ensureCarMaintainanceInterval(carId, maintainanceIntervalId, maintainanceInterval, isWeeks) {
-    if (!maintainanceIntervalId) {
+  @writer async ensureCarMaintainanceInterval(data) {
+    if (!data.carMaintainanceIntervalId) {
       return await this.collections.get(tables.car_maintainance_intervals).create((record) => {
-        if (isWeeks) {
-          record.weeksBetween = maintainanceInterval;
-          record.milesBetween = null;
-        } else {
-          record.weeksBetween = null;
-          record.milesBetween = maintainanceInterval;
-        }
-        record._setRaw('car_id', carId);
+        record.interval = data.interval;
+        record.intervalUnit = data.intervalUnit;
+        record._setRaw('car_id', data.carId);
         record._setRaw('maintainance_type_id', this.id);
       });
     } else {
-      let databaseRecord = await this.collections.get(tables.car_maintainance_intervals).find(maintainanceIntervalId);
-      if (carId && databaseRecord.car.id !== carId) {
+      let databaseRecord = await this.collections.get(tables.car_maintainance_intervals).find(data.carMaintainanceIntervalId);
+      if (data.carId !== undefined && databaseRecord.car.id !== data.carId) {
         return null;
       }
-      if (maintainanceIntervalId && databaseRecord.maintainanceType.id !== this.id) {
+      if (data.maintainanceIntervalId !== undefined && databaseRecord.maintainanceType.id !== this.id) {
         return null;
       }
       return await databaseRecord.update((record) => {
-        if (isWeeks) {
-          record.weeksBetween = maintainanceInterval;
-          record.milesBetween = null;
-        } else {
-          record.weeksBetween = null;
-          record.milesBetween = maintainanceInterval;
-        }
+        record.interval = data.interval;
+        record.intervalUnit = data.intervalUnit;
       });
     }
   }

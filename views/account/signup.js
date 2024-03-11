@@ -1,9 +1,8 @@
 import React from "react";
 import { Alert, StyleSheet } from "react-native";
 import { CallbackButton } from "../../components/callbackButton";
-import { View, Text, Pressable, Modal, FontAwesome, Feather } from "../../components/elements";
+import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from "../../components/elements";
 import { FormElement } from "../../components/formElement";
-import 'react-native-url-polyfill/auto'
 import { supabase } from "../../helpers/supabase";
 
 export class Signup extends React.Component {
@@ -55,10 +54,19 @@ export class Signup extends React.Component {
                 }} />
             </View>
             <View style={ pageStyles.modalBody }>
-              <FormElement onChangeText={(text) => { this.setState({ email: text }); }}>E-Mail</FormElement>
-              <FormElement onChangeText={(text) => { this.setState({ confirmEmail: text }); }}>Confirm E-Mail</FormElement>
-              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => { this.setState({ password: text }); }}>Password</FormElement>
-              <FormElement textInputProps={{secureTextEntry: true}} onChangeText={(text) => { this.setState({ confirmPassword: text }); }}>Confirm Password</FormElement>
+              {[
+                { label: "E-Mail", keyboardType: "email-address", model: "email" },
+                { label: "Confirm E-Mail", keyboardType: "email-address", model: "confirmEmail" },
+                { label: "Password", keyboardType: "default", model: "password" },
+                { label: "Confirm Password", keyboardType: "default", model: "confirmPassword" },
+              ].map((item) => (
+                <FormElement label={ item.label }
+                  key={ item.model }>
+                  <TextInput
+                    onChangeText={(text) => this.setState({ [item.model]: text })}
+                    keyboardType={ item.keyboardType } />
+                </FormElement>
+              ))}
             </View>
           </View>
         </Modal>
@@ -71,9 +79,9 @@ const pageStyles = StyleSheet.create({
   showModalPressable: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'center',    
+    alignSelf: 'center',
     padding: 10,
-    
+
     width: "95%"
   },
   showModalText: {

@@ -1,17 +1,18 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import withObservables from '@nozbe/with-observables';
+import { withObservables } from '@nozbe/watermelondb/react'
 import { View, Text, Pressable, FlatList, Modal } from "../../../components/elements";
 import { CarCard } from "./carCard";
 import { tables } from "../../../database/tables";
-import { CallbackButton } from "../../../components/callbackButton";
+import { SettingsContext } from "../../../helpers/settingsContext";
 
 class CarList extends React.Component {
+  static contextType = SettingsContext;
   state = {
     modalVisible: false,
   }
   modal = {
-    carId: null,
+    car: null,
   }
   RenderCarCard = (car) =>
     <CarCard key={ car.id } car={ car } navigation={ this.props.navigation } triggerModal={ this.triggerModal.bind(this) } closeModal={ this.closeModal.bind(this) }/>
@@ -55,21 +56,20 @@ class CarList extends React.Component {
       <this.EnhancedCarList cars={ this.props.database.get(tables.cars).query() }/>
     );
   }
-  triggerModal(carID) {
+  triggerModal(car) {
     this.setState({ modalVisible: true });
-    this.modal.carId = carID;
+    this.modal.car = car;
   }
   closeModal() {
     this.setState({ modalVisible: false });
-    this.modal.carId = null;
+    this.modal.car = null;
   }
   modalEditCar() {
-    this.props.navigation.navigate('CarForm', { carId: this.modal.carId });
+    this.props.navigation.navigate('CarForm', { carId: this.modal.car.id });
     this.closeModal();
   }
   async modalDeleteCar() {
-    let car = await this.props.database.get(tables.cars).find(this.modal.carId);
-    await car.deleteRecord();
+    await this.modal.car.deleteRecord();
     this.closeModal();
   }
 }

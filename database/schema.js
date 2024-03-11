@@ -60,8 +60,8 @@ export default appSchema({
     tableSchema({
       name: tables.car_maintainance_intervals,
       columns: [
-        { name: 'miles_between', type: 'string', isOptional: true },
-        { name: 'weeks_between', type: 'string', isOptional: true },
+        { name: 'interval', type: 'string', isOptional: true },
+        { name: 'interval_unit', type: 'string', isOptional: true },
         { name: 'car_id', type: 'string', isIndexed: true },
         { name: 'maintainance_type_id', type: 'string', isIndexed: true },
       ]

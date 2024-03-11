@@ -15,93 +15,157 @@ import {
 } from "react-native";
 import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
 import { KeyboardScrollView as KeyboardScrollViewPkg} from '@rlemasquerier/react-native-keyboard-scrollview';
-import { style, colors } from "./style";
+import React from "react";
+import { SettingsContext } from "../helpers/settingsContext";
 
-let Button = (props) => (
-  <ButtonPkg color={ style.button.color }  { ... props }>
-    { props.children }
-  </ButtonPkg>
-);
-
-let Dropdown = (props) => (
-  <DropdownPkg 
-    placeholder="Select..."
-    searchPlaceholder="Search..."
-    labelField="label"
-    valueField="value"
-    searchField="label"
-    search={ true }
-    activeColor={ colors.background }
-    { ... props }
-    placeholderStyle={ [style.dropdown.placeholderStyle, props.placeholderStyle] }
-    selectedTextStyle={ [style.dropdown.selectedTextStyle, props.selectedTextStyle] }
-    flatListProps={{ style: [style.dropdown.flatListProps, props.flatListProps] }}
-    itemTextStyle={ [style.dropdown.itemTextStyle, props.itemTextStyle] }
-    inputSearchStyle={ [style.dropdown.inputSearchStyle, props.inputSearchStyle] }
-    containerStyle={ [style.dropdown.view, props.containerStyle] }
-    style={[ style.dropdown.style, props.style ]}/>
-);
-
-let Feather = (props) => (
-  <FeatherPkg color={ style.icon.color } { ... props } />
-);
-
-let FlatList = (props) => (
-  <FlatListPkg { ... props } style={[ style.flatList.style, props.style ]}/>
-);
-
-let FontAwesome = (props) => (
-  <FontAwesomePkg color={ style.icon.color } { ... props }/>
-);
-
-let KeyboardScrollView = (props) => {
-  return (
-    <KeyboardScrollViewPkg { ... props }>
-      { props.children }
-    </KeyboardScrollViewPkg>
-  );
+class Button extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <ButtonPkg color={ this.context.button.color } { ... this.props }>
+        { this.props.children }
+      </ButtonPkg>
+    );
+  }
 }
 
-let Modal = (props) => (
-  <ModalPkg { ... props }>
-    { props.children }
-  </ModalPkg>
-);
+class Dropdown extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <DropdownPkg
+        placeholder="Select..."
+        searchPlaceholder="Search..."
+        labelField="label"
+        valueField="value"
+        searchField="label"
+        search={ true }
+        activeColor={ this.context.styles.dropdown.activeColor }
+        { ... this.props }
+        placeholderStyle={ [this.context.styles.dropdown.placeholderStyle, this.props.placeholderStyle] }
+        selectedTextStyle={ [this.context.styles.dropdown.selectedTextStyle, this.props.selectedTextStyle] }
+        flatListProps={{ style: [this.context.styles.dropdown.flatListProps, this.props.flatListProps] }}
+        itemTextStyle={ [this.context.styles.dropdown.itemTextStyle, this.props.itemTextStyle] }
+        inputSearchStyle={ [this.context.styles.dropdown.inputSearchStyle, this.props.inputSearchStyle] }
+        containerStyle={ [this.context.styles.dropdown.view, this.props.containerStyle] }
+        style={[ this.context.styles.dropdown.style, this.props.style ]}/>
+    );
+  }
+}
 
-let Pressable = (props) => (
-  <PressablePkg { ... props } style={[ style.pressable.style, props.style ]}>
-    { props.children }
-  </PressablePkg>
-);
+class Feather extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <FeatherPkg color={ this.context.colors.secondary } { ... this.props }/>
+    );
+  }
+}
 
-let ScrollView = (props) => (
-  <ScrollViewPkg { ... props }>
-    { props.children }
-  </ScrollViewPkg>
-);
+class FlatList extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <FlatListPkg { ... this.props } style={[ this.context.styles.flatList.style, this.props.style ]}/>
+    );
+  }
+}
 
-let StatusBar = (props) => (
-  <StatusBarPkg backgroundColor={ style.statusBar.backgroundColor } barStyle={ style.statusBar.barStyle } { ... props } />
-);
+class FontAwesome extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <FontAwesomePkg color={ this.context.colors.secondary } { ... this.props }/>
+    );
+  }
+}
 
-let Text = (props) => (
-  <TextPkg ellipsizeMode='tail' numberOfLines={1} { ... props } style={[ style.text.style, props.style ]}>
-    { props.children }
-  </TextPkg>
-);
+class KeyboardScrollView extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <KeyboardScrollViewPkg { ... this.props }>
+        { this.props.children }
+      </KeyboardScrollViewPkg>
+    );
+  }
+}
 
-let TextInput = (props) => (
-  <TextInputPkg { ... props } style={[ style.textInput.style, props.style ]}>
-    { props.children }
-  </TextInputPkg>
-);
+class Modal extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <ModalPkg { ... this.props }>
+        { this.props.children }
+      </ModalPkg>
+    );
+  }
+}
 
-let View = (props) => (
-  <ViewPkg { ... props } style={[ style.view.style, props.style ]}>
-    { props.children }
-  </ViewPkg>
-);
-    
+class Pressable extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <PressablePkg { ... this.props } style={[ this.context.styles.pressable.style, this.props.style ]}>
+        { this.props.children }
+      </PressablePkg>
+    );
+  }
+}
+
+class ScrollView extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <ScrollViewPkg { ... this.props }>
+        { this.props.children }
+      </ScrollViewPkg>
+    );
+  }
+}
+
+class StatusBar extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <StatusBarPkg backgroundColor={ this.context.styles.statusBar.backgroundColor } barStyle={ this.context.styles.statusBar.barStyle } { ... this.props } />
+    );
+  }
+}
+
+class Text extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <TextPkg ellipsizeMode='tail' numberOfLines={1} { ... this.props } style={[ this.context.styles.text.style, this.props.style ]}>
+        { this.props.children }
+      </TextPkg>
+    );
+  }
+}
+
+class TextInput extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <TextInputPkg { ... this.props } style={[ this.context.styles.textInput.style, this.props.style ]}>
+        { this.props.children }
+      </TextInputPkg>
+    );
+  }
+}
+
+class View extends React.Component {
+  static contextType = SettingsContext;
+  render() {
+    return (
+      <ViewPkg { ... this.props } style={[ this.context.styles.view.style, this.props.style ]}>
+        { this.props.children }
+      </ViewPkg>
+    );
+  }
+}
+
 export {
   Button,
   Dropdown,
