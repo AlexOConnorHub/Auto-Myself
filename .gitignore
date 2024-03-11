@@ -42,3 +42,5 @@ yarn-error.*
 
 # Secrets
 secrets/*
+
+eas.json
