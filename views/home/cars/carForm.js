@@ -4,8 +4,11 @@ import { View, Text, KeyboardScrollView, TextInput } from "../../../components/e
 import { FormElement } from "../../../components/formElement";
 import { CallbackButton } from "../../../components/callbackButton";
 import { tables } from "../../../database/tables";
+import { SettingsContext } from "../../../helpers/settingsContext";
+import { convertIntervalForStorage, convertIntervalForDisplay } from "../../../helpers/functions";
 
 class CarForm extends React.Component {
+  static contextType = SettingsContext
   car = null
   new = true
   state = {
@@ -15,7 +18,7 @@ class CarForm extends React.Component {
     year: '',
     vin: '',
     lpn: '',
-    annualMileage: '',
+    annualUsage: '',
   }
   formData = [
     {
@@ -48,11 +51,6 @@ class CarForm extends React.Component {
       model: 'lpn',
       keyboardType: 'default',
     },
-    {
-      label: 'Estimated Annual Mileage',
-      model: 'annualMileage',
-      keyboardType: 'numeric',
-    },
   ]
   constructor(props) {
     super(props);
@@ -71,6 +69,7 @@ class CarForm extends React.Component {
       state[data.model] = this.car[data.model];
       return state;
     }, {}) );
+    this.setState({ annualUsage: convertIntervalForDisplay(this.car.annualUsage, 'dist', this.context.distanceUnit) });
   }
   render() {
     return (
@@ -92,9 +91,16 @@ class CarForm extends React.Component {
               key={ item.model }>
               <TextInput
                 onChangeText={(text) => { this.setState({ [item.model]: text }); }}
+                value={ this.state[item.model] }
                 keyboardType={ item.keyboardType } />
             </FormElement>
           )) }
+          <FormElement label={ `Estimated Annual Usage (${this.context.distanceUnit})` } key='annualUsage'>
+            <TextInput
+              onChangeText={(text) => { this.setState({ annualUsage: text }); }}
+              value={ this.state.annualUsage }
+              keyboardType='numeric' />
+          </FormElement>
         </KeyboardScrollView>
       </View>
     )
@@ -104,6 +110,7 @@ class CarForm extends React.Component {
       state[data.model] = this.state[data.model];
       return state;
     }, {});
+    formStates.annualUsage = convertIntervalForStorage(this.state.annualUsage, 'dist', this.context.distanceUnit);
     if (this.new) {
       this.car = await this.props.database.write(async () => {
         return await this.props.database.get(tables.cars).create((record) => {

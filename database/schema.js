@@ -13,7 +13,7 @@ export default appSchema({
         { name: 'vin', type: 'string', isOptional: true },
         { name: 'lpn', type: 'string', isOptional: true },
         { name: 'nickname', type: 'string', isOptional: true },
-        { name: 'annual_mileage', type: 'string', isOptional: true },
+        { name: 'annual_usage', type: 'string', isOptional: true },
         { name: 'created_at', type: 'number' },
         { name: 'updated_at', type: 'number' },
       ]

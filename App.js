@@ -34,10 +34,7 @@ const Tab = createBottomTabNavigator();
 // })
 
 export default class App extends React.Component {
-  state = {
-    colors: kvStorage.getString('display.theme') === 'light' ? lightColors : darkColors,
-    distanceUnit: kvStorage.getString('display.units'),
-  };
+
   constructor(props) {
     super(props);
     if (!kvStorage.contains('local_user')) {
@@ -47,8 +44,12 @@ export default class App extends React.Component {
       kvStorage.set('display.theme', 'dark');
     }
     if (!kvStorage.contains('display.units')) {
-      kvStorage.set('display.units', 'mi');
+      kvStorage.set('display.units', 'Miles');
     }
+    this.state = {
+      colors: kvStorage.getString('display.theme') === 'light' ? lightColors : darkColors,
+      distanceUnit: kvStorage.getString('display.units'),
+    };
     this.state.styles = themedStyle(this.state.colors);
   }
   async createLocalUser() {

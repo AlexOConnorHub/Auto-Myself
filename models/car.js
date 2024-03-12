@@ -15,7 +15,7 @@ export default class Car extends Model {
   @text('vin') vin;
   @text('lpn') lpn;
   @text('nickname') nickname;
-  @text('annual_mileage') annualMileage;
+  @text('annual_usage') annualUsage;
   @date('created_at') createdAt;
   @date('updated_at') updatedAt;
   @children(tables.car_maintainance_intervals) carMaintainanceIntervals;

@@ -3,6 +3,7 @@ import { StyleSheet } from "react-native";
 import { Text, Pressable } from "../../../components/elements";
 import { ConditionalText } from "../../../components/conditionalText";
 import { SettingsContext } from "../../../helpers/settingsContext";
+import { convertIntervalForDisplay } from "../../../helpers/functions";
 
 class CarCard extends React.Component {
   static contextType = SettingsContext;
@@ -22,8 +23,8 @@ class CarCard extends React.Component {
         <ConditionalText condition={ this.props.car.lpn } style={ [pageStyles.data, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
           License Plate: { this.props.car.lpn }
         </ConditionalText>
-        <ConditionalText condition={ this.props.car.annualMileage } style={ [pageStyles.data, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
-          Estimated Annual Mileage: { this.props.car.annualMileage }
+        <ConditionalText condition={ this.props.car.annualUsage } style={ [pageStyles.data, pageStyles.cardRow, { backgroundColor: this.context.colors.primary }] }>
+          Estimated Annual Usage: { convertIntervalForDisplay(this.props.car.annualUsage, 'dist', this.context.distanceUnit) } { this.context.distanceUnit }
         </ConditionalText>
       </Pressable>
     );
