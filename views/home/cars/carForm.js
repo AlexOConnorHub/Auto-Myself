@@ -1,6 +1,6 @@
 import React from "react";
 import { Keyboard, StyleSheet } from "react-native";
-import { View, Text, KeyboardScrollView, TextInput } from "../../../components/elements";
+import { View, Text, ScrollView, TextInput } from "../../../components/elements";
 import { FormElement } from "../../../components/formElement";
 import { CallbackButton } from "../../../components/callbackButton";
 import { tables } from "../../../database/tables";
@@ -85,7 +85,7 @@ class CarForm extends React.Component {
             title={ 'Save' }
             onPress={ this.save.bind(this) } />
         </View>
-        <KeyboardScrollView>
+        <ScrollView>
           { this.formData.map((item) => (
             <FormElement label={ item.label }
               key={ item.model }>
@@ -101,7 +101,7 @@ class CarForm extends React.Component {
               value={ this.state.annualUsage }
               keyboardType='numeric' />
           </FormElement>
-        </KeyboardScrollView>
+        </ScrollView>
       </View>
     )
   }

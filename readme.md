@@ -10,18 +10,31 @@ This is a mobile app written in React Native for taking control of vehicle maint
 
 ## TODO
 
-- [ ] Add sync from WatermelonDB to Supabase
-  - [ ] Write Postgres functions to sync data. While it's more work, I believe it would be more secure. This should also make supporting family accounts easier/safer.
-- [ ] Make/Model
-  - [ ] Make dropdown
-- [ ] Pop-up menu
+### Car
+
+- [ ] Make inclusive dropdown for "Make" and "Model"
+- [ ] Ability to add a picture of the car
+- [ ] Ability to change ownership of a car
+
+### Maintainance
+
+- [X] Notes field causes crash in Google's testing
+- [X] Add list of pre-loaded Maintainance Types
+- [ ] Add notifications for upcoming maintainance
+- [ ] Critique "est. annual usage" based on reported OD
+- [ ] Pics of receipts
+
+### Families
+
+- [ ] Add family members
+- [ ] Add family cars
+
+### Other
+
+- [ ] Make a view to see upcoming/anticipated maintainance
+- [ ] Automated Tests
+- [ ] Sync WatermelonDB => Supabase
+- [ ] Pop-up menu for cards
   - [ ] On long press themed
   - [ ] Consistant for cars and maintainaces
-- [X] Car
-  - [X] estimated annual "mileage" should be changed
-    - [X] Utilize km/mi setting
-    - [X] Remeber to store as Miles only
-- [ ] Maintainance
-  - [ ] Add list of pre-loaded Maintainance Types
-- [X] Defaults to "mi" for new users
-  - [X] Change to "Miles" like it should be
+  - [ ] Assets: make look better

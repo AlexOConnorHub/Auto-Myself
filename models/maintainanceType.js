@@ -8,6 +8,30 @@ export default class MaintainanceType extends Model {
     [tables.car_maintainance_intervals]: { type: 'has_many', foreignKey: 'maintainance_type_id' },
     [tables.maintainance_records]: { type: 'has_many', foreignKey: 'maintainance_type_id' },
   };
+  static defaultMaintainanceTypes = {
+    1: [
+      'Oil change',
+      'Coolant flush',
+      'Cabin air filter',
+      'Engine air filter',
+      'Tire rotation',
+      'Brake pads',
+      'Brake fluid',
+      'Transmission fluid',
+      'Spark plugs',
+      'Transfer case fluid',
+      'Serpentine belt',
+      'Timing belt',
+      'Power steering fluid',
+      'Differential fluid',
+      'Change tires',
+      'Wheel alignment',
+      'Battery',
+      'Fuel filter',
+      'Fuel injector',
+      'Fuel pump',
+    ],
+  };
   @text('name') name;
   // @field('description') description;
   @children(tables.car_maintainance_intervals) carMaintainanceIntervals;

@@ -14,7 +14,6 @@ import {
   View as ViewPkg,
 } from "react-native";
 import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
-import { KeyboardScrollView as KeyboardScrollViewPkg} from '@rlemasquerier/react-native-keyboard-scrollview';
 import React from "react";
 import { SettingsContext } from "../helpers/settingsContext";
 
@@ -76,17 +75,6 @@ class FontAwesome extends React.Component {
   render() {
     return (
       <FontAwesomePkg color={ this.context.colors.secondary } { ... this.props }/>
-    );
-  }
-}
-
-class KeyboardScrollView extends React.Component {
-  static contextType = SettingsContext;
-  render() {
-    return (
-      <KeyboardScrollViewPkg { ... this.props }>
-        { this.props.children }
-      </KeyboardScrollViewPkg>
     );
   }
 }
@@ -172,7 +160,6 @@ export {
   Feather,
   FlatList,
   FontAwesome,
-  KeyboardScrollView,
   Modal,
   Pressable,
   ScrollView,

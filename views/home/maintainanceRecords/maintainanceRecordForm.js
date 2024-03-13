@@ -1,8 +1,7 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Dropdown, View, Text, TextInput } from "../../../components/elements";
+import { Dropdown, View, Text, TextInput, ScrollView } from "../../../components/elements";
 import { CallbackButton } from "../../../components/callbackButton";
-import { KeyboardScrollView } from "../../../components/elements";
 import { FormElement } from "../../../components/formElement";
 import { Q } from "@nozbe/watermelondb";
 import { tables } from "../../../database/tables";
@@ -86,7 +85,7 @@ class MaintainanceRecordForm extends React.Component {
             title={ 'Save' }
             onPress={ this.save.bind(this) } />
         </View>
-        <KeyboardScrollView>
+        <ScrollView>
           <FormElement label="Maintainance Type">
             <Dropdown
               label="Maintainance Type"
@@ -151,7 +150,7 @@ class MaintainanceRecordForm extends React.Component {
               pressable={ {style: pageStyles.deleteButton} }
               onPress={ this.delete.bind(this) } />
           }
-        </KeyboardScrollView>
+        </ScrollView>
       </View>
     );
   }

@@ -14,6 +14,7 @@ import { database } from './database/database';
 import { tables } from './database/tables';
 import { kvStorage } from './helpers/kvStorage';
 import { SettingsContext } from './helpers/settingsContext';
+import MaintainanceType from './models/maintainanceType';
 // import { sync } from './database/synchronize';
 // import { supabase } from './helpers/supabase';
 // import { Account } from './views/account/account';
@@ -46,6 +47,9 @@ export default class App extends React.Component {
     if (!kvStorage.contains('display.units')) {
       kvStorage.set('display.units', 'Miles');
     }
+    if (!kvStorage.contains('database.seed.maintainance_type.version') || kvStorage.getNumber('database.seed.maintainance_type.version') < 1) {
+      this.initMaintainanceType(kvStorage.getNumber('database.seed.maintainance_type.version'));
+    }
     this.state = {
       colors: kvStorage.getString('display.theme') === 'light' ? lightColors : darkColors,
       distanceUnit: kvStorage.getString('display.units'),
@@ -58,6 +62,21 @@ export default class App extends React.Component {
     });
     kvStorage.set('local_user', user.id);
   };
+  async initMaintainanceType(currentVersion = 0) {
+    for (let version in MaintainanceType.defaultMaintainanceTypes) {
+      if (version > currentVersion) {
+        await database.write(async () => {
+          let maintainanceTypeTable = database.get(tables.maintainance_types);
+          for (let maintainanceType of MaintainanceType.defaultMaintainanceTypes[version]) {
+            await maintainanceTypeTable.create((record) => {
+              record.name = maintainanceType;
+            });
+          }
+        });
+        kvStorage.set('database.seed.maintainance_type.version', Number(version));
+      }
+    }
+  }
   componentDidMount() {
     this.listener = kvStorage.addOnValueChangedListener((changedKey) => {
       if (changedKey === 'display.theme') {
