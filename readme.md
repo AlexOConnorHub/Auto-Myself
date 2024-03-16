@@ -13,13 +13,15 @@ This is a mobile app written in React Native for taking control of vehicle maint
 ### Car
 
 - [ ] Make inclusive dropdown for "Make" and "Model"
-- [ ] Ability to add a picture of the car
+- [ ] Form validation
 - [ ] Ability to change ownership of a car
+- [ ] Ability to add a picture of the car
 
-### Maintainance
+### Maintainence
 
 - [X] Notes field causes crash in Google's testing
 - [X] Add list of pre-loaded Maintainance Types
+- [ ] Form validation
 - [ ] Add notifications for upcoming maintainance
 - [ ] Critique "est. annual usage" based on reported OD
 - [ ] Pics of receipts
@@ -34,6 +36,7 @@ This is a mobile app written in React Native for taking control of vehicle maint
 - [ ] Make a view to see upcoming/anticipated maintainance
 - [ ] Automated Tests
 - [ ] Sync WatermelonDB => Supabase
+- [ ] Import/Export data
 - [ ] Pop-up menu for cards
   - [ ] On long press themed
   - [ ] Consistant for cars and maintainaces
