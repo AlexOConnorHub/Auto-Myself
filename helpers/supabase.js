@@ -9,6 +9,9 @@ const supabase = createClient(supabaseConfig.url, supabaseConfig.apiKey, {
     persistSession: true,
     detectSessionInUrl: false,
   },
+  db: {
+    schema: supabaseConfig.schema,
+  },
 });
 
 export { supabase };

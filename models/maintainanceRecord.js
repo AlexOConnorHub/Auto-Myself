@@ -24,7 +24,7 @@ export default class MaintainanceRecord extends Model {
   }
 
   @writer async deleteRecord() {
-    return await this.destroyPermanently(); // TODO: Make sure to not actually delete if synced
+    return await this.markAsDeleted();
   }
 
   humanDate() {

@@ -1,10 +1,9 @@
 import React from 'react';
-import { Alert, StyleSheet } from 'react-native';
-import { View, Text } from '../../components/elements';
-import { CallbackButton } from '../../components/callbackButton';
-import { Signup } from './signup';
-import { Login } from './login';
-import { supabase } from '../../helpers/supabase';
+import { StyleSheet } from 'react-native';
+import { View } from '../../components/elements';
+import { Auth } from './auth';
+import { Manage } from './manage';
+import { SettingsContext } from '../../helpers/settingsContext';
 
 /* This is the home page of the app. It will need to:
   1. If logged in, sync the remote DB with the local DB, and push updates if needed
@@ -14,9 +13,10 @@ import { supabase } from '../../helpers/supabase';
  */
 
 class Account extends React.Component {
+  static contextType = SettingsContext;
   constructor(props) {
     super(props);
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    this.props.supabase.auth.getSession().then(({ data: { session } }) => {
         if (session) {
           this.setState({ loggedIn: true });
         } else {
@@ -24,7 +24,7 @@ class Account extends React.Component {
         }
       }
     );
-    supabase.auth.onAuthStateChange((event, session) => {
+    this.props.supabase.auth.onAuthStateChange((event, session) => {
       console.log("Auth state changed");
       if (event === "SIGNED_IN") {
         this.setState({ loggedIn: true });
@@ -37,21 +37,12 @@ class Account extends React.Component {
     loggedIn: false
   }
   render() {
+    console.log(this.state.loggedIn ? 'True' : 'False');
     return (
     <View style={ pageStyles.view }>
-      { this.state.loggedIn ?
-        <CallbackButton
-          title="Logout"
-          onPress={(callback) => {
-            supabase.auth.signOut();
-            callback();
-          }}
-        /> :
-        <View style={ pageStyles.authButtons }>
-          <Login />
-          <Signup />
-        </View>
-      }
+      { this.state.loggedIn
+        ? <Manage supabase={ this.props.supabase } database={ this.props.database } />
+        : <Auth supabase={ this.props.supabase } /> }
     </View>
     );
   }
@@ -64,8 +55,5 @@ const pageStyles = StyleSheet.create({
     flex: 1,
     alignContent: 'center',
     justifyContent: 'center',
-  },
-  authButtons: {
-    rowGap: 15,
   },
 });

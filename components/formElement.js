@@ -11,7 +11,7 @@ class FormElement extends React.Component {
   render() {
     return (
       <View { ... this.props.viewProps } style={( this.props.viewProps && this.props.viewProps.style ? [ pageStyles.formElementInputSection, this.props.viewProps.style ] : pageStyles.formElementInputSection )}>
-        <Text { ... this.props.textProps } style={( this.props.textProps && this.props.textProps.style ? [ pageStyles.formElementText, this.props.textProps.style ] : pageStyles.formElementText )}>{ this.props.label }</Text>
+        { this.props.noLabel ? null : <Text { ... this.props.textProps } style={( this.props.textProps && this.props.textProps.style ? [ pageStyles.formElementText, this.props.textProps.style ] : pageStyles.formElementText )}>{ this.props.label }</Text> }
         { this.props.children }
       </View>
     );

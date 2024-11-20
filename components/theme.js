@@ -4,17 +4,17 @@ const darkColors = {
   key: 'dark',
   background: '#282A3A',
   secondaryBackground: '#3D4153',
-  primary: '#A67729',
-  secondary: '#FFFF66',
+  primary: '#d69113',
+  secondary: '#FFFF44',
   text: '#FFFFFF',
   theme: 'light', // Theme for status bar
 };
 
 const lightColors = {
   key: 'light',
-  background: '#C8C8C8',
-  secondaryBackground: '#A3A3A3',
-  primary: '#A67729',
+  background: '#FFFFFF',
+  secondaryBackground: '#D3D3E8',
+  primary: '#d69113',
   secondary: '#000000',
   text: '#000000',
   theme: 'dark', // Theme for status bar

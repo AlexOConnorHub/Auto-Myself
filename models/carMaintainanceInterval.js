@@ -21,7 +21,7 @@ export default class CarMaintainanceInterval extends Model {
     });
   }
   @writer async deleteRecord() {
-    return await this.destroyPermanently(); // TODO: Make sure to not actually delete if synced
+    return await this.markAsDeleted();
   }
   @writer async setCar(carId) {
     return await this.update((record) => {

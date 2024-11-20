@@ -1,4 +1,4 @@
-import { Model, Q } from '@nozbe/watermelondb';
+import { Model } from '@nozbe/watermelondb';
 import { date, text, children, writer } from '@nozbe/watermelondb/decorators';
 import { tables } from '../database/tables';
 
@@ -31,6 +31,6 @@ export default class Car extends Model {
   }
 
   @writer async deleteRecord() {
-    return await this.destroyPermanently(); // TODO: Make sure to not actually delete if synced
+    return await this.markAsDeleted();
   }
 }

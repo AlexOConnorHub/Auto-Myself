@@ -13,16 +13,17 @@ This is a mobile app written in React Native for taking control of vehicle maint
 ### Car
 
 - [ ] Make inclusive dropdown for "Make" and "Model"
-- [ ] Form validation
+- [ ] Form validation (content and length)
 - [ ] Ability to change ownership of a car
 - [ ] Ability to add a picture of the car
 
-### Maintainence
+### Maintainance
 
-- [ ] Form validation
+- [ ] Form validation (content and length)
 - [ ] Add notifications for upcoming maintainance
 - [ ] Critique "est. annual usage" based on reported OD
 - [ ] Pics of receipts
+- [ ] Specify date of maintainance
 
 ### Families
 
@@ -39,3 +40,12 @@ This is a mobile app written in React Native for taking control of vehicle maint
   - [ ] On long press themed
   - [ ] Consistant for cars and maintainaces
   - [ ] Assets: make look better
+- [ ] Drop users table
+- [ ] Remove created_at and updated_at fileds (as we only trust server, and client doesn't need this info)
+- [ ] Add QR code generator/reader for UUID sharing related events (families and cars)
+- [ ] Authentication
+  - [X] Add captcha
+  - [ ] Add "forgot password"
+  - [ ] Add "change password"
+  - [ ] Add "change email"
+  - [X] Add Make password fields password type

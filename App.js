@@ -2,8 +2,7 @@ import 'react-native-gesture-handler';
 import 'react-native-url-polyfill/auto';
 import 'react-native-get-random-values';
 import React from 'react';
-// import { AppState } from 'react-native';
-import { StyleSheet } from 'react-native';
+import { AppState, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { FontAwesome, StatusBar } from './components/elements';
@@ -15,9 +14,9 @@ import { tables } from './database/tables';
 import { kvStorage } from './helpers/kvStorage';
 import { SettingsContext } from './helpers/settingsContext';
 import MaintainanceType from './models/maintainanceType';
-// import { sync } from './database/synchronize';
-// import { supabase } from './helpers/supabase';
-// import { Account } from './views/account/account';
+import { sync } from './database/synchronize';
+import { supabase } from './helpers/supabase';
+import { Account } from './views/account/account';
 
 const Tab = createBottomTabNavigator();
 
@@ -26,16 +25,15 @@ const Tab = createBottomTabNavigator();
 // to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
 // `SIGNED_OUT` event if the user's session is terminated. This should
 // only be registered once.
-// AppState.addEventListener('change', (state) => {
-//   if (state === 'active') {
-//     supabase.auth.startAutoRefresh()
-//   } else {
-//     supabase.auth.stopAutoRefresh()
-//   }
-// })
+AppState.addEventListener('change', (state) => {
+  if (state === 'active') {
+    supabase.auth.startAutoRefresh()
+  } else {
+    supabase.auth.stopAutoRefresh()
+  }
+})
 
 export default class App extends React.Component {
-
   constructor(props) {
     super(props);
     if (!kvStorage.contains('local_user')) {
@@ -91,14 +89,14 @@ export default class App extends React.Component {
     this.listener.remove();
   }
   render() {
-    //   sync();
+    // sync(database);
     return (
       // <React.StrictMode>
         <SettingsContext.Provider value={{ ...this.state }}>
           <NavigationContainer>
             <StatusBar/>
             <Tab.Navigator screenOptions={{...appStyles.navigatorScreenOptions, tabBarInactiveBackgroundColor: this.state.colors.secondaryBackground, tabBarActiveBackgroundColor: this.state.colors.primary, }} backBehavior='initialRoute' initialRouteName='Home'>
-              {/* <Tab.Screen name='Account' options={ appStyles.screenOptionsAccount } component={ Account }/> */}
+              <Tab.Screen name='Account' options={ appStyles.screenOptionsAccount } children={ () => <Account database={ database } supabase={ supabase }/> }/>
               <Tab.Screen name='Home' options={ appStyles.screenOptionsHome }>
                 { (props) => { return <Home { ...props } database={ database }/> } }
               </Tab.Screen>

@@ -4,10 +4,10 @@
     "slug": "MyCar-TotalControl",
     "version": "1.0.2",
     "orientation": "portrait",
-    "icon": "./assets/app-icon.png",
+    "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/transparent-background.png",
+      "image": "./assets/icon.png",
       "resizeMode": "contain",
       "backgroundColor": "#A67729"
     },
@@ -20,14 +20,14 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/transparent-background.png",
+        "foregroundImage": "./assets/icon.png",
         "backgroundColor": "#A67729"
       },
       "package": "com.anonymous.MyCarTotalControl",
       "versionCode": 3
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/icon.png"
     },
     "plugins": [
       [
