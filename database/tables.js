@@ -1,7 +1,29 @@
 const tables = {
-  cars: 'cars',
-  users: 'users',
-  families: 'families',
+  cars: {
+    table_name: 'cars',
+    columns: {
+      id: 'string',
+      make: 'string',
+      model: 'string',
+      year: 'number',
+      vin: 'string',
+      lpn: 'string',
+    },
+  }
+  users: {
+    table_name: 'users',
+    columns: {
+      id: 'string',
+      name: 'string',
+    },
+  },
+  permissions: {
+    table_name: 'permissions',
+    columns: {
+      id: 'string',
+      name: 'string',
+    },
+  },
   maintainance_types: 'maintainance_types',
   family_members: 'family_members',
   owners: 'owners',

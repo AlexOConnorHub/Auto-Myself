@@ -53,8 +53,7 @@
             ]
           }
         }
-      ],
-      "@skam22/watermelondb-expo-plugin"
+      ]
     ],
     "extra": {
       "eas": {
