@@ -1,7 +1,6 @@
-import { synchronize } from '@nozbe/watermelondb/sync';
 import { supabase } from '../helpers/supabase';
 
-async function sync() {
+export const sync = async () => {
   const { data, error } = await supabase.rpc('test', {
     arg: 3
   });
@@ -45,5 +44,3 @@ async function sync() {
   //   migrationsEnabledAtVersion: 1,
   // })
 }
-
-export { sync };

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Alert, StyleSheet } from 'react-native';
 import { View, Text } from '../../components/elements';
-import { CallbackButton } from '../../components/callbackButton';
+import CallbackButton from '../../components/callbackButton';
 import { Signup } from './signup';
 import { Login } from './login';
-import { supabase } from '../../helpers/supabase';
+// import { supabase } from '../../helpers/supabase';
 
 /* This is the home page of the app. It will need to:
   1. If logged in, sync the remote DB with the local DB, and push updates if needed
@@ -61,7 +61,7 @@ export { Account };
 
 const pageStyles = StyleSheet.create({
   view: {
-    flex: 1,
+    // flex: 1,
     alignContent: 'center',
     justifyContent: 'center',
   },

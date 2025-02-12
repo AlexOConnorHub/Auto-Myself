@@ -1,4 +1,4 @@
-function convertIntervalForStorage(interval, intervalUnit, displayUnits) {
+function convertIntervalForStorage(interval, intervalUnit, displayUnits: 'Miles' | 'Kilometers') {
   if (interval === undefined || interval === null || interval === '') {
     return '';
   }
@@ -10,7 +10,7 @@ function convertIntervalForStorage(interval, intervalUnit, displayUnits) {
   return interval;
 }
 
-function convertIntervalForDisplay(interval, intervalUnit, displayUnits) {
+function convertIntervalForDisplay(interval, intervalUnit, displayUnits: 'Miles' | 'Kilometers') {
   if (interval === undefined || interval === null || interval === '') {
     return '';
   }

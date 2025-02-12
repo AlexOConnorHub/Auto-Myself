@@ -1,9 +1,9 @@
 import React from "react";
 import { Alert, StyleSheet } from "react-native";
-import { CallbackButton } from "../../components/callbackButton";
+import CallbackButton from "../../components/callbackButton";
 import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from "../../components/elements";
-import { FormElement } from "../../components/formElement";
-import { supabase } from "../../helpers/supabase";
+import FormElement from "../../components/formElement";
+// import { supabase } from "../../helpers/supabase";
 
 export class Login extends React.Component {
   state = {

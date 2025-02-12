@@ -1,12 +1,11 @@
-# MyCar-TotalControl
+# Auto Myself
 
 This is a mobile app written in React Native for taking control of vehicle maintainance.
 
 ## Build
 
 - `npm install`
-- `npx expo prebuild`
-- `npx expo run:android`
+- `npx expo start`
 
 ## TODO
 
@@ -41,3 +40,8 @@ This is a mobile app written in React Native for taking control of vehicle maint
   - [ ] On long press themed
   - [ ] Consistant for cars and maintainaces
   - [ ] Assets: make look better
+- [ ] Migrate splash APIs
+- [ ] Migrate React-Navigation v7
+- [ ] Migrations on db, not store
+- [ ] "tables" object from schema
+- [ ] Headers/navigation (Back button)
