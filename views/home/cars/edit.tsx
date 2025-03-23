@@ -46,7 +46,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       label: 'Make',
       input: 'text',
       condition: {
-        formStateKey: 'user_custom_entry',
+        formStateKey: 'manual_entry',
         value: true,
         constant_or: !isConnected,
       },
@@ -60,7 +60,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
         label: 'Loading makes...',
       },
       condition: {
-        formStateKey: 'user_custom_entry',
+        formStateKey: 'manual_entry',
         value: false,
         constant_and: isConnected,
       },
@@ -69,7 +69,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       label: 'Model',
       input: 'text',
       condition: {
-        formStateKey: 'user_custom_entry',
+        formStateKey: 'manual_entry',
         value: true,
         constant_or: !isConnected,
       },
@@ -83,12 +83,12 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
         label: 'Loading models...'
       },
       condition: {
-        formStateKey: 'user_custom_entry',
+        formStateKey: 'manual_entry',
         value: false,
         constant_and: isConnected,
       },
     },
-    user_custom_entry: {
+    manual_entry: {
       label: undefined,
       input: 'toggle',
       toggleLabel: 'Tap to Enter Manually',
@@ -118,7 +118,14 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
 
   const row = useRow(tables.cars, props.route.params.id);
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
-    state[key] = row[key] || '';
+    if (key === 'manual_entry') {
+      state[key] = (
+        (row.make?.length > 0 && row.make_id?.toString().length === 0) ||
+        (row.model?.length > 0 && row.model_id?.toString().length === 0)
+      );
+    } else {
+      state[key] = row[key] || '';
+    }
     return state;
   }, {}) as Record<string, any>);
 

@@ -5,7 +5,6 @@ import {
   Ionicons as IoniconsPkg,
 } from "@expo/vector-icons";
 import { NavigationContainer as NavigationContainerPkg, useTheme} from '@react-navigation/native';
-import { Checkbox as CheckboxPkg, CheckboxProps } from 'expo-checkbox';
 import {
   // Button as ButtonPkg,
   FlatList as FlatListPkg,
@@ -34,12 +33,6 @@ import { tables } from "../database/schema";
 //     </ButtonPkg>
 //   );
 // }
-
-export function Checkbox(props: React.ComponentProps<typeof CheckboxPkg>): React.ReactElement {
-  return (
-    <CheckboxPkg { ...props }/>
-  )
-};
 
 export function Dropdown(props: React.ComponentProps<typeof DropdownPkg>): React.ReactElement {
   const theme = useTheme();
