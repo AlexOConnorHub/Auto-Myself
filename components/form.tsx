@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Checkbox, Dropdown, Ionicons, Pressable, Text, TextInput, View } from "./elements";
+import { Dropdown, Ionicons, Pressable, Text, TextInput, View } from "./elements";
 import { KeyboardType, StyleSheet } from "react-native";
 import FormElement from "./formElement";
 import { OptionButtons } from "./optionButtons";
