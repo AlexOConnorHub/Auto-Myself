@@ -8,36 +8,13 @@ import { useCell, useRow } from "tinybase/ui-react";
 import { tables } from "../../../database/schema";
 
 export default function Card(props): React.ReactElement {
-  // static contextType = SettingsContext;
-  // state = {
-  //   maintainanceType: {},
-  //   carMaintainanceInterval: {},
-  // }
-  // componentDidMount() {
-  //   this.postConstruct();
-  // }
-  // async postConstruct() {
-  //   let maintainanceType = await this.props.maintainanceRecord.maintainanceType.fetch();
-  //   this.setState({ maintainanceType: maintainanceType });
-  //   let carMaintainanceInterval = await maintainanceType.carMaintainanceInterval(this.props.maintainanceRecord.car.id);
-  //   this.setState({ carMaintainanceInterval: carMaintainanceInterval });
-  // }
-
-  // useEffect(() => {
-  //   (async () => {
-  //     let maintainanceType = await props.maintainanceRecord.maintainanceType.fetch();
-  //     let carMaintainanceInterval = await maintainanceType.carMaintainanceInterval(props.maintainanceRecord.car.id);
-  //     setState({ maintainanceType: maintainanceType, carMaintainanceInterval: carMaintainanceInterval });
-  //   })();
-  // }, []);
-
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-  const row = useRow(tables.maintainance_records, props.record.id);
+  const row = useRow(tables.maintenance_records, props.record.id);
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const theme = useTheme();
 
   const onPress = () => {
-    navigation.navigate('EditRecord', { id: props.record.id });
+    navigation.navigate('EditRecord', { id: props.record.id, car_id: row.car_id });
   }
 
   return (

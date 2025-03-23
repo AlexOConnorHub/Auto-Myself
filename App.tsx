@@ -1,20 +1,16 @@
 import 'react-native-gesture-handler';
-import 'react-native-url-polyfill/auto';
 import 'react-native-get-random-values';
+import 'react-native-url-polyfill/auto';
+import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import React, { useEffect, useState, StrictMode } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStore } from 'tinybase/store';
+import { Provider } from 'tinybase/ui-react';
 import { NavigationContainer, StatusBar, Ionicons } from './components/elements';
+import { setupDatabase } from './database/database';
 import Home from './views/home';
 import Settings from './views/settings';
-import { Provider, useRowListener } from 'tinybase/ui-react';
-
-
-import { hide, preventAutoHideAsync } from 'expo-splash-screen';
-import { setupDatabase } from './database/database';
-import { tables } from './database/schema';
-import { CellOrUndefined, createStore, GetCellChange, Store } from 'tinybase/store';
-import { Id } from 'tinybase/common';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 // import { sync } from './database/synchronize';
 // import { supabase } from './helpers/supabase';
@@ -32,7 +28,6 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 //     supabase.auth.stopAutoRefresh()
 //   }
 // })
-
 
 const store = createStore();
 const Tab = createBottomTabNavigator();
@@ -56,14 +51,12 @@ export default function App() {
             <StatusBar/>
             <Tab.Navigator screenOptions={{
                 tabBarStyle: {
-                  // backgroundColor: styles.colors.secondaryBackground,
                   borderTopWidth: 0,
                 },
                 tabBarShowLabel: false,
                 headerTitleStyle: {
                   fontSize: 30,
                   fontWeight: 'bold',
-                  // color: styles.colors.text,
                 },
               }} backBehavior='initialRoute' initialRouteName='Home'>
               {/* <Tab.Screen name='Account' options={{

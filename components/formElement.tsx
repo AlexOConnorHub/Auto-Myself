@@ -33,5 +33,6 @@ const pageStyles = StyleSheet.create({
   formElementText: {
     fontSize: 18,
     fontWeight: 'bold',
+    // padding: 10,
   },
 });
