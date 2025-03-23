@@ -8,29 +8,28 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { tables } from "../../../database/schema";
 import { useCell } from "tinybase/ui-react";
 
-export default function Card(props): React.ReactElement {
+export default function Card({ car }): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const onPress = () => {
-    navigation.navigate('Records', { id: props.car.id });
+    navigation.navigate('Records', { car_id: car.id });
   }
   return (
-    <Pressable onPress={() => onPress() } style={ pageStyles.pressable } onLongPress={() => props.triggerModal(props.car)}>
+    <Pressable onPress={() => onPress() } style={ pageStyles.pressable }>
       <Text style={ [pageStyles.title, pageStyles.cardRow, ] }>
-        { props.car.nickname }
-        { (props.car.year) ? ` (${props.car.year})` : '' }
+        { car.nickname } { (car.year) ? `(${car.year})` : '' }
       </Text>
-      <Text style={ [pageStyles.title, pageStyles.cardRow, ] }>
-        { props.car.make } { props.car.model }
-      </Text>
-      <ConditionalText condition={ props.car.vin } style={ [pageStyles.data, pageStyles.cardRow, ] }>
-        VIN: { props.car.vin }
+      <ConditionalText condition={ car.make || car.model } style={ [pageStyles.title, pageStyles.cardRow, ] }>
+        { `${car.make} ${car.model}`.trim() }
       </ConditionalText>
-      <ConditionalText condition={ props.car.lpn } style={ [pageStyles.data, pageStyles.cardRow, ] }>
-        License Plate: { props.car.lpn }
+      <ConditionalText condition={ car.vin } style={ [pageStyles.data, pageStyles.cardRow, ] }>
+        VIN: { car.vin }
       </ConditionalText>
-      <ConditionalText condition={ props.car.annualUsage } style={ [pageStyles.data, pageStyles.cardRow, ] }>
-        Estimated Annual Usage: { convertIntervalForDisplay(props.car.annualUsage, 'dist', distanceUnit as "Miles" | "Kilometers") } { distanceUnit }
+      <ConditionalText condition={ car.lpn } style={ [pageStyles.data, pageStyles.cardRow, ] }>
+        License Plate: { car.lpn }
+      </ConditionalText>
+      <ConditionalText condition={ car.annualUsage } style={ [pageStyles.data, pageStyles.cardRow, ] }>
+        Estimated Annual Usage: { convertIntervalForDisplay(car.annualUsage, 'dist', distanceUnit as "Miles" | "Kilometers") } { distanceUnit }
       </ConditionalText>
     </Pressable>
   );
@@ -39,6 +38,7 @@ export default function Card(props): React.ReactElement {
 const pageStyles = StyleSheet.create({
   pressable: {
     paddingVertical: 5,
+    paddingHorizontal: 10,
     marginVertical: 10,
     borderRadius: 12,
     width: '95%',

@@ -3,8 +3,8 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Index from './cars';
 import EditCar from './cars/edit';
 import EditRecord from './records/edit';
-// import { MaintainanceRecordList } from './records';
-// import { MaintainanceRecordForm } from './records/edit';
+// import { MaintenanceRecordList } from './records';
+// import { MaintenanceRecordForm } from './records/edit';
 import Records from './records';
 import { useTheme } from '@react-navigation/native';
 

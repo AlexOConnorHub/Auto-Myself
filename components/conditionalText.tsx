@@ -2,7 +2,7 @@ import React from "react";
 import { Text } from "./elements";
 
 export default function ConditionalText(props): React.ReactElement {
-  if (props.condition) {
+  if (!props.condition) {
     return null;
   }
   let localProps = Object.assign({}, props);

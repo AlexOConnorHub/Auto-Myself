@@ -4,11 +4,6 @@ export const sync = async () => {
   const { data, error } = await supabase.rpc('test', {
     arg: 3
   });
-  if (error) {
-    console.log('error', error);
-  } else {
-    console.log('data', data);
-  }
   // await synchronize({
   //   database,
   //   pullChanges: async ({ lastPulledAt, schemaVersion, migration }) => {

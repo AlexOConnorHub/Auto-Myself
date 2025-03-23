@@ -5,6 +5,7 @@ import {
   Ionicons as IoniconsPkg,
 } from "@expo/vector-icons";
 import { NavigationContainer as NavigationContainerPkg, useTheme} from '@react-navigation/native';
+import { Checkbox as CheckboxPkg, CheckboxProps } from 'expo-checkbox';
 import {
   // Button as ButtonPkg,
   FlatList as FlatListPkg,
@@ -34,6 +35,12 @@ import { tables } from "../database/schema";
 //   );
 // }
 
+export function Checkbox(props: React.ComponentProps<typeof CheckboxPkg>): React.ReactElement {
+  return (
+    <CheckboxPkg { ...props }/>
+  )
+};
+
 export function Dropdown(props: React.ComponentProps<typeof DropdownPkg>): React.ReactElement {
   const theme = useTheme();
   return (
@@ -46,14 +53,13 @@ export function Dropdown(props: React.ComponentProps<typeof DropdownPkg>): React
       search={ true }
       activeColor={ theme.colors.background }
       { ...props }
-      placeholderStyle={{ backgroundColor: theme.colors.background, color: theme.colors.text, ...props.placeholderStyle as object }}
-      selectedTextStyle={{ color: theme.colors.text, ...props.selectedTextStyle as object}}
-      flatListProps={{ style: { backgroundColor: theme.colors.border }, ...props.flatListProps }}
-      itemTextStyle={{ color: theme.colors.text, ...props.itemTextStyle as object }}
-      inputSearchStyle={{ color: theme.colors.text, backgroundColor: theme.colors.border, borderWidth: 0, ...props.inputSearchStyle as object }}
-      containerStyle={{ backgroundColor: theme.colors.background, borderWidth: 1.5, borderColor: theme.colors.primary, ...props.containerStyle as object }}
-      style={{ backgroundColor: theme.colors.border, ...props.style as object }} />
-      // color: theme.colors.text,
+      placeholderStyle={[{ color: theme.colors.text }, props.placeholderStyle ]}
+      selectedTextStyle={[{ color: theme.colors.text }, props.selectedTextStyle ]}
+      flatListProps={{ style: { backgroundColor: theme.colors.border } , ...props.flatListProps }}
+      itemTextStyle={[{ color: theme.colors.text }, props.itemTextStyle ]}
+      inputSearchStyle={[{ color: theme.colors.text, backgroundColor: theme.colors.border, borderWidth: 0 }, props.inputSearchStyle ]}
+      containerStyle={[{ backgroundColor: theme.colors.background, borderWidth: 1.5, borderColor: theme.colors.primary }, props.containerStyle ]}
+      style={[{ backgroundColor: theme.colors.border }, props.style ]} />
   );
 }
 
@@ -141,7 +147,7 @@ export function NavigationContainer(props: React.ComponentProps<typeof Navigatio
 export function Pressable(props: React.ComponentProps<typeof PressablePkg>): React.ReactElement {
   const theme = useTheme();
   return (
-    <PressablePkg { ...props } style={{ backgroundColor: theme.colors.primary, borderRadius: 30, ...props.style as object }}>
+    <PressablePkg { ...props } style={[{ backgroundColor: theme.colors.primary, borderRadius: 30}, props.style as object ]}>
       { props.children }
     </PressablePkg>
   );
