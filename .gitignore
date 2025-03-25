@@ -45,3 +45,4 @@ secrets/*
 
 eas.json
 cert-auto-myself.json
+.env.local

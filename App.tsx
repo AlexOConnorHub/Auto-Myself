@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
+import { init, wrap } from '@sentry/react-native';
 import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import React, { useEffect, useState, StrictMode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -16,6 +17,10 @@ import { NavigatorScreenParams, ParamListBase } from '@react-navigation/native';
 // import { sync } from './database/synchronize';
 // import { supabase } from './helpers/supabase';
 // import { Account } from './views/account/account';
+
+init({
+  dsn: 'https://ec4adae5dfe85a00b368745227de8d66@o4509037304807424.ingest.us.sentry.io/4509037306707968',
+});
 
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
@@ -46,7 +51,7 @@ const store = createStore();
 const Tab = createBottomTabNavigator();
 
 preventAutoHideAsync();
-export default function App() {
+export default wrap(function App() {
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     setupDatabase(store).then(() => setInitializing(false));
@@ -95,4 +100,4 @@ export default function App() {
       </Provider>
     </StrictMode>
   );
-}
+});
