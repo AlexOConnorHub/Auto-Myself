@@ -44,3 +44,5 @@ yarn-error.*
 secrets/*
 
 eas.json
+
+.env.local
