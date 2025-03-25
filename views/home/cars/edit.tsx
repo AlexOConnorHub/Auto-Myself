@@ -145,7 +145,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
 
   useEffect(() => {
     const doAsync = async () => {
-      setModelArray((await models({ make_id: formState.make.value, modelyear: formState.year  })).Results.map((item) => ({
+      setModelArray((await models({ make_id: formState.make_id.value, modelyear: formState.year  })).Results.map((item) => ({
         value: item.Model_ID,
         label: item.Model_Name,
       })));
