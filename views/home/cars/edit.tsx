@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, Keyboard, KeyboardType, } from "react-native";
+import { StyleSheet, Keyboard, Alert } from "react-native";
 import { Pressable, View, Text, ScrollView, TextInput, KeyboardAvoidingView } from "../../../components/elements";
-import FormElement from "../../../components/formElement";
-import CallbackButton from "../../../components/callbackButton";
 import { useNetInfo } from '@react-native-community/netinfo';
 import { convertIntervalForStorage } from "../../../helpers/functions";
 import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore } from "tinybase/ui-react";
@@ -11,24 +9,11 @@ import { tables } from "../../../database/schema";
 import Form from "../../../components/form";
 import { makes, models } from '../../../helpers/nhtsa';
 import { StackNavigationProp } from "@react-navigation/stack";
-import { OptionButtons } from "../../../components/optionButtons";
-
-
-// makes().then((data: { Results: {Make_ID: number, Make_Name: string}[]}) => console.log(data.Results.filter((v) => { /ma/.test(v.Make_Name.toLowerCase()) })));
-// models({ modelyear: null, make_id: 13060}).then(data => {
-//   let res = data["Results"];
-//   console.log(res);
-//   console.log(typeof res);
-//   for (let item of res) {
-//     console.log(item);
-//   }
-// });
 
 export default function Edit(props: { route: { params: { id: string }}}): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const { type, isConnected } = useNetInfo();
-  // const isConnected = false;
   const [userCustomEntry, setUserCustomEntry] = useState(false);
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
@@ -206,6 +191,23 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
     callback();
   }
   const remove = useDelRowCallback(tables.cars, props.route.params.id, store, () => goBack(() => {}), []);
+  const confirmDelete = () => {
+    return Alert.alert(
+      'Delete Car',
+      'Are you sure you want to delete this car?',
+      [
+        {
+          text: 'Yes',
+          onPress: () => {
+            remove();
+          },
+        },
+        {
+          text: 'No',
+        },
+      ]
+    );
+  };
   return (
     <KeyboardAvoidingView>
       <ScrollView>
@@ -215,7 +217,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
             !isNewCar &&
             <Pressable
               key='delete'
-              onPress={ remove.bind(this) }
+              onPress={ confirmDelete.bind(this) }
               style={[
                 pageStyles.pressable,
               ]}>

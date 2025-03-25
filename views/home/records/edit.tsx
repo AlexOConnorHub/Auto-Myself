@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Keyboard, KeyboardType, StyleSheet } from "react-native";
+import { Alert, Keyboard, KeyboardType, StyleSheet } from "react-native";
 import { Dropdown, View, Text, TextInput, ScrollView, KeyboardAvoidingView, Pressable } from "../../../components/elements";
 import { ParamListBase, useNavigation } from "@react-navigation/native";
 import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore, useTable } from "tinybase/ui-react";
@@ -106,8 +106,24 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
     callback();
   }
 
-
   const remove = useDelRowCallback(tables.maintenance_records, props.route.params.id, store, () => goBack(() => {}), []);
+    const confirmDelete = () => {
+      return Alert.alert(
+        'Delete Record',
+        'Are you sure you want to delete this record?',
+        [
+          {
+            text: 'Yes',
+            onPress: () => {
+              remove();
+            },
+          },
+          {
+            text: 'No',
+          },
+        ]
+      );
+    };
   return (
     <KeyboardAvoidingView style={ pageStyles.container }>
       <ScrollView>
@@ -117,7 +133,7 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
             !isNewRecord &&
             <Pressable
               key='delete'
-              onPress={ remove.bind(this) }
+              onPress={ confirmDelete.bind(this) }
               style={[
                 pageStyles.pressable,
               ]}>
