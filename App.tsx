@@ -1,7 +1,7 @@
 import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
-import { init, wrap } from '@sentry/react-native';
+import { feedbackIntegration, init, wrap } from '@sentry/react-native';
 import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import React, { useEffect, useState, StrictMode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -17,10 +17,6 @@ import Settings from './views/settings';
 // import { supabase } from './helpers/supabase';
 // import { Account } from './views/account/account';
 
-init({
-  dsn: 'https://ec4adae5dfe85a00b368745227de8d66@o4509037304807424.ingest.us.sentry.io/4509037306707968',
-});
-
 // Tells Supabase Auth to continuously refresh the session automatically
 // if the app is in the foreground. When this is added, you will continue
 // to receive `onAuthStateChange` events with the `TOKEN_REFRESHED` or
@@ -33,6 +29,19 @@ init({
 //     supabase.auth.stopAutoRefresh()
 //   }
 // })
+
+init({
+  dsn: 'https://ec4adae5dfe85a00b368745227de8d66@o4509037304807424.ingest.us.sentry.io/4509037306707968',
+  integrations: [
+    feedbackIntegration({
+      formTitle: 'Provide Feedback',
+      submitButtonLabel: 'Send Feedback',
+      messageLabel: 'Feedback',
+      messagePlaceholder: 'What is your feedback?',
+      successMessageText: 'Thank you for your feedback!',
+    }),
+  ],
+});
 
 const store = createStore();
 const Tab = createBottomTabNavigator();

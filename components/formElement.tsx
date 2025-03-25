@@ -11,15 +11,18 @@ export default function FormElement(props): React.ReactElement {
           ? [pageStyles.formElementInputSection, props.viewProps.style]
           : pageStyles.formElementInputSection
       }>
-      <Text
-        {...props.textProps}
-        style={
-          props.textProps && props.textProps.style
+      {
+        props.label &&
+        <Text
+          {...props.textProps}
+          style={
+            props.textProps && props.textProps.style
             ? [pageStyles.formElementText, props.textProps.style]
             : pageStyles.formElementText
-        }>
-        {props.label}
-      </Text>
+          }>
+          {props.label}
+        </Text>
+      }
       {props.children}
     </View>
   );

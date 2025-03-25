@@ -1,10 +1,11 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { View, Text } from '../../components/elements';
+import { View, Pressable, Text } from '../../components/elements';
 import { OptionButtons } from '../../components/optionButtons';
 import FormElement from '../../components/formElement';
 import { useCell, useSetCellCallback } from 'tinybase/ui-react';
 import { tables } from '../../database/schema';
+import { showFeedbackWidget } from '@sentry/react-native';
+import { StyleSheet } from 'react-native';
 
 export default function Settings(): React.JSX.Element {
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
@@ -32,6 +33,24 @@ export default function Settings(): React.JSX.Element {
           onSelect={ (newValue: string) => setTheme(newValue) }
         />
       </FormElement>
+      <FormElement>
+        <Pressable onPress={ () => { showFeedbackWidget() } } style={ pageStyles.pressable }>
+          <Text style={ pageStyles.text }>
+            Provide Feedback
+          </Text>
+        </Pressable>
+      </FormElement>
     </View>
   );
 }
+
+const pageStyles = StyleSheet.create({
+  pressable: {
+    borderRadius: 5,
+    padding: 10,
+  },
+  text: {
+    fontSize: 18,
+    marginLeft: 10,
+  }
+});
