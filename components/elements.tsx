@@ -19,7 +19,6 @@ import {
   View as ViewPkg,
 } from "react-native";
 import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
-// import { SafeAreaView as SafeAreaViewPkg} from 'react-native-safe-area-context';
 import React from "react";
 import { useHeaderHeight } from '@react-navigation/elements'
 import { useCell } from "tinybase/ui-react";

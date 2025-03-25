@@ -1,5 +1,6 @@
 import { Store } from "tinybase/store";
 import { tables } from "./schema";
+import { ExpoSqlitePersister } from "tinybase/persisters/persister-expo-sqlite";
 
 function incrementSchemaVersion(store: Store) {
   let currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
@@ -7,7 +8,8 @@ function incrementSchemaVersion(store: Store) {
 }
 
 export const migrations = [
-  (store: Store) => {
+  (persister: ExpoSqlitePersister) => {
+    const store = persister.getStore();
     store.setRow(tables.settings, 'local', { distanceUnit: 'Miles', theme: 'dark' });
 
     store.setTable(tables.maintenance_types, {
