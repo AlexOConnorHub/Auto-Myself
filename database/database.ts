@@ -1,7 +1,7 @@
 import { createExpoSqlitePersister } from 'tinybase/persisters/persister-expo-sqlite';
 import { migrations } from './migrations';
 import { openDatabaseSync } from 'expo-sqlite';
-import { Store  } from 'tinybase';
+import { Store } from 'tinybase';
 import { tables } from './schema';
 
 export async function setupDatabase(store: Store): Promise<void> {

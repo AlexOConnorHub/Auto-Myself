@@ -17,14 +17,18 @@ export default function Index(): React.ReactElement {
     <View style={ pageStyles.container }>
       <View>
         <FlatList
-          data={ Object.keys(cars).map((key) => { return { ...cars[key], id: key }; }) }
+          data={ Object.keys(cars).map((key) => {
+            return { ...cars[key], id: key };
+          }) }
           renderItem={({ item }) => CarListItem(item) }
           ListEmptyComponent={() => (
             <Text style={ pageStyles.emptyText }>Add a car to get started!</Text>
           )}
         />
       </View>
-      <Pressable onPress={() => { navigation.navigate('EditCar', { id: undefined }); }} style={ pageStyles.addCarButton }>
+      <Pressable onPress={() => {
+        navigation.navigate('EditCar', { id: undefined });
+      }} style={ pageStyles.addCarButton }>
         <Text style={ pageStyles.addCarText }>Add Car</Text>
       </Pressable>
     </View>
@@ -36,7 +40,7 @@ const pageStyles = StyleSheet.create({
     height: '100%',
     justifyContent: 'space-between',
   },
-  emptyText : {
+  emptyText: {
     fontSize: 24,
     alignSelf: 'center',
   },
