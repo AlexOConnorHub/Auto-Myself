@@ -20,7 +20,7 @@ export const schema = {
     'interval': { 'type': 'string' },
     'interval_unit': { 'type': 'string' },
     'car_id': { 'type': 'string' },
-    'maintenance_type_id': { 'type': 'string'},
+    'maintenance_type_id': { 'type': 'string' },
   },
   'maintenance_records': {
     'odometer': { 'type': 'string' },
