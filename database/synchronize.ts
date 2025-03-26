@@ -1,9 +1,9 @@
-import { supabase } from '../helpers/supabase';
+// import { supabase } from '../helpers/supabase';
 
 export const sync = async () => {
-  const { data, error } = await supabase.rpc('test', {
-    arg: 3
-  });
+  // const { data, error } = await supabase.rpc('test', {
+  //   arg: 3
+  // });
   // await synchronize({
   //   database,
   //   pullChanges: async ({ lastPulledAt, schemaVersion, migration }) => {
@@ -38,4 +38,4 @@ export const sync = async () => {
   //   },
   //   migrationsEnabledAtVersion: 1,
   // })
-}
+};

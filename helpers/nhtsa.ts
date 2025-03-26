@@ -7,14 +7,14 @@ export const makes: () => Promise<{
     Make_Name: string,
   }[]
 }> = async () => {
-  let uri = 'https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes';
-  let url = new URL(uri);
+  const uri = 'https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes';
+  const  url = new URL(uri);
   url.searchParams.append('format', 'json');
   return fetch(url)
     .then(response => response.json())
     .then(json => json)
     .catch(error => console.error(`${url.toString()}: ${error.toString()}`));
-}
+};
 
 export const models: (data: {
   make_id: number,
@@ -36,7 +36,7 @@ export const models: (data: {
   } else {
     uri += `/GetModelsForMakeId/${encodeURIComponent(data.make_id || 0)}`;
   }
-  let url = new URL(uri);
+  const url = new URL(uri);
   url.searchParams.append('format', 'json');
   return fetch(url)
     .then(response => response.json())

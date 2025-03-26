@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { Dropdown, Ionicons, Pressable, Text, TextInput, View } from "./elements";
-import { KeyboardType, StyleSheet } from "react-native";
-import FormElement from "./formElement";
-import { OptionButtons } from "./optionButtons";
+import React from 'react';
+import { Dropdown, Ionicons, Pressable, Text, TextInput, View } from './elements';
+import { KeyboardType, StyleSheet } from 'react-native';
+import { OptionButtons } from './optionButtons';
 
-type formStateGeneratorType = {
+interface formStateGeneratorType {
   label: string;
   toggleLabel?: string;
   value: string;
@@ -22,78 +21,78 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
   return (
     <View>
       { Object.keys(formMetaData).filter((key) => {
-          const element = formMetaData[key];
-          if (Object.hasOwn(element, 'condition')) {
-            let evaluation = formState[element.condition.formStateKey] == element.condition.value;
-            if (Object.hasOwn(element.condition, 'constant_or')) {
-              evaluation = evaluation || element.condition.constant_or;
-            }
-            if (Object.hasOwn(element.condition, 'constant_and')) {
-              evaluation = evaluation && element.condition.constant_and;
-            }
-            if (element.condition.invert) {
-              evaluation = !evaluation;
-            }
-            return evaluation;
+        const element = formMetaData[key];
+        if (Object.hasOwn(element, 'condition')) {
+          let evaluation = formState[element.condition.formStateKey] == element.condition.value;
+          if (Object.hasOwn(element.condition, 'constant_or')) {
+            evaluation = evaluation || element.condition.constant_or;
           }
-          return Object.hasOwn(element, 'hidden') ? !element.hidden : true;
-        }).map((key) => {
-          const element = formMetaData[key] as formStateGeneratorType;
-          return (
-            <View key={ key } style={ pageStyles.formElementInputSection }>
-              {
-                element.label !== undefined &&
+          if (Object.hasOwn(element.condition, 'constant_and')) {
+            evaluation = evaluation && element.condition.constant_and;
+          }
+          if (element.condition.invert) {
+            evaluation = !evaluation;
+          }
+          return evaluation;
+        }
+        return Object.hasOwn(element, 'hidden') ? !element.hidden : true;
+      }).map((key) => {
+        const element = formMetaData[key] as formStateGeneratorType;
+        return (
+          <View key={ key } style={ pageStyles.formElementInputSection }>
+            {
+              element.label !== undefined &&
                 <Text style={ pageStyles.formElementText }>
                   { element.label }
                 </Text>
-              }
-              {
-                (Object.hasOwn(element, 'disable') && element.disable.disable) ?
-                  <Text style={ pageStyles.formElementText }>
-                    { element.disable.label }
-                  </Text> :
+            }
+            {
+              (Object.hasOwn(element, 'disable') && element.disable.disable) ?
+                <Text style={ pageStyles.formElementText }>
+                  { element.disable.label }
+                </Text> :
                 (element.input === 'dropdown') ?
                   <Dropdown
                     value={ formState[`${key}_id`] || formState[key] }
-                    onChange={(newValue: any) => { onFormStateChange(key, newValue) }}
+                    onChange={(newValue) => { onFormStateChange(key, newValue); }}
                     data={ element.dropdownData }
                     style={ pageStyles.dropdown }
                     selectedTextStyle={ pageStyles.dropdownInput }
                     placeholderStyle={ pageStyles.dropdownInput }
+                  /> :
+                  (element.input === 'optionButtons') ?
+                    <OptionButtons
+                      value={ formState[key] }
+                      onSelect={(newValue) => { onFormStateChange(key, newValue); }}
+                      options={ element.optionButtonOptions }
+                      direction="vertical"
                     /> :
-                (element.input === 'optionButtons') ?
-                  <OptionButtons
-                    value={ formState[key] }
-                    onSelect={(newValue: any) => { onFormStateChange(key, newValue) }}
-                    options={ element.optionButtonOptions }
-                    direction="vertical"
-                    /> :
-                (element.input === 'toggle') ?
-                  <Pressable
-                    style={ pageStyles.togglePressable }
-                    onPress={() => { onFormStateChange(key, !formState[key]) }}
-                    >
-                    <Text style={ pageStyles.toggleText }>
-                      {
-                        formState[key] ?
-                        <Ionicons size={15} name="checkmark-circle-outline"/> :
-                        <Ionicons size={15} name="ellipse-outline"/>
-                      } { element.toggleLabel }
-                    </Text>
-                  </Pressable> :
-                // else
-                  <TextInput
-                    value={ formState[key] }
-                    onChangeText={(newValue: any) => { onFormStateChange(key, newValue) }}
-                    keyboardType={ element.keyboardType || 'default' }
-                    multiline={ element.textAreaOptions?.multiline || false }
-                    numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
-                    style={ pageStyles.textInput }
-                    />
-              }
-            </View>
-          )
-        })
+                    (element.input === 'toggle') ?
+                      <Pressable
+                        style={ pageStyles.togglePressable }
+                        onPress={() => { onFormStateChange(key, !formState[key]); }}
+                      >
+                        <Text style={ pageStyles.toggleText }>
+                          {
+                            formState[key] ?
+                              <Ionicons size={15} name="checkmark-circle-outline"/> :
+                              <Ionicons size={15} name="ellipse-outline"/>
+                          } { element.toggleLabel }
+                        </Text>
+                      </Pressable> :
+                    // else
+                      <TextInput
+                        value={ formState[key] }
+                        onChangeText={(newValue) => { onFormStateChange(key, newValue); }}
+                        keyboardType={ element.keyboardType || 'default' }
+                        multiline={ element.textAreaOptions?.multiline || false }
+                        numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
+                        style={ pageStyles.textInput }
+                      />
+            }
+          </View>
+        );
+      })
       }
     </View>
   );

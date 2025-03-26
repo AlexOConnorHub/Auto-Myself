@@ -6,7 +6,7 @@ export default function CallbackButton(props): React.ReactElement {
   const [disabled, setDisabled] = React.useState(false);
   const callback = () => {
     setDisabled(false);
-  }
+  };
   return (
     <Pressable
       {...props.pressable}

@@ -1,11 +1,11 @@
-import React, { useEffect } from "react";
-import { StyleSheet } from "react-native";
-import { View, Text, Pressable } from "../../../components/elements";
-import { convertIntervalForDisplay } from "../../../helpers/functions";
-import { ParamListBase, useNavigation, useTheme } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { useCell, useRow } from "tinybase/ui-react";
-import { tables } from "../../../database/schema";
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { View, Text, Pressable } from '../../../components/elements';
+import { convertIntervalForDisplay } from '../../../helpers/functions';
+import { ParamListBase, useNavigation, useTheme } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { useCell, useRow } from 'tinybase/ui-react';
+import { tables } from '../../../database/schema';
 
 export default function Card(props): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -15,14 +15,14 @@ export default function Card(props): React.ReactElement {
 
   const onPress = () => {
     navigation.navigate('EditRecord', { id: props.record.id, car_id: row.car_id });
-  }
+  };
 
   return (
     <Pressable style={ pageStyles.container } onPress={ onPress.bind(this) }>
       <View style={{ ...pageStyles.row, backgroundColor: theme.colors.primary, }}>
         <Text style={ pageStyles.headerText }>{ row.name }</Text>
         <Text style={ pageStyles.subText }>
-          { convertIntervalForDisplay(row.interval, row.intervalUnit, distanceUnit as "Miles" | "Kilometers") } { row.intervalUnit === 'dist' ? distanceUnit : row.intervalUnit }
+          { convertIntervalForDisplay(row.interval, row.intervalUnit, distanceUnit as 'Miles' | 'Kilometers') } { row.intervalUnit === 'dist' ? distanceUnit : row.intervalUnit }
         </Text>
       </View>
       <Text style={[ pageStyles.row, pageStyles.mainText, { backgroundColor: theme.colors.primary } ]}>{ row.notes }</Text>

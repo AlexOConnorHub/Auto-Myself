@@ -1,18 +1,18 @@
-import React from "react";
-import { Alert, StyleSheet } from "react-native";
-import CallbackButton from "../../components/callbackButton";
-import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from "../../components/elements";
-import FormElement from "../../components/formElement";
-// import { supabase } from "../../helpers/supabase";
+import React from 'react';
+import { Alert, StyleSheet } from 'react-native';
+import CallbackButton from '../../components/callbackButton';
+import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from '../../components/elements';
+import FormElement from '../../components/formElement';
+import { supabase } from '../../helpers/supabase';
 
 export class Signup extends React.Component {
   state = {
     modalVisible: false,
-    email: "",
-    confirmEmail: "",
-    password: "",
-    confirmPassword: "",
-  }
+    email: '',
+    confirmEmail: '',
+    password: '',
+    confirmPassword: '',
+  };
   render() {
     return (
       <View>
@@ -35,9 +35,9 @@ export class Signup extends React.Component {
                   let password = this.state.password;
                   let confirmPassword = this.state.confirmPassword;
                   if (email !== confirmEmail) {
-                    Alert.alert("Emails do not match");
-                } else if (password !== confirmPassword) {
-                    Alert.alert("Passwords do not match");
+                    Alert.alert('Emails do not match');
+                  } else if (password !== confirmPassword) {
+                    Alert.alert('Passwords do not match');
                   } else {
                     const { error } = await supabase.auth.signUp({
                       email: email,
@@ -46,7 +46,7 @@ export class Signup extends React.Component {
                     if (error) {
                       Alert.alert(error.message);
                     } else {
-                      Alert.alert("Account created");
+                      Alert.alert('Account created');
                       this.setState({ modalVisible: false });
                     }
                   }
@@ -55,10 +55,10 @@ export class Signup extends React.Component {
             </View>
             <View style={ pageStyles.modalBody }>
               {[
-                { label: "E-Mail", keyboardType: "email-address", model: "email" },
-                { label: "Confirm E-Mail", keyboardType: "email-address", model: "confirmEmail" },
-                { label: "Password", keyboardType: "default", model: "password" },
-                { label: "Confirm Password", keyboardType: "default", model: "confirmPassword" },
+                { label: 'E-Mail', keyboardType: 'email-address', model: 'email' },
+                { label: 'Confirm E-Mail', keyboardType: 'email-address', model: 'confirmEmail' },
+                { label: 'Password', keyboardType: 'default', model: 'password' },
+                { label: 'Confirm Password', keyboardType: 'default', model: 'confirmPassword' },
               ].map((item) => (
                 <FormElement label={ item.label }
                   key={ item.model }>
@@ -71,7 +71,7 @@ export class Signup extends React.Component {
           </View>
         </Modal>
       </View>
-    )
+    );
   }
 }
 
@@ -82,7 +82,7 @@ const pageStyles = StyleSheet.create({
     alignSelf: 'center',
     padding: 10,
 
-    width: "95%"
+    width: '95%'
   },
   showModalText: {
     fontSize: 20,

@@ -3,7 +3,7 @@ import {
   Feather as FeatherPkg,
   EvilIcons as EvilIconsPkg,
   Ionicons as IoniconsPkg,
-} from "@expo/vector-icons";
+} from '@expo/vector-icons';
 import { NavigationContainer as NavigationContainerPkg, useTheme} from '@react-navigation/native';
 import {
   // Button as ButtonPkg,
@@ -17,12 +17,12 @@ import {
   Text as TextPkg,
   TextInput as TextInputPkg,
   View as ViewPkg,
-} from "react-native";
+} from 'react-native';
 import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
-import React from "react";
-import { useHeaderHeight } from '@react-navigation/elements'
-import { useCell } from "tinybase/ui-react";
-import { tables } from "../database/schema";
+import React from 'react';
+import { useHeaderHeight } from '@react-navigation/elements';
+import { useCell } from 'tinybase/ui-react';
+import { tables } from '../database/schema';
 
 // export function Button(props: React.ComponentProps<typeof ButtonPkg>): React.ReactElement {
 //   const theme = useTheme();
@@ -91,7 +91,7 @@ export function Ionicons(props: React.ComponentProps<typeof IoniconsPkg>): React
 }
 
 export function KeyboardAvoidingView(props: React.ComponentProps<typeof KeyboardAvoidingViewPkg>): React.ReactElement {
-  const height = useHeaderHeight()
+  const height = useHeaderHeight();
   return (
     <KeyboardAvoidingViewPkg keyboardVerticalOffset={height} behavior={ Platform.select({android: undefined, ios: 'padding'}) } { ...props }>
       { props.children }

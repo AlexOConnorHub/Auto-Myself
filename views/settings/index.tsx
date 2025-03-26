@@ -1,6 +1,5 @@
 import React from 'react';
-import { StyleSheet } from 'react-native';
-import { View, Text } from '../../components/elements';
+import { View } from '../../components/elements';
 import { OptionButtons } from '../../components/optionButtons';
 import FormElement from '../../components/formElement';
 import { useCell, useSetCellCallback } from 'tinybase/ui-react';
