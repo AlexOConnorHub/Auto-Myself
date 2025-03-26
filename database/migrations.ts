@@ -1,9 +1,9 @@
-import { Store } from "tinybase/store";
-import { tables } from "./schema";
-import { ExpoSqlitePersister } from "tinybase/persisters/persister-expo-sqlite";
+import { Store } from 'tinybase/store';
+import { tables } from './schema';
+import { ExpoSqlitePersister } from 'tinybase/persisters/persister-expo-sqlite';
 
 function incrementSchemaVersion(store: Store) {
-  let currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
+  const currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
   store.setCell(tables.schema_version, 'local',  'version', currentVersion + 1);
 }
 

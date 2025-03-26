@@ -1,5 +1,5 @@
-import React from "react";
-import { Pressable, Text } from "./elements";
+import React from 'react';
+import { Pressable, Text } from './elements';
 
 export default function ListItem(props): React.ReactElement {
   return (
@@ -7,7 +7,7 @@ export default function ListItem(props): React.ReactElement {
       backgroundColor: null,
       borderRadius: 0,
 
-      }}>
+    }}>
       {/* { backgroundColor: settings.colors.primary } */}
       <Text>
         { props.label }
@@ -19,5 +19,5 @@ export default function ListItem(props): React.ReactElement {
         </Text>
       </Pressable>
     </Pressable>
-  )
+  );
 }

@@ -1,16 +1,16 @@
-import React from "react";
-import { Alert, StyleSheet } from "react-native";
-import CallbackButton from "../../components/callbackButton";
-import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from "../../components/elements";
-import FormElement from "../../components/formElement";
-// import { supabase } from "../../helpers/supabase";
+import React from 'react';
+import { Alert, StyleSheet } from 'react-native';
+import CallbackButton from '../../components/callbackButton';
+import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from '../../components/elements';
+import FormElement from '../../components/formElement';
+import { supabase } from '../../helpers/supabase';
 
 export class Login extends React.Component {
   state = {
     modalVisible: false,
-    email: "",
-    password: "",
-  }
+    email: '',
+    password: '',
+  };
   render() {
     return (
       <View>
@@ -28,19 +28,19 @@ export class Login extends React.Component {
               <CallbackButton
                 title="Login"
                 onPress={ async (callback) => {
-                  if (this.state.email === "") {
-                    Alert.alert("Email cannot be blank");
-                  } else if (this.state.password === "") {
-                    Alert.alert("Password cannot be blank");
+                  if (this.state.email === '') {
+                    Alert.alert('Email cannot be blank');
+                  } else if (this.state.password === '') {
+                    Alert.alert('Password cannot be blank');
                   } else {
-                    const {data: { session }, error} = await supabase.auth.signInWithPassword({
+                    const { data, error } = await supabase.auth.signInWithPassword({
                       email: this.state.email,
                       password: this.state.password,
                     });
                     if (error) {
                       Alert.alert(error.message);
                     } else {
-                      Alert.alert("Logged in");
+                      Alert.alert('Logged in');
                       this.setState({ modalVisible: false });
                     }
                   }
@@ -64,7 +64,7 @@ export class Login extends React.Component {
           </View>
         </Modal>
       </View>
-    )
+    );
   }
 }
 
@@ -75,7 +75,7 @@ const pageStyles = StyleSheet.create({
     alignSelf: 'center',
     padding: 10,
 
-    width: "95%"
+    width: '95%'
   },
   showModalText: {
     fontSize: 20,

@@ -50,34 +50,32 @@ export default function App() {
           <NavigationContainer>
             <StatusBar/>
             <Tab.Navigator screenOptions={{
-                tabBarStyle: {
-                  borderTopWidth: 0,
-                },
-                tabBarShowLabel: false,
-                headerTitleStyle: {
-                  fontSize: 30,
-                  fontWeight: 'bold',
-                },
-              }} backBehavior='initialRoute' initialRouteName='Home'>
+              tabBarStyle: {
+                borderTopWidth: 0,
+              },
+              tabBarShowLabel: false,
+              headerTitleStyle: {
+                fontSize: 30,
+                fontWeight: 'bold',
+              },
+            }} backBehavior='initialRoute' initialRouteName='Home'>
               {/* <Tab.Screen name='Account' options={{
                   tabBarIcon: () => { return <FontAwesome size={40} name='user'/> },
                   tabBarAccessibilityLabel: 'Account',
                 }} component={ Account }/> */}
               <Tab.Screen name='Home' options={{
                 tabBarIcon: (props: {focused: boolean; color: string; size: number; }): React.ReactNode => {
-                    let name = props.focused ? 'car-sharp' : 'car-outline';
-                    return <Ionicons size={48} name={name as 'car-sharp' | 'car-outline'} />
-                  },
-                  tabBarAccessibilityLabel: 'Home',
-                  headerShown: false,
-                }} component={ Home } />
+                  return <Ionicons size={48} name={props.focused ? 'car-sharp' : 'car-outline'} />;
+                },
+                tabBarAccessibilityLabel: 'Home',
+                headerShown: false,
+              }} component={ Home } />
               <Tab.Screen name='Settings' options={{
-                  tabBarIcon: (props: {focused: boolean; color: string; size: number; }): React.ReactNode => {
-                    let name = props.focused ? 'settings-sharp' : 'settings-outline';
-                    return <Ionicons name={name as 'settings-sharp' | 'settings-outline'} />
-                  },
-                  tabBarAccessibilityLabel: 'Settings',
-                }} component={ Settings }/>
+                tabBarIcon: (props: {focused: boolean; color: string; size: number; }): React.ReactNode => {
+                  return <Ionicons name={props.focused ? 'settings-sharp' : 'settings-outline'} />;
+                },
+                tabBarAccessibilityLabel: 'Settings',
+              }} component={ Settings }/>
             </Tab.Navigator>
           </NavigationContainer>
         </SafeAreaProvider>

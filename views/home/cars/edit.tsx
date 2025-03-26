@@ -1,25 +1,23 @@
-import React, { useEffect, useState } from "react";
-import { StyleSheet, Keyboard, Alert } from "react-native";
-import { Pressable, View, Text, ScrollView, TextInput, KeyboardAvoidingView } from "../../../components/elements";
+import React, { useEffect, useState } from 'react';
+import { StyleSheet, Keyboard, Alert } from 'react-native';
+import { Pressable, View, Text, ScrollView, KeyboardAvoidingView } from '../../../components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { convertIntervalForStorage } from "../../../helpers/functions";
-import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore } from "tinybase/ui-react";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { tables } from "../../../database/schema";
-import Form from "../../../components/form";
+import { convertIntervalForStorage } from '../../../helpers/functions';
+import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { tables } from '../../../database/schema';
+import Form from '../../../components/form';
 import { makes, models } from '../../../helpers/nhtsa';
-import { StackNavigationProp } from "@react-navigation/stack";
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export default function Edit(props: { route: { params: { id: string }}}): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
-  const { type, isConnected } = useNetInfo();
-  const [userCustomEntry, setUserCustomEntry] = useState(false);
+  const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
-  const useDropdowns = isConnected && !userCustomEntry;
-  let isNewCar = props.route.params.id === undefined;
-  let formMetaData = {
+  const isNewCar = props.route.params.id === undefined;
+  const formMetaData = {
     nickname: {
       label: 'Nickname',
     },
@@ -33,7 +31,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       condition: {
         formStateKey: 'manual_entry',
         value: true,
-        constant_or: !isConnected,
+        constant_or: !netInfo.isConnected,
       },
     },
     make_id: {
@@ -41,13 +39,13 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       input: 'dropdown',
       dropdownData: makeArray,
       disable: {
-        disable: useDropdowns && makeArray.length === 0,
+        disable: netInfo.isConnected && makeArray.length === 0,
         label: 'Loading makes...',
       },
       condition: {
         formStateKey: 'manual_entry',
         value: false,
-        constant_and: isConnected,
+        constant_and: netInfo.isConnected,
       },
     },
     model: {
@@ -56,7 +54,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       condition: {
         formStateKey: 'manual_entry',
         value: true,
-        constant_or: !isConnected,
+        constant_or: !netInfo.isConnected,
       },
     },
     model_id: {
@@ -64,22 +62,22 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       input: 'dropdown',
       dropdownData: modelArray,
       disable: {
-        disable: useDropdowns && modelArray.length === 0,
+        disable: netInfo.isConnected && modelArray.length === 0,
         label: 'Loading models...'
       },
       condition: {
         formStateKey: 'manual_entry',
         value: false,
-        constant_and: isConnected,
+        constant_and: netInfo.isConnected,
       },
     },
     manual_entry: {
       label: undefined,
       input: 'toggle',
-      toggleLabel: 'Tap to Enter Manually',
+      toggleLabel: 'Enter Manually',
       disable: {
         label: 'No internet connection',
-        disable: !isConnected,
+        disable: !netInfo.isConnected,
       }
     },
     vin: {
@@ -101,7 +99,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
     // },
   };
 
-  const row = useRow(tables.cars, props.route.params.id);
+  const row = useRow(tables.cars, props.route.params.id) as Record<string, string>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
       state[key] = (
@@ -112,7 +110,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       state[key] = row[key] || '';
     }
     return state;
-  }, {}) as Record<string, any>);
+  }, {}) as Record<string, string>);
 
   useEffect(() => {
     const doAsync = async () => {
@@ -132,30 +130,35 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
   }, [row.nickname]);
 
   useEffect(() => {
-    if (typeof formState.make_id === "object") {
-      setFormState(prev => ({ ...prev, make: formState.make_id.label }));
+    if (typeof formState.make_id === 'object') {
+      const make_obj = formState.make_id as { label: string };
+      setFormState(prev => ({ ...prev, make: make_obj.label }));
     }
   }, [formState.make_id]);
 
   useEffect(() => {
-    if (typeof formState.model_id === "object") {
-      setFormState(prev => ({ ...prev, model: formState.model_id.label }));
+    if (typeof formState.model_id === 'object') {
+      const model_obj = formState.model_id as { label: string };
+      setFormState(prev => ({ ...prev, model: model_obj.label }));
     }
   }, [formState.model_id]);
 
   useEffect(() => {
     const doAsync = async () => {
-      setModelArray((await models({ make_id: formState.make_id.value, modelyear: formState.year  })).Results.map((item) => ({
-        value: item.Model_ID,
-        label: item.Model_Name,
-      })));
+      if (typeof formState.make_id === 'object') {
+        const make_obj = formState.make_id as { label: string, value: number };
+        setModelArray((await models({ make_id: make_obj.value, modelyear: parseInt(formState.year)  })).Results.map((item) => ({
+          value: item.Model_ID,
+          label: item.Model_Name,
+        })));
+      }
     };
     doAsync();
   }, [formState.make_id, (formState.year.toString().length === 4 ? formState.year : null)]);
 
   const store = useStore();
   const saveFunction = () => {
-      const newRow = Object.keys(formMetaData).filter((key) => [
+    const newRow = Object.keys(formMetaData).filter((key) => [
       'nickname',
       'year',
       'make',
@@ -168,29 +171,31 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
     ].includes(key)).reduce((state, key) => {
       state[key] = formState[key];
       return state;
-    }, {} as Record<string, any>);
+    }, {} as Record<string, string>);
 
     newRow.make = newRow.make.toUpperCase();
     newRow.model = newRow.model.toUpperCase();
-    if (typeof newRow.make_id === "object") {
-      newRow.make_id = newRow.make_id.value;
+    if (typeof newRow.make_id === 'object') {
+      const make_obj = newRow.make_id as { value: string };
+      newRow.make_id = make_obj.value;
     }
-    if (typeof newRow.model_id === "object") {
-      newRow.model_id = newRow.model_id.value;
+    if (typeof newRow.model_id === 'object') {
+      const model_obj = newRow.model_id as { value: string };
+      newRow.model_id = model_obj.value;
     }
 
-    newRow.annualUsage = convertIntervalForStorage(newRow.annualUsage, 'dist', distanceUnit as "Miles" | "Kilometers");
+    newRow.annualUsage = convertIntervalForStorage(newRow.annualUsage, 'dist', distanceUnit as 'Miles' | 'Kilometers');
     return newRow;
   };
   const save = isNewCar ?
-    useAddRowCallback(tables.cars, saveFunction, [formState], store, () => goBack(() => {}), []) :
-    useSetRowCallback(tables.cars, props.route.params.id, saveFunction, [formState], store, () => goBack(() => {}), []);
-  const goBack = (callback) => {
+    useAddRowCallback(tables.cars, saveFunction, [formState], store, () => goBack(), []) :
+    useSetRowCallback(tables.cars, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
+  const goBack = (callback?: () => void) => {
     Keyboard.dismiss();
     navigation.navigate('Index');
     callback();
-  }
-  const remove = useDelRowCallback(tables.cars, props.route.params.id, store, () => goBack(() => {}), []);
+  };
+  const remove = useDelRowCallback(tables.cars, props.route.params.id, store, () => goBack(), []);
   const confirmDelete = () => {
     return Alert.alert(
       'Delete Car',
@@ -211,7 +216,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
   return (
     <KeyboardAvoidingView>
       <ScrollView>
-        <Form formState={ formState } formMetaData={ formMetaData }  onFormStateChange={ (key: string, value: string) => { setFormState(prev => ({ ...prev, [key]: value })) } } />
+        <Form formState={ formState } formMetaData={ formMetaData }  onFormStateChange={ (key: string, value: string) => { setFormState(prev => ({ ...prev, [key]: value })); } } />
         <View style={ pageStyles.view }>
           {
             !isNewCar &&
@@ -235,7 +240,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  )
+  );
 }
 
 const pageStyles = StyleSheet.create({

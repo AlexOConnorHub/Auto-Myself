@@ -1,15 +1,15 @@
-import React from "react";
-import { StyleSheet } from "react-native";
-import { View, Text, Pressable, FlatList } from "../../../components/elements";
-import Card from "./card";
-import { useTable } from "tinybase/ui-react";
-import { ParamListBase, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { View, Text, Pressable, FlatList } from '../../../components/elements';
+import Card from './card';
+import { useTable } from 'tinybase/ui-react';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 export default function Index(): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const CarListItem = (car) =>
-    <Card key={ car.id } car={ car } />
+    <Card key={ car.id } car={ car } />;
 
   const cars = useTable('cars');
 

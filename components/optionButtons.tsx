@@ -5,7 +5,6 @@ import { useTheme } from '@react-navigation/native';
 
 export function OptionButtons(props): React.ReactElement {
   const theme = useTheme();
-  const [value, setValue] = React.useState(props.value || props.options[0].key);
   return (
     <View style={[pageStyles.view, { flexDirection: props.direction === 'vertical' ? 'column' : 'row' }]}>
       {
@@ -14,7 +13,6 @@ export function OptionButtons(props): React.ReactElement {
             <Pressable
               key={option.key}
               onPress={() => {
-                setValue(option.key);
                 props.onSelect(option.key);
               }}
               style={[
