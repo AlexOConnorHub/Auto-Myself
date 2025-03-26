@@ -19,7 +19,7 @@ export default function Card(props): React.ReactElement {
 
   return (
     <Pressable style={ pageStyles.container } onPress={ onPress.bind(this) }>
-      <View style={{ ...pageStyles.row, backgroundColor: theme.colors.primary, }}>
+      <View style={{ ...pageStyles.row, backgroundColor: theme.colors.primary }}>
         <Text style={ pageStyles.headerText }>{ row.name }</Text>
         <Text style={ pageStyles.subText }>
           { convertIntervalForDisplay(row.interval, row.intervalUnit, distanceUnit as 'Miles' | 'Kilometers') } { row.intervalUnit === 'dist' ? distanceUnit : row.intervalUnit }

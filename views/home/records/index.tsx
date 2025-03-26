@@ -24,7 +24,9 @@ export default function Records(props): React.ReactElement {
     <View style={ pageStyles.container }>
       <View>
         <FlatList
-          data={ Object.keys(records).filter((key) => records[key].car_id === props.route.params.car_id).map((key) => { return { ...records[key], id: key }; }) }
+          data={ Object.keys(records).filter((key) => records[key].car_id === props.route.params.car_id).map((key) => {
+            return { ...records[key], id: key };
+          }) }
           renderItem={({ item }) => RecordListItem(item) }
           ListEmptyComponent={() => (
             <Text style={ pageStyles.emptyText }>No records yet</Text>
@@ -32,10 +34,14 @@ export default function Records(props): React.ReactElement {
         />
       </View>
       <View style={ pageStyles.actionButtonSection }>
-        <Pressable onPress={() => { navigation.navigate('EditRecord', { id: undefined, car_id: props.route.params.car_id }); }} style={ pageStyles.actionButton }>
+        <Pressable onPress={() => {
+          navigation.navigate('EditRecord', { id: undefined, car_id: props.route.params.car_id });
+        }} style={ pageStyles.actionButton }>
           <Text style={ pageStyles.actionButtonText }>Add Maintenance</Text>
         </Pressable>
-        <Pressable onPress={() => { navigation.navigate('EditCar', { id: props.route.params.car_id }); }} style={ pageStyles.actionButton }>
+        <Pressable onPress={() => {
+          navigation.navigate('EditCar', { id: props.route.params.car_id });
+        }} style={ pageStyles.actionButton }>
           <Text style={ pageStyles.actionButtonText }>Edit Car</Text>
         </Pressable>
       </View>
@@ -48,7 +54,7 @@ const pageStyles = StyleSheet.create({
     height: '100%',
     justifyContent: 'space-between',
   },
-  emptyText : {
+  emptyText: {
     fontSize: 24,
     alignSelf: 'center',
   },

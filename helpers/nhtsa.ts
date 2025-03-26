@@ -8,7 +8,7 @@ export const makes: () => Promise<{
   }[]
 }> = async () => {
   const uri = 'https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes';
-  const  url = new URL(uri);
+  const url = new URL(uri);
   url.searchParams.append('format', 'json');
   return fetch(url)
     .then(response => response.json())

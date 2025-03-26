@@ -4,7 +4,7 @@ import {
   EvilIcons as EvilIconsPkg,
   Ionicons as IoniconsPkg,
 } from '@expo/vector-icons';
-import { NavigationContainer as NavigationContainerPkg, useTheme} from '@react-navigation/native';
+import { NavigationContainer as NavigationContainerPkg, useTheme } from '@react-navigation/native';
 import {
   // Button as ButtonPkg,
   FlatList as FlatListPkg,
@@ -47,7 +47,7 @@ export function Dropdown(props: React.ComponentProps<typeof DropdownPkg>): React
       { ...props }
       placeholderStyle={[{ color: theme.colors.text }, props.placeholderStyle ]}
       selectedTextStyle={[{ color: theme.colors.text }, props.selectedTextStyle ]}
-      flatListProps={{ style: { backgroundColor: theme.colors.border } , ...props.flatListProps }}
+      flatListProps={{ style: { backgroundColor: theme.colors.border }, ...props.flatListProps }}
       itemTextStyle={[{ color: theme.colors.text }, props.itemTextStyle ]}
       inputSearchStyle={[{ color: theme.colors.text, backgroundColor: theme.colors.border, borderWidth: 0 }, props.inputSearchStyle ]}
       containerStyle={[{ backgroundColor: theme.colors.background, borderWidth: 1.5, borderColor: theme.colors.primary }, props.containerStyle ]}
@@ -93,7 +93,7 @@ export function Ionicons(props: React.ComponentProps<typeof IoniconsPkg>): React
 export function KeyboardAvoidingView(props: React.ComponentProps<typeof KeyboardAvoidingViewPkg>): React.ReactElement {
   const height = useHeaderHeight();
   return (
-    <KeyboardAvoidingViewPkg keyboardVerticalOffset={height} behavior={ Platform.select({android: undefined, ios: 'padding'}) } { ...props }>
+    <KeyboardAvoidingViewPkg keyboardVerticalOffset={height} behavior={ Platform.select({ android: undefined, ios: 'padding' }) } { ...props }>
       { props.children }
     </KeyboardAvoidingViewPkg>
   );
@@ -139,7 +139,7 @@ export function NavigationContainer(props: React.ComponentProps<typeof Navigatio
 export function Pressable(props: React.ComponentProps<typeof PressablePkg>): React.ReactElement {
   const theme = useTheme();
   return (
-    <PressablePkg { ...props } style={[{ backgroundColor: theme.colors.primary, borderRadius: 30}, props.style as object ]}>
+    <PressablePkg { ...props } style={[{ backgroundColor: theme.colors.primary, borderRadius: 30 }, props.style as object ]}>
       { props.children }
     </PressablePkg>
   );

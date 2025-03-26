@@ -14,7 +14,9 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
 
   const row = useRow(tables.maintenance_records, props.route.params.id);
   const types = useTable(tables.maintenance_types);
-  const typesArray = Object.keys(types).map((key) => { return { value: key, label: types[key].name as string }; });
+  const typesArray = Object.keys(types).map((key) => {
+    return { value: key, label: types[key].name as string };
+  });
   typesArray.sort((a, b) => a.label.localeCompare(b.label));
   typesArray.unshift({ value: 'new', label: 'New Maintenance Type' });
 
@@ -87,7 +89,7 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
       'new_maintenance_type',
       'interval',
       'intervalUnit',
-    ].includes(key))
+    ].includes(key)),
     ).reduce((state, key) => {
       state[key] = formState[key];
       return state;
@@ -98,12 +100,14 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
     return newRow;
   };
   const save = isNewRecord ?
-    useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, () => goBack() , []) :
+    useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, () => goBack(), []) :
     useSetRowCallback(tables.maintenance_records, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
   const goBack = (callback?: () => void) => {
     Keyboard.dismiss();
     navigation.goBack();
-    callback();
+    if (callback !== undefined) {
+      callback();
+    }
   };
 
   const remove = useDelRowCallback(tables.maintenance_records, props.route.params.id, store, () => goBack(), []);
@@ -121,7 +125,7 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
         {
           text: 'No',
         },
-      ]
+      ],
     );
   };
   return (
@@ -229,5 +233,5 @@ const pageStyles = StyleSheet.create({
     marginVertical: 10,
     textAlignVertical: 'top',
     // backgroundColor: 'white',
-  }
+  },
 });

@@ -63,7 +63,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       dropdownData: modelArray,
       disable: {
         disable: netInfo.isConnected && modelArray.length === 0,
-        label: 'Loading models...'
+        label: 'Loading models...',
       },
       condition: {
         formStateKey: 'manual_entry',
@@ -78,7 +78,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
       disable: {
         label: 'No internet connection',
         disable: !netInfo.isConnected,
-      }
+      },
     },
     vin: {
       label: 'VIN',
@@ -145,13 +145,18 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
 
   useEffect(() => {
     const doAsync = async () => {
+      let id_for_uri;
       if (typeof formState.make_id === 'object') {
         const make_obj = formState.make_id as { label: string, value: number };
-        setModelArray((await models({ make_id: make_obj.value, modelyear: parseInt(formState.year)  })).Results.map((item) => ({
-          value: item.Model_ID,
-          label: item.Model_Name,
-        })));
+        id_for_uri = make_obj.value;
+      } else {
+        id_for_uri = formState.make_id;
       }
+
+      setModelArray((await models({ make_id: id_for_uri, modelyear: parseInt(formState.year) })).Results.map((item) => ({
+        value: item.Model_ID,
+        label: item.Model_Name,
+      })));
     };
     doAsync();
   }, [formState.make_id, (formState.year.toString().length === 4 ? formState.year : null)]);
@@ -193,7 +198,9 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
   const goBack = (callback?: () => void) => {
     Keyboard.dismiss();
     navigation.navigate('Index');
-    callback();
+    if (callback !== undefined) {
+      callback();
+    }
   };
   const remove = useDelRowCallback(tables.cars, props.route.params.id, store, () => goBack(), []);
   const confirmDelete = () => {
@@ -210,13 +217,15 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
         {
           text: 'No',
         },
-      ]
+      ],
     );
   };
   return (
     <KeyboardAvoidingView>
       <ScrollView>
-        <Form formState={ formState } formMetaData={ formMetaData }  onFormStateChange={ (key: string, value: string) => { setFormState(prev => ({ ...prev, [key]: value })); } } />
+        <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key: string, value: string) => {
+          setFormState(prev => ({ ...prev, [key]: value }));
+        } } />
         <View style={ pageStyles.view }>
           {
             !isNewCar &&

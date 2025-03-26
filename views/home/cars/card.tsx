@@ -16,19 +16,19 @@ export default function Card({ car }): React.ReactElement {
   };
   return (
     <Pressable onPress={() => onPress() } style={ pageStyles.pressable }>
-      <Text style={ [pageStyles.title, pageStyles.cardRow, ] }>
+      <Text style={ [pageStyles.title, pageStyles.cardRow ] }>
         { car.nickname } { (car.year) ? `(${car.year})` : '' }
       </Text>
-      <ConditionalText condition={ car.make || car.model } style={ [pageStyles.title, pageStyles.cardRow, ] }>
+      <ConditionalText condition={ car.make || car.model } style={ [pageStyles.title, pageStyles.cardRow ] }>
         { `${car.make} ${car.model}`.trim() }
       </ConditionalText>
-      <ConditionalText condition={ car.vin } style={ [pageStyles.data, pageStyles.cardRow, ] }>
+      <ConditionalText condition={ car.vin } style={ [pageStyles.data, pageStyles.cardRow ] }>
         VIN: { car.vin }
       </ConditionalText>
-      <ConditionalText condition={ car.lpn } style={ [pageStyles.data, pageStyles.cardRow, ] }>
+      <ConditionalText condition={ car.lpn } style={ [pageStyles.data, pageStyles.cardRow ] }>
         License Plate: { car.lpn }
       </ConditionalText>
-      <ConditionalText condition={ car.annualUsage } style={ [pageStyles.data, pageStyles.cardRow, ] }>
+      <ConditionalText condition={ car.annualUsage } style={ [pageStyles.data, pageStyles.cardRow ] }>
         Estimated Annual Usage: { convertIntervalForDisplay(car.annualUsage, 'dist', distanceUnit as 'Miles' | 'Kilometers') } { distanceUnit }
       </ConditionalText>
     </Pressable>

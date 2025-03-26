@@ -54,7 +54,9 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
                 (element.input === 'dropdown') ?
                   <Dropdown
                     value={ formState[`${key}_id`] || formState[key] }
-                    onChange={(newValue) => { onFormStateChange(key, newValue); }}
+                    onChange={(newValue) => {
+                      onFormStateChange(key, newValue);
+                    }}
                     data={ element.dropdownData }
                     style={ pageStyles.dropdown }
                     selectedTextStyle={ pageStyles.dropdownInput }
@@ -63,14 +65,18 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
                   (element.input === 'optionButtons') ?
                     <OptionButtons
                       value={ formState[key] }
-                      onSelect={(newValue) => { onFormStateChange(key, newValue); }}
+                      onSelect={(newValue) => {
+                        onFormStateChange(key, newValue);
+                      }}
                       options={ element.optionButtonOptions }
                       direction="vertical"
                     /> :
                     (element.input === 'toggle') ?
                       <Pressable
                         style={ pageStyles.togglePressable }
-                        onPress={() => { onFormStateChange(key, !formState[key]); }}
+                        onPress={() => {
+                          onFormStateChange(key, !formState[key]);
+                        }}
                       >
                         <Text style={ pageStyles.toggleText }>
                           {
@@ -83,7 +89,9 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
                     // else
                       <TextInput
                         value={ formState[key] }
-                        onChangeText={(newValue) => { onFormStateChange(key, newValue); }}
+                        onChangeText={(newValue) => {
+                          onFormStateChange(key, newValue);
+                        }}
                         keyboardType={ element.keyboardType || 'default' }
                         multiline={ element.textAreaOptions?.multiline || false }
                         numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }

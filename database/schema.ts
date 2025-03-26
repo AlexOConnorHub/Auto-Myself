@@ -46,7 +46,7 @@ export const schema = {
     'last_name': { 'type': 'string' },
     'created_at': { 'type': 'number' },
     'updated_at': { 'type': 'number' },
-  }
+  },
 };
 
 export const tables = {
