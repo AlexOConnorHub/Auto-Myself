@@ -64,14 +64,14 @@ export default function App() {
                   tabBarAccessibilityLabel: 'Account',
                 }} component={ Account }/> */}
               <Tab.Screen name='Home' options={{
-                tabBarIcon: (props: {focused: boolean; color: string; size: number; }): React.ReactNode => {
+                tabBarIcon: (props: {focused: boolean; }): React.ReactNode => {
                   return <Ionicons size={48} name={props.focused ? 'car-sharp' : 'car-outline'} />;
                 },
                 tabBarAccessibilityLabel: 'Home',
                 headerShown: false,
               }} component={ Home } />
               <Tab.Screen name='Settings' options={{
-                tabBarIcon: (props: {focused: boolean; color: string; size: number; }): React.ReactNode => {
+                tabBarIcon: (props: {focused: boolean; }): React.ReactNode => {
                   return <Ionicons name={props.focused ? 'settings-sharp' : 'settings-outline'} />;
                 },
                 tabBarAccessibilityLabel: 'Settings',

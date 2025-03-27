@@ -10,7 +10,7 @@ import Form from '../../../components/form';
 import { makes, models } from '../../../helpers/nhtsa';
 import { StackNavigationProp } from '@react-navigation/stack';
 
-export default function Edit(props: { route: { params: { id: string }}}): React.ReactElement {
+export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; } } }>): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const netInfo = useNetInfo();
@@ -125,7 +125,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
 
   useEffect(() => {
     if (!isNewCar) {
-      navigation.setOptions({ title: (row.nickname || 'Edit Car') as string });
+      navigation.setOptions({ title: (row.nickname || 'Edit Car') });
     }
   }, [row.nickname]);
 
@@ -192,9 +192,10 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
     newRow.annualUsage = convertIntervalForStorage(newRow.annualUsage, 'dist', distanceUnit as 'Miles' | 'Kilometers');
     return newRow;
   };
-  const save = isNewCar ?
-    useAddRowCallback(tables.cars, saveFunction, [formState], store, () => goBack(), []) :
-    useSetRowCallback(tables.cars, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
+
+  const addRecord = useAddRowCallback(tables.cars, saveFunction, [formState], store, () => goBack(), []);
+  const updateRecord = useSetRowCallback(tables.cars, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
+
   const goBack = (callback?: () => void) => {
     Keyboard.dismiss();
     navigation.navigate('Index');
@@ -240,7 +241,7 @@ export default function Edit(props: { route: { params: { id: string }}}): React.
           }
           <Pressable
             key='save'
-            onPress={ save.bind(this) }
+            onPress={ isNewCar ? addRecord : updateRecord }
             style={[
               pageStyles.pressable,
             ]}>

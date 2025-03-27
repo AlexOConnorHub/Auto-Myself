@@ -8,7 +8,7 @@ import Form from '../../../components/form';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { convertIntervalForStorage } from '../../../helpers/functions';
 
-export default function Edit(props: { route: { params: { car_id: string; id: string; }} }): React.ReactElement {
+export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; }} }>): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
 
@@ -99,9 +99,10 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
     newRow.odometer = convertIntervalForStorage(newRow.odometer, 'dist', distanceUnit as 'Miles' | 'Kilometers');
     return newRow;
   };
-  const save = isNewRecord ?
-    useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, () => goBack(), []) :
-    useSetRowCallback(tables.maintenance_records, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
+
+  const addRecord = useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, () => goBack(), []);
+  const updateRecord = useSetRowCallback(tables.maintenance_records, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
+
   const goBack = (callback?: () => void) => {
     Keyboard.dismiss();
     navigation.goBack();
@@ -146,7 +147,7 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
           }
           <Pressable
             key='save'
-            onPress={ save.bind(this) }
+            onPress={isNewRecord ? addRecord : updateRecord}
             style={[
               pageStyles.pressable,
             ]}>
@@ -156,40 +157,6 @@ export default function Edit(props: { route: { params: { car_id: string; id: str
       </ScrollView>
     </KeyboardAvoidingView>
   );
-
-//   async save(callback) {
-//     if (this.state.maintenanceTypeId === 'new') {
-//       this.maintenanceType = await this.props.database.write(async () => {
-//         // return await this.props.database.get(tables.maintenance_types).create((record) => {
-//         //   record.name = this.state.new_maintenanceType;
-//         // });
-//       });
-//       this.setState({ maintenanceTypeId: this.maintenanceType });
-//     } else if (!this.maintenanceType) {
-//       // this.maintenanceType = await this.props.database.get(tables.maintenance_types).find(this.state.maintenanceTypeId);
-//     }
-//     this.maintenanceInterval = await this.maintenanceType.ensureCarMaintenanceInterval({
-//       carId: this.props.route.params.carId,
-//       carMaintenanceIntervalId: this.carMaintenanceIntervalId,
-//       interval: convertIntervalForStorage(this.state.interval, this.state.intervalUnit, distanceUnit),
-//       intervalUnit: this.state.intervalUnit,
-//     });
-//     if (this.new) {
-//       await this.maintenanceType.createMaintenanceRecord({
-//         carId: this.props.route.params.carId,
-//         odometer: this.state.odometer,
-//         cost: this.state.cost,
-//         notes: this.state.notes,
-//       });
-//     } else {
-//       await this.maintenanceRecord.updateRecord({
-//         odometer: this.state.odometer,
-//         cost: this.state.cost,
-//         notes: this.state.notes,
-//       });
-//     }
-//     this.goBack(callback);
-//   }
 }
 
 const pageStyles = StyleSheet.create({
@@ -232,6 +199,5 @@ const pageStyles = StyleSheet.create({
     padding: 10,
     marginVertical: 10,
     textAlignVertical: 'top',
-    // backgroundColor: 'white',
   },
 });
