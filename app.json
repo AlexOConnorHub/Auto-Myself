@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "MyCar-TotalControl",
-    "slug": "MyCar-TotalControl",
+    "name": "Auto Myself",
+    "slug": "auto-myself",
     "version": "1.0.2",
+    "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
@@ -16,46 +17,19 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.MyCarTotalControl"
+      "bundleIdentifier": "com.automyself.ios"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/transparent-background.png",
         "backgroundColor": "#A67729"
       },
-      "package": "com.anonymous.MyCarTotalControl",
+      "package": "com.automyself.android",
       "versionCode": 3
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "kotlinVersion": "1.8.10",
-            "compileSdkVersion": 33,
-            "targetSdkVersion": 33,
-            "packagingOptions": {
-              "pickFirst": [
-                "**/libc++_shared.so"
-              ]
-            }
-          },
-          "ios": {
-            "extraPods": [
-              {
-                "name": "simdjson",
-                "path": "../node_modules/@nozbe/simdjson",
-                "modular_headers": true
-              }
-            ]
-          }
-        }
-      ],
-      "@skam22/watermelondb-expo-plugin"
-    ],
     "extra": {
       "eas": {
         "projectId": "111d2a73-634d-4abf-b2d6-ec1aa4cb5fa3"

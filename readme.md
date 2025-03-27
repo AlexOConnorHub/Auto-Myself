@@ -1,3 +1,8 @@
-# My Car - Total Control
+# Auto Myself
 
-This is a Open-Source mobile app written in React Native utilizing Expo for taking control of vehicle maintainance.
+This is a mobile app written in React Native for taking control of vehicle maintenance.
+
+## Build
+
+- `npm install`
+- `npx expo start`
