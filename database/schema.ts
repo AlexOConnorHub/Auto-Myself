@@ -16,34 +16,23 @@ export const schema = {
     'updated_at': { 'type': 'number' },
     'notes': { 'type': 'string' },
   },
-  'car_maintenance_intervals': {
-    'interval': { 'type': 'string' },
-    'interval_unit': { 'type': 'string' },
-    'car_id': { 'type': 'string' },
-    'maintenance_type_id': { 'type': 'string' },
-  },
   'maintenance_records': {
     'odometer': { 'type': 'string' },
     'notes': { 'type': 'string' },
     'cost': { 'type': 'string' },
     'created_at': { 'type': 'number' },
     'car_id': { 'type': 'string' },
-    'maintenance_type_id': { 'type': 'string' },
-  },
-  'maintenance_types': {
-    'name': { 'type': 'string' },
-  },
-  'permissions': {
-    'car_id': { 'type': 'string' },
-    'user_id': { 'type': 'string' },
+    'type': { 'type': 'string' },
+    'interval': { 'type': 'number' },
+    'interval_unit': { 'type': 'string' },
+    'date': { 'type': 'string' },
   },
   'settings': {
     'distance_unit': { 'type': 'string', 'default': 'Miles' },
     'theme': { 'type': 'string', 'default': 'dark' },
   },
   'users': {
-    'first_name': { 'type': 'string' },
-    'last_name': { 'type': 'string' },
+    'name': { 'type': 'string' },
     'created_at': { 'type': 'number' },
     'updated_at': { 'type': 'number' },
   },
@@ -51,9 +40,7 @@ export const schema = {
 
 export const tables = {
   'cars': 'cars',
-  'car_maintenance_intervals': 'car_maintenance_intervals',
   'maintenance_records': 'maintenance_records',
-  'maintenance_types': 'maintenance_types',
   'permissions': 'permissions',
   'settings': 'settings',
   'users': 'users',

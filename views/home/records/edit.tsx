@@ -6,42 +6,86 @@ import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallbac
 import { tables } from '../../../database/schema';
 import Form from '../../../components/form';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { convertIntervalForStorage } from '../../../helpers/functions';
 
 export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; }} }>): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
 
+  const carRecords = useTable(tables.maintenance_records);
   const row = useRow(tables.maintenance_records, props.route.params.id);
-  const types = useTable(tables.maintenance_types);
-  const typesArray = Object.keys(types).map((key) => {
-    return { value: key, label: types[key].name as string };
-  });
+  const typesObj = {} as Record<string, Record<string, string>>;
+
+  for (const key of Object.keys(carRecords)) {
+    const carRecord = carRecords[key] as Record<string, string>;
+    if (!Object.hasOwn(typesObj, carRecord.type) || carRecord.date > typesObj[carRecord.type].date) {
+      typesObj[carRecord.type] ||= {};
+      typesObj[carRecord.type].date = carRecord.date;
+      typesObj[carRecord.type].interval = carRecord.interval;
+      typesObj[carRecord.type].interval_unit = carRecord.interval_unit;
+    }
+  }
+
+  const typesArray = Object.keys(typesObj).map((key) => {
+    return { ...typesObj[key], label: key, value: key };
+  }).concat([
+    'Oil change',
+    'Coolant flush',
+    'Cabin air filter',
+    'Engine air filter',
+    'Tire rotation',
+    'Brake pads',
+    'Brake rotors',
+    'Brake pads & rotors',
+    'Brake fluid',
+    'Transmission fluid',
+    'Spark plugs',
+    'Transfer case fluid',
+    'Serpentine belt',
+    'Timing belt',
+    'Power steering fluid',
+    'Differential fluid',
+    'Change tires',
+    'Wheel alignment',
+    'Battery',
+    'Fuel filter',
+    'Fuel injector',
+    'Fuel pump',
+  ].filter((item) => !Object.keys(typesObj).includes(item))
+    .map((item) => ({ value: item, label: item })));
   typesArray.sort((a, b) => a.label.localeCompare(b.label));
-  typesArray.unshift({ value: 'new', label: 'New Maintenance Type' });
 
   const isNewRecord = props.route.params.id === undefined;
-  const formStateGenerator = {
-    maintenance_type_id: {
+  const formMetaData = {
+    type_custom: {
+      label: 'Maintenance Type',
+      input: 'text',
+      condition: {
+        formStateKey: 'new_entry',
+        value: true,
+      },
+    },
+    type: {
       label: 'Maintenance Type',
       input: 'dropdown',
       dropdownData: typesArray,
+      condition: {
+        formStateKey: 'new_entry',
+        value: false,
+      },
     },
-    new_maintenance_type: {
-      label: 'New Maintenance Type',
-      condition: { formStateKey: 'maintenance_type_id', value: 'new' },
+    new_entry: {
+      input: 'toggle',
+      toggleLabel: 'Not in List',
     },
     interval: {
       label: 'Maintenance Interval',
       keyboardType: 'numeric',
-      condition: { formStateKey: 'maintenance_type_id', value: null, invert: true },
     },
     interval_unit: {
       label: 'Interval Unit',
-      condition: { formStateKey: 'maintenance_type_id', value: null, invert: true },
       input: 'optionButtons',
       optionButtonOptions: [
-        { key: 'dist', label: distanceUnit as string },
+        { key: 'dist', label: distanceUnit },
         { key: 'weeks', label: 'Weeks' },
         { key: 'months', label: 'Months' },
         { key: 'years', label: 'Years' },
@@ -55,6 +99,10 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       label: `Odometer (${distanceUnit})`,
       keyboardType: 'numeric',
     },
+    date: {
+      label: 'Date',
+      input: 'date',
+    },
     notes: {
       label: 'Notes',
       textAreaOptions: {
@@ -63,9 +111,20 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       },
     },
   };
+  const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
+    if (key === 'date') {
+      if (Object.hasOwn(row, 'date')) {
+        const row_date = row[key] as string;
+        state[key] = new Date(row_date);
+      } else {
+        state[key] = new Date();
+      }
+    } else if (typeof row[key] === 'number') {
+      state[key] = row[key].toString();
+    } else {
+      state[key] = row[key] || '';
+    }
 
-  const [formState, setFormState] = useState(() => Object.keys(formStateGenerator).reduce((state, key) => {
-    state[key] = row[key] || '';
     return state;
   }, {}) as Record<string, string>);
 
@@ -77,26 +136,26 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
 
   const store = useStore();
   const saveFunction = () => {
-    let maintenance_type_id = formState.maintenance_type_id;
-    if (formState.maintenance_type_id === 'new') {
-      const newType = {
-        name: formState.new_maintenance_type,
-      };
-      maintenance_type_id = store.addRow(tables.maintenance_types, newType);
+    const newRow = {
+      type: undefined,
+      date: undefined,
+      interval: convertIntervalForStorage(formState.interval, formState.interval_unit, distanceUnit === 'Kilometers'),
+      interval_unit: formState.interval_unit,
+      cost: convertIntervalForStorage(formState.cost, 'money', false),
+      odometer: convertIntervalForStorage(formState.odometer, 'dist', distanceUnit === 'Kilometers'),
+      notes: formState.notes,
+      car_id: props.route.params.car_id,
+    };
+    if (formState.new_entry) {
+      newRow.type = formState.type_custom;
+    } else if (typeof formState.type === 'object') {
+      const type_dropdown = formState.type as { value: string };
+      newRow.type = type_dropdown.value;
+    } else {
+      newRow.type = formState.type;
     }
-    const newRow = Object.keys(formStateGenerator).filter((key) => !([
-      'maintenance_type_id',
-      'new_maintenance_type',
-      'interval',
-      'intervalUnit',
-    ].includes(key)),
-    ).reduce((state, key) => {
-      state[key] = formState[key];
-      return state;
-    }, {} as { odometer: string, maintenance_type_id: string, car_id: string });
-    newRow.maintenance_type_id = maintenance_type_id;
-    newRow.car_id = props.route.params.car_id;
-    newRow.odometer = convertIntervalForStorage(newRow.odometer, 'dist', distanceUnit as 'Miles' | 'Kilometers');
+    const new_date = new Date(formState.date);
+    newRow.date = new_date.toISOString().split('T')[0];
     return newRow;
   };
 
@@ -132,7 +191,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
   return (
     <KeyboardAvoidingView style={ pageStyles.container }>
       <ScrollView>
-        <Form formState={ formState } formMetaData={ formStateGenerator } onFormStateChange={ (key, value) => setFormState(prev => ({ ...prev, [key]: value })) } />
+        <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key, value) => setFormState(prev => ({ ...prev, [key]: value })) } />
         <View style={ pageStyles.view }>
           {
             !isNewRecord &&

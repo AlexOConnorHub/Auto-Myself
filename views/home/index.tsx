@@ -3,12 +3,11 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Index from './cars';
 import EditCar from './cars/edit';
 import EditRecord from './records/edit';
-// import { MaintenanceRecordList } from './records';
-// import { MaintenanceRecordForm } from './records/edit';
 import Records from './records';
 import { useTheme } from '@react-navigation/native';
+import { HomeStackParamList } from '../../App';
 
-const Stack = createStackNavigator();
+const Stack = createStackNavigator<HomeStackParamList>();
 
 export default function Home(): React.ReactElement {
   const theme = useTheme();

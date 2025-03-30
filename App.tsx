@@ -11,6 +11,7 @@ import { NavigationContainer, StatusBar, Ionicons } from './components/elements'
 import { setupDatabase } from './database/database';
 import Home from './views/home';
 import Settings from './views/settings';
+import { NavigatorScreenParams, ParamListBase } from '@react-navigation/native';
 
 // import { sync } from './database/synchronize';
 // import { supabase } from './helpers/supabase';
@@ -28,6 +29,18 @@ import Settings from './views/settings';
 //     supabase.auth.stopAutoRefresh()
 //   }
 // })
+
+export interface TabParamList extends ParamListBase {
+  Home: NavigatorScreenParams<HomeStackParamList>;
+  Settings: undefined;
+};
+
+export interface HomeStackParamList extends ParamListBase {
+  Index: undefined;
+  EditCar: undefined;
+  Records: undefined;
+  EditRecord: undefined;
+};
 
 const store = createStore();
 const Tab = createBottomTabNavigator();

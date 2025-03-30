@@ -1,7 +1,9 @@
 import React from 'react';
-import { Dropdown, Ionicons, Pressable, Text, TextInput, View } from './elements';
-import { KeyboardType, StyleSheet } from 'react-native';
+import { DateTimePicker, Dropdown, Ionicons, Pressable, Text, TextInput, View } from './elements';
+import { KeyboardType, Platform, StyleSheet } from 'react-native';
 import { OptionButtons } from './optionButtons';
+import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
+import { useTheme } from '@react-navigation/native';
 
 interface formStateGeneratorType {
   label: string;
@@ -11,7 +13,7 @@ interface formStateGeneratorType {
   keyboardType?: KeyboardType;
   condition?: { formStateKey: string; value: string; invert?: boolean; };
   disable?: { disable: boolean; label: string; };
-  input?: 'dropdown' | 'text' | 'optionButtons' | 'toggle';
+  input?: 'dropdown' | 'text' | 'optionButtons' | 'toggle' | 'date';
   optionButtonOptions?: { key: string; label: string; }[];
   textAreaOptions?: { multiline: boolean; numberOfLines: number; };
   dropdownData?: { label: string; value: string; }[];
@@ -38,6 +40,7 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
         return Object.hasOwn(element, 'hidden') ? !element.hidden : true;
       }).map((key) => {
         const element = formMetaData[key] as formStateGeneratorType;
+        const theme = useTheme();
         return (
           <View key={ key } style={ pageStyles.formElementInputSection }>
             {
@@ -86,17 +89,42 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
                           } { element.toggleLabel }
                         </Text>
                       </Pressable> :
-                    // else
-                      <TextInput
-                        value={ formState[key] }
-                        onChangeText={(newValue) => {
-                          onFormStateChange(key, newValue);
-                        }}
-                        keyboardType={ element.keyboardType || 'default' }
-                        multiline={ element.textAreaOptions?.multiline || false }
-                        numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
-                        style={ pageStyles.textInput }
-                      />
+                      (element.input === 'date') ? (
+                        (Platform.OS === 'ios') ?
+                          <DateTimePicker
+                            mode='date'
+                            value={ new Date(formState[key]) }
+                            display='compact'
+                            onChange={(event, date) => {
+                              onFormStateChange(key, date);
+                            }}
+                          /> : // android
+                          <Pressable
+                            style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
+                            onPress={ () => DateTimePickerAndroid.open({
+                              mode: 'date',
+                              value: new Date(formState[key]),
+                              display: 'spinner',
+                              onChange: (event, date) => {
+                                onFormStateChange(key, date);
+                              },
+                            }) }>
+                            <Text style={ pageStyles.toggleText }>
+                              { formState[key] instanceof Date ? formState[key].toISOString().split('T')[0] : formState[key] }
+                            </Text>
+                          </Pressable>
+                      ) :
+                      // else
+                        <TextInput
+                          value={ formState[key] }
+                          onChangeText={(newValue) => {
+                            onFormStateChange(key, newValue);
+                          }}
+                          keyboardType={ element.keyboardType || 'default' }
+                          multiline={ element.textAreaOptions?.multiline || false }
+                          numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
+                          style={ pageStyles.textInput }
+                        />
             }
           </View>
         );
@@ -107,6 +135,10 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
 }
 
 const pageStyles = StyleSheet.create({
+  datePickerAndroid: {
+    alignSelf: 'stretch',
+    textAlign: 'center',
+  },
   dropdown: {
     marginVertical: 5,
   },
