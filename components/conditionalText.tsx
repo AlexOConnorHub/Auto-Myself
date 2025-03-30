@@ -5,7 +5,7 @@ export default function ConditionalText(props): React.ReactElement {
   if (!props.condition) {
     return null;
   }
-  const localProps = Object.assign({}, props);
+  const localProps = { ...props };
   delete localProps.condition;
   return (
     <Text { ...localProps }>

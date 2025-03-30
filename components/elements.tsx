@@ -6,7 +6,6 @@ import {
 } from '@expo/vector-icons';
 import { NavigationContainer as NavigationContainerPkg, useTheme } from '@react-navigation/native';
 import {
-  // Button as ButtonPkg,
   FlatList as FlatListPkg,
   KeyboardAvoidingView as KeyboardAvoidingViewPkg,
   Modal as ModalPkg,
@@ -24,15 +23,6 @@ import React from 'react';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useCell } from 'tinybase/ui-react';
 import { tables } from '../database/schema';
-
-// export function Button(props: React.ComponentProps<typeof ButtonPkg>): React.ReactElement {
-//   const theme = useTheme();
-//   return (
-//     <ButtonPkg color={ theme.colors.primary } { ...props }>
-//       { props.children }
-//     </ButtonPkg>
-//   );
-// }
 
 export function DateTimePicker(props): React.ReactElement {
   const theme = useTheme();

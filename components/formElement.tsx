@@ -7,14 +7,14 @@ export default function FormElement(props): React.ReactElement {
     <View
       {...props.viewProps}
       style={
-        props.viewProps && props.viewProps.style
+        props.viewProps?.style
           ? [pageStyles.formElementInputSection, props.viewProps.style]
           : pageStyles.formElementInputSection
       }>
       <Text
         {...props.textProps}
         style={
-          props.textProps && props.textProps.style
+          props.textProps?.style
             ? [pageStyles.formElementText, props.textProps.style]
             : pageStyles.formElementText
         }>

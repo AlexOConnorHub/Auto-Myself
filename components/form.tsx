@@ -5,7 +5,7 @@ import { OptionButtons } from './optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from '@react-navigation/native';
 
-interface formStateGeneratorType {
+interface FormStateGeneratorType {
   label: string;
   toggleLabel?: string;
   value: string;
@@ -121,7 +121,7 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
         }
         return Object.hasOwn(element, 'hidden') ? !element.hidden : true;
       }).map((key) => {
-        const element = formMetaData[key] as formStateGeneratorType;
+        const element = formMetaData[key] as FormStateGeneratorType;
         return (
           <View key={ key } style={ pageStyles.formElementInputSection }>
             {
