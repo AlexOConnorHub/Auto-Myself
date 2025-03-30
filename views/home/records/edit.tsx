@@ -136,13 +136,16 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
 
   const store = useStore();
   const saveFunction = () => {
+    const formatNumber = (input) => {
+      return Number(input.replace(/\D/, ''));
+    };
     const newRow = {
       type: undefined,
       date: undefined,
-      interval: convertIntervalForStorage(formState.interval, formState.interval_unit, distanceUnit === 'Kilometers'),
+      interval: formatNumber(formState.interval),
       interval_unit: formState.interval_unit,
-      cost: convertIntervalForStorage(formState.cost, 'money', false),
-      odometer: convertIntervalForStorage(formState.odometer, 'dist', distanceUnit === 'Kilometers'),
+      cost: formatNumber(formState.cost),
+      odometer: formatNumber(formState.odometer),
       notes: formState.notes,
       car_id: props.route.params.car_id,
     };
