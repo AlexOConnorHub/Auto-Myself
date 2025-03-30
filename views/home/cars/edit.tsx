@@ -2,8 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Keyboard, Alert } from 'react-native';
 import { Pressable, View, Text, ScrollView, KeyboardAvoidingView } from '../../../components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { convertIntervalForStorage } from '../../../helpers/functions';
-import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
+import { useAddRowCallback, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { tables } from '../../../database/schema';
 import Form from '../../../components/form';
@@ -12,7 +11,6 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; } } }>): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-  const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
@@ -72,7 +70,6 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       },
     },
     manual_entry: {
-      label: undefined,
       input: 'toggle',
       toggleLabel: 'Enter Manually',
       disable: {
@@ -163,33 +160,28 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
 
   const store = useStore();
   const saveFunction = () => {
-    const newRow = Object.keys(formMetaData).filter((key) => [
-      'nickname',
-      'year',
-      'make',
-      'make_id',
-      'model',
-      'model_id',
-      'vin',
-      'lpn',
-      // 'annualUsage',
-    ].includes(key)).reduce((state, key) => {
-      state[key] = formState[key];
-      return state;
-    }, {} as Record<string, string>);
+    const newRow = {
+      nickname: formState.nickname,
+      year: formState.year,
+      make: formState.make.toUpperCase(),
+      make_id: formState.make_id,
+      model: formState.model.toUpperCase(),
+      model_id: formState.model_id,
+      vin: formState.vin,
+      lpn: formState.lpn,
+      notes: formState.notes,
+      // annualUsage: formState.annualUsage,
+    };
 
-    newRow.make = newRow.make.toUpperCase();
-    newRow.model = newRow.model.toUpperCase();
-    if (typeof newRow.make_id === 'object') {
-      const make_obj = newRow.make_id as { value: string };
+    if (typeof formState.make_id === 'object') {
+      const make_obj = formState.make_id as { value: string };
       newRow.make_id = make_obj.value;
     }
-    if (typeof newRow.model_id === 'object') {
-      const model_obj = newRow.model_id as { value: string };
+    if (typeof formState.model_id === 'object') {
+      const model_obj = formState.model_id as { value: string };
       newRow.model_id = model_obj.value;
-    }
+    };
 
-    newRow.annualUsage = convertIntervalForStorage(newRow.annualUsage, 'dist', distanceUnit as 'Miles' | 'Kilometers');
     return newRow;
   };
 

@@ -1,17 +1,15 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, Pressable } from '../../../components/elements';
-import { convertIntervalForDisplay } from '../../../helpers/functions';
-import { ParamListBase, useNavigation, useTheme } from '@react-navigation/native';
+import { Pressable } from '../../../components/elements';
+import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { useCell, useRow } from 'tinybase/ui-react';
+import { useRow } from 'tinybase/ui-react';
 import { tables } from '../../../database/schema';
+import ConditionalText from '../../../components/conditionalText';
 
 export default function Card(props): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-  const row = useRow(tables.maintenance_records, props.record.id);
-  const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
-  const theme = useTheme();
+  const row = useRow(tables.maintenance_records, props.record.id) as Record<string, string | number>;
 
   const onPress = () => {
     navigation.navigate('EditRecord', { id: props.record.id, car_id: row.car_id });
@@ -19,18 +17,9 @@ export default function Card(props): React.ReactElement {
 
   return (
     <Pressable style={ pageStyles.container } onPress={ onPress.bind(this) }>
-      <View style={{ ...pageStyles.row, backgroundColor: theme.colors.primary }}>
-        <Text style={ pageStyles.headerText }>{ row.name }</Text>
-        <Text style={ pageStyles.subText }>
-          { convertIntervalForDisplay(row.interval, row.intervalUnit, distanceUnit as 'Miles' | 'Kilometers') } { row.intervalUnit === 'dist' ? distanceUnit : row.intervalUnit }
-        </Text>
-      </View>
-      <Text style={[ pageStyles.row, pageStyles.mainText, { backgroundColor: theme.colors.primary } ]}>{ row.notes }</Text>
-      <View style={[ pageStyles.row, { backgroundColor: theme.colors.primary } ]}>
-        <Text style={ pageStyles.subText }>{ row.date }</Text>
-        <Text style={ pageStyles.subText }>Odometer: { row.odometer }</Text>
-        <Text style={ pageStyles.subText }>Cost: { row.cost }</Text>
-      </View>
+      <ConditionalText condition={ row.type }style={ pageStyles.headerText }>{ row.type }</ConditionalText>
+      <ConditionalText condition={ row.date }style={ pageStyles.subText }>{ row.date }</ConditionalText>
+      <ConditionalText condition={ row.odometer }style={ pageStyles.subText }>Odometer: { row.odometer }</ConditionalText>
     </Pressable>
   );
 }
@@ -38,6 +27,7 @@ export default function Card(props): React.ReactElement {
 const pageStyles = StyleSheet.create({
   container: {
     paddingVertical: 5,
+    paddingHorizontal: 10,
     marginVertical: 10,
     borderRadius: 12,
     width: '95%',
@@ -55,6 +45,5 @@ const pageStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginHorizontal: 10,
   },
 });

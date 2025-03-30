@@ -17,6 +17,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-native-community/netinfo": "11.4.1",
     "@react-navigation/bottom-tabs": "^6.2.0",
+    "@react-navigation/native-stack": "^6.0.14",
     "@react-navigation/native": "^6.0.14",
     "@react-navigation/stack": "^6.3.18",
     "@supabase/supabase-js": "^2.39.3",
@@ -34,7 +35,8 @@
     "react-native-screens": "~4.4.0",
     "react-native-url-polyfill": "^2.0.0",
     "tinybase": "^5.4.7",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "@react-native-community/datetimepicker": "8.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

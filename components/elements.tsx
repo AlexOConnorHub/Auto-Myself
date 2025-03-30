@@ -18,6 +18,7 @@ import {
   TextInput as TextInputPkg,
   View as ViewPkg,
 } from 'react-native';
+import DateTimePickerPkg from '@react-native-community/datetimepicker';
 import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
 import React from 'react';
 import { useHeaderHeight } from '@react-navigation/elements';
@@ -32,6 +33,18 @@ import { tables } from '../database/schema';
 //     </ButtonPkg>
 //   );
 // }
+
+export function DateTimePicker(props): React.ReactElement {
+  const theme = useTheme();
+  return (
+    <DateTimePickerPkg
+      themeVariant={ theme.dark ? 'dark' : 'light' }
+      textColor={ theme.colors.text }
+      accentColor={ theme.colors.border }
+      { ...props }
+    />
+  );
+}
 
 export function Dropdown(props: React.ComponentProps<typeof DropdownPkg>): React.ReactElement {
   const theme = useTheme();
@@ -116,8 +129,8 @@ export function NavigationContainer(props: React.ComponentProps<typeof Navigatio
     background: '#E8E8E8',
     secondary: '#000000',
     primary: '#B18234',
-    border: '#A3A3A3',
-    card: '#A3A3A3',
+    border: '#D0D0DF',
+    card: '#D0D0DF',
     text: '#000000',
   } : {
     notification: '#282A3A',
