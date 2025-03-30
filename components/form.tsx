@@ -19,6 +19,88 @@ interface formStateGeneratorType {
   dropdownData?: { label: string; value: string; }[];
 };
 
+const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) => {
+  const theme = useTheme();
+  console.log(formStateKey);
+  console.log(element);
+  console.log(formState);
+  switch (element.input) {
+    case 'dropdown':
+      return <Dropdown
+        value={ formState[`${formStateKey}_id`] || formState[formStateKey] }
+        onChange={(newValue) => {
+          onFormStateChange(formStateKey, newValue);
+        }}
+        data={ element.dropdownData }
+        style={ pageStyles.dropdown }
+        selectedTextStyle={ pageStyles.dropdownInput }
+        placeholderStyle={ pageStyles.dropdownInput }
+      />;
+    case 'optionButtons':
+      return <OptionButtons
+        value={ formState[formStateKey] }
+        onSelect={(newValue) => {
+          onFormStateChange(formStateKey, newValue);
+        }}
+        options={ element.optionButtonOptions }
+        direction="vertical"
+      />;
+    case 'toggle':
+      return <Pressable
+        style={ pageStyles.togglePressable }
+        onPress={() => {
+          onFormStateChange(formStateKey, !formState[formStateKey]);
+        }}
+      >
+        <Text style={ pageStyles.toggleText }>
+          {
+            formState[formStateKey] ?
+              <Ionicons size={15} name="checkmark-circle-outline"/> :
+              <Ionicons size={15} name="ellipse-outline"/>
+          } { element.toggleLabel }
+        </Text>
+      </Pressable>;
+    case 'date':
+      if (Platform.OS === 'ios') {
+        return <DateTimePicker
+          mode='date'
+          value={ new Date(formState[formStateKey]) }
+          display='compact'
+          onChange={(event, date) => {
+            onFormStateChange(formStateKey, date);
+          }}
+        />;
+      } else {
+        // android
+        return <Pressable
+          style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
+          onPress={ () => DateTimePickerAndroid.open({
+            mode: 'date',
+            value: new Date(formState[formStateKey]),
+            display: 'spinner',
+            onChange: (event, date) => {
+              onFormStateChange(formStateKey, date);
+            },
+          }) }>
+          <Text style={ pageStyles.toggleText }>
+            { formState[formStateKey] instanceof Date ? formState[formStateKey].toISOString().split('T')[0] : formState[formStateKey] }
+          </Text>
+        </Pressable>;
+      }
+    default:
+      return <TextInput
+        value={ formState[formStateKey] }
+        onChangeText={(newValue) => {
+          onFormStateChange(formStateKey, newValue);
+        }}
+        keyboardType={ element.keyboardType || 'default' }
+        multiline={ element.textAreaOptions?.multiline || false }
+        numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
+        style={ pageStyles.textInput }
+      />;
+  }
+};
+
 export default function Form({ formMetaData, formState, onFormStateChange }): React.ReactElement {
   return (
     <View>
@@ -40,7 +122,6 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
         return Object.hasOwn(element, 'hidden') ? !element.hidden : true;
       }).map((key) => {
         const element = formMetaData[key] as formStateGeneratorType;
-        const theme = useTheme();
         return (
           <View key={ key } style={ pageStyles.formElementInputSection }>
             {
@@ -54,77 +135,7 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
                 <Text style={ pageStyles.formElementText }>
                   { element.disable.label }
                 </Text> :
-                (element.input === 'dropdown') ?
-                  <Dropdown
-                    value={ formState[`${key}_id`] || formState[key] }
-                    onChange={(newValue) => {
-                      onFormStateChange(key, newValue);
-                    }}
-                    data={ element.dropdownData }
-                    style={ pageStyles.dropdown }
-                    selectedTextStyle={ pageStyles.dropdownInput }
-                    placeholderStyle={ pageStyles.dropdownInput }
-                  /> :
-                  (element.input === 'optionButtons') ?
-                    <OptionButtons
-                      value={ formState[key] }
-                      onSelect={(newValue) => {
-                        onFormStateChange(key, newValue);
-                      }}
-                      options={ element.optionButtonOptions }
-                      direction="vertical"
-                    /> :
-                    (element.input === 'toggle') ?
-                      <Pressable
-                        style={ pageStyles.togglePressable }
-                        onPress={() => {
-                          onFormStateChange(key, !formState[key]);
-                        }}
-                      >
-                        <Text style={ pageStyles.toggleText }>
-                          {
-                            formState[key] ?
-                              <Ionicons size={15} name="checkmark-circle-outline"/> :
-                              <Ionicons size={15} name="ellipse-outline"/>
-                          } { element.toggleLabel }
-                        </Text>
-                      </Pressable> :
-                      (element.input === 'date') ? (
-                        (Platform.OS === 'ios') ?
-                          <DateTimePicker
-                            mode='date'
-                            value={ new Date(formState[key]) }
-                            display='compact'
-                            onChange={(event, date) => {
-                              onFormStateChange(key, date);
-                            }}
-                          /> : // android
-                          <Pressable
-                            style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
-                            onPress={ () => DateTimePickerAndroid.open({
-                              mode: 'date',
-                              value: new Date(formState[key]),
-                              display: 'spinner',
-                              onChange: (event, date) => {
-                                onFormStateChange(key, date);
-                              },
-                            }) }>
-                            <Text style={ pageStyles.toggleText }>
-                              { formState[key] instanceof Date ? formState[key].toISOString().split('T')[0] : formState[key] }
-                            </Text>
-                          </Pressable>
-                      ) :
-                      // else
-                        <TextInput
-                          value={ formState[key] }
-                          onChangeText={(newValue) => {
-                            onFormStateChange(key, newValue);
-                          }}
-                          keyboardType={ element.keyboardType || 'default' }
-                          multiline={ element.textAreaOptions?.multiline || false }
-                          numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
-                          style={ pageStyles.textInput }
-                        />
+                <FormSegment element={ element } formStateKey={ key } formState={ formState } onFormStateChange={ onFormStateChange } />
             }
           </View>
         );
