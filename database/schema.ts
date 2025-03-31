@@ -31,18 +31,18 @@ export const schema = {
     'distance_unit': { 'type': 'string', 'default': 'Miles' },
     'theme': { 'type': 'string', 'default': 'dark' },
   },
-  'users': {
-    'name': { 'type': 'string' },
-    'created_at': { 'type': 'number' },
-    'updated_at': { 'type': 'number' },
-  },
+  // 'users': {
+  //   'name': { 'type': 'string' },
+  //   'created_at': { 'type': 'number' },
+  //   'updated_at': { 'type': 'number' },
+  // },
 };
 
 export const tables = {
   'cars': 'cars',
   'maintenance_records': 'maintenance_records',
-  'permissions': 'permissions',
+  // 'permissions': 'permissions',
   'settings': 'settings',
-  'users': 'users',
+  // 'users': 'users',
   'schema_version': 'schema_version',
 };
