@@ -28,7 +28,7 @@
     "expo-status-bar": "~2.0.1",
     "expo-system-ui": "~4.0.7",
     "react": "18.3.1",
-    "react-native": "0.76.7",
+    "react-native": "0.76.8",
     "react-native-element-dropdown": "^2.10.0",
     "react-native-get-random-values": "^1.9.0",
     "react-native-reanimated": "~3.16.1",
