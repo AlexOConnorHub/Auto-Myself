@@ -1,6 +1,6 @@
 # Auto Myself
 
-This is a mobile app written in React Native for taking control of vehicle maintenance.
+This is a Open-Source mobile app written with React Native utilizing Expo for taking control of vehicle maintainance.
 
 ## Build
 
