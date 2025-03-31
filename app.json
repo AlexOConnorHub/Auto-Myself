@@ -1,8 +1,8 @@
 {
   "expo": {
     "name": "Auto Myself",
-    "slug": "auto-myself",
-    "version": "1.0.2",
+    "slug": "MyCar-TotalControl",
+    "version": "1.1.0",
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon.png",
@@ -17,14 +17,14 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.automyself.ios"
+      "bundleIdentifier": "com.anonymous.MyCarTotalControl"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/transparent-background.png",
         "backgroundColor": "#A67729"
       },
-      "package": "com.automyself.android",
+      "package": "com.anonymous.MyCarTotalControl",
       "versionCode": 3
     },
     "web": {
