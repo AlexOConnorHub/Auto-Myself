@@ -1,8 +1,9 @@
 {
   "expo": {
-    "name": "MyCar-TotalControl",
+    "name": "Auto Myself",
     "slug": "MyCar-TotalControl",
-    "version": "1.0.2",
+    "version": "1.2.0",
+    "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon.png",
     "userInterfaceStyle": "light",
@@ -24,42 +25,25 @@
         "backgroundColor": "#A67729"
       },
       "package": "com.anonymous.MyCarTotalControl",
-      "versionCode": 3
+      "versionCode": 4
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "plugins": [
-      [
-        "expo-build-properties",
-        {
-          "android": {
-            "kotlinVersion": "1.8.10",
-            "compileSdkVersion": 33,
-            "targetSdkVersion": 33,
-            "packagingOptions": {
-              "pickFirst": [
-                "**/libc++_shared.so"
-              ]
-            }
-          },
-          "ios": {
-            "extraPods": [
-              {
-                "name": "simdjson",
-                "path": "../node_modules/@nozbe/simdjson",
-                "modular_headers": true
-              }
-            ]
-          }
-        }
-      ],
-      "@skam22/watermelondb-expo-plugin"
-    ],
     "extra": {
       "eas": {
         "projectId": "111d2a73-634d-4abf-b2d6-ec1aa4cb5fa3"
       }
-    }
+    },
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "auto-myself",
+          "organization": "alex-oconnor"
+        }
+      ]
+    ]
   }
 }
