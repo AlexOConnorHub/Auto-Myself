@@ -4,6 +4,7 @@ import { deleteAsync, documentDirectory, getInfoAsync } from 'expo-file-system';
 import { openDatabaseSync } from 'expo-sqlite';
 import { Store } from 'tinybase';
 import { tables } from './schema';
+import { captureEvent } from '@sentry/react-native';
 
 const migrateWatermelon = async (persister: ExpoSqlitePersister) => {
   const store = persister.getStore();
@@ -57,7 +58,7 @@ export async function setupDatabase(store: Store): Promise<void> {
       deleteAsync(watermelonDBFlie);
     }
   } catch (e) {
-    console.error(e);
+    captureEvent(e);
   }
 
   let current_schema_version = store.getCell(tables.schema_version, 'local', 'version') as number || 0;

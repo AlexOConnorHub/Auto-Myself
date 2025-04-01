@@ -40,7 +40,7 @@
         "@sentry/react-native/expo",
         {
           "url": "https://sentry.io/",
-          "project": "react-native",
+          "project": "auto-myself",
           "organization": "alex-oconnor"
         }
       ]
