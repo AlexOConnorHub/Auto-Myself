@@ -1,6 +1,7 @@
 import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
+import { feedbackIntegration, init, wrap } from '@sentry/react-native';
 import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import React, { useEffect, useState, StrictMode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -42,11 +43,24 @@ export interface HomeStackParamList extends ParamListBase {
   EditRecord: undefined;
 };
 
+init({
+  dsn: 'https://ec4adae5dfe85a00b368745227de8d66@o4509037304807424.ingest.us.sentry.io/4509037306707968',
+  integrations: [
+    feedbackIntegration({
+      formTitle: 'Provide Feedback',
+      submitButtonLabel: 'Send Feedback',
+      messageLabel: 'Feedback',
+      messagePlaceholder: 'What is your feedback?',
+      successMessageText: 'Thank you for your feedback!',
+    }),
+  ],
+});
+
 const store = createStore();
 const Tab = createBottomTabNavigator();
 
 preventAutoHideAsync();
-export default function App() {
+export default wrap(function App() {
   const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     setupDatabase(store).then(() => setInitializing(false));
@@ -95,4 +109,4 @@ export default function App() {
       </Provider>
     </StrictMode>
   );
-}
+});

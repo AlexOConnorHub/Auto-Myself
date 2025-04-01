@@ -34,6 +34,16 @@
       "eas": {
         "projectId": "111d2a73-634d-4abf-b2d6-ec1aa4cb5fa3"
       }
-    }
+    },
+    "plugins": [
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "auto-myself",
+          "organization": "alex-oconnor"
+        }
+      ]
+    ]
   }
 }

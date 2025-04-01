@@ -21,9 +21,6 @@ interface FormStateGeneratorType {
 
 const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) => {
   const theme = useTheme();
-  console.log(formStateKey);
-  console.log(element);
-  console.log(formState);
   switch (element.input) {
     case 'dropdown':
       return <Dropdown

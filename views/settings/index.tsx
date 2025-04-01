@@ -1,5 +1,5 @@
 import React from 'react';
-import { View } from '../../components/elements';
+import { View, Pressable, Text } from '../../components/elements';
 import { OptionButtons } from '../../components/optionButtons';
 import FormElement from '../../components/formElement';
 import { useCell, useSetCellCallback, useStore } from 'tinybase/ui-react';
@@ -8,6 +8,8 @@ import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { TabParamList, HomeStackParamList } from '../../App';
+import { showFeedbackWidget } from '@sentry/react-native';
+import { StyleSheet } from 'react-native';
 
 type AppStackNavigationProps = NativeStackNavigationProp<TabParamList & HomeStackParamList>;
 
@@ -78,6 +80,24 @@ export default function Settings(): React.JSX.Element {
           onSelect={ (newValue: string) => setTheme(newValue) }
         />
       </FormElement>
+      <FormElement>
+        <Pressable onPress={() => showFeedbackWidget()} style={ pageStyles.pressable }>
+          <Text style={ pageStyles.text }>
+            Provide Feedback
+          </Text>
+        </Pressable>
+      </FormElement>
     </View>
   );
 }
+
+const pageStyles = StyleSheet.create({
+  pressable: {
+    borderRadius: 5,
+    padding: 10,
+  },
+  text: {
+    fontSize: 18,
+    marginLeft: 10,
+  },
+});

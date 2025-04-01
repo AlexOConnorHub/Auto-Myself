@@ -4,11 +4,13 @@ import { deleteAsync, documentDirectory, getInfoAsync } from 'expo-file-system';
 import { openDatabaseSync } from 'expo-sqlite';
 import { Store } from 'tinybase';
 import { tables } from './schema';
+import { captureEvent } from '@sentry/react-native';
 
+const watermelonDBFile = 'mycars.db';
 const migrateWatermelon = async (persister: ExpoSqlitePersister) => {
   const store = persister.getStore();
 
-  const watermelonDB = openDatabaseSync('mycars.db', {}, documentDirectory);
+  const watermelonDB = openDatabaseSync(watermelonDBFile, {}, documentDirectory);
   const cars = watermelonDB.getAllSync('SELECT id, nickname, upper(make), model, year, vin, lpn, created_at, updated_at FROM cars;') as Record<string, string>[];
   const maintenance_records = watermelonDB.getAllSync(`SELECT R.car_id, R.odometer, R.notes, R.cost,
         DATE(ROUND(R.created_at / 1000), 'unixepoch') as date,
@@ -51,13 +53,13 @@ export async function setupDatabase(store: Store): Promise<void> {
   await persister.load();
 
   try {
-    const watermelonDBFlie = `${ documentDirectory }/mycar.db`;
-    if ((await getInfoAsync(watermelonDBFlie)).exists) {
+    const info = await getInfoAsync(`${ documentDirectory }${ watermelonDBFile }`);
+    if (info.exists) {
       await migrateWatermelon(persister);
-      deleteAsync(watermelonDBFlie);
+      deleteAsync(`${documentDirectory}${watermelonDBFile}`);
     }
   } catch (e) {
-    console.error(e);
+    captureEvent(e);
   }
 
   let current_schema_version = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
