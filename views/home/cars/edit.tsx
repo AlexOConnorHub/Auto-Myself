@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Keyboard, Alert } from 'react-native';
 import { Pressable, View, Text, ScrollView, KeyboardAvoidingView } from '../../../components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAddRowCallback, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
+import { useAddRowCallback, useDelRowCallback, useRow, useSetRowCallback, useStore, useTable } from 'tinybase/ui-react';
 import { ParamListBase, useNavigation } from '@react-navigation/native';
 import { tables } from '../../../database/schema';
 import Form from '../../../components/form';
 import { makes, models } from '../../../helpers/nhtsa';
 import { StackNavigationProp } from '@react-navigation/stack';
+import * as Clipboard from 'expo-clipboard';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; } } }>): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -80,7 +83,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     vin: {
       label: 'VIN',
     },
-    lpn: {
+    license_plate: {
       label: 'License Plate',
     },
     notes: {
@@ -95,7 +98,6 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     //   keyboardType: 'numeric',
     // },
   };
-
   const row = useRow(tables.cars, props.route.params.id) as Record<string, string>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
@@ -168,7 +170,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       model: formState.model.toUpperCase(),
       model_id: formState.model_id,
       vin: formState.vin,
-      lpn: formState.lpn,
+      license_plate: formState.license_plate,
       notes: formState.notes,
       // annualUsage: formState.annualUsage,
     };
@@ -213,6 +215,38 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       ],
     );
   };
+  const allRecords = useTable(tables.maintenance_records);
+  const recordsForExport = Object.keys(allRecords).filter((key) => allRecords[key].car_id === props.route.params.id).map((key) => {
+    return {
+      ...allRecords[key],
+      // maintenance_type: allRecords[key].maintenance_type,
+      // interval: allRecords[key].interval,
+      // interval_unit: allRecords[key].interval_unit,
+      // cost: allRecords[key].cost,
+      // odometer: allRecords[key].odometer,
+      // date: allRecords[key].date,
+      // notes: allRecords[key].notes,
+    };
+  });
+
+  const exportRecord = () => {
+    const final = JSON.stringify({
+      ...row,
+      records: recordsForExport,
+    }, null, 4);
+
+    const asyncFunc = async () => {
+      if (await Sharing.isAvailableAsync()) {
+        const fileLocation = `${FileSystem.cacheDirectory}export.json`;
+        await FileSystem.writeAsStringAsync(fileLocation, final, { encoding: FileSystem.EncodingType.UTF8 });
+        Sharing.shareAsync(fileLocation, { dialogTitle: 'Download File', mimeType: 'application/json' });
+      } else {
+        await Clipboard.setStringAsync(final);
+        Alert.alert('Exported', 'Data copied to clipboard. Please save to a file');
+      }
+    };
+    asyncFunc();
+  };
   return (
     <KeyboardAvoidingView>
       <ScrollView>
@@ -222,14 +256,24 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
         <View style={ pageStyles.view }>
           {
             !isNewCar &&
-            <Pressable
-              key='delete'
-              onPress={ confirmDelete.bind(this) }
-              style={[
-                pageStyles.pressable,
-              ]}>
-              <Text style={pageStyles.text}>Delete</Text>
-            </Pressable>
+            <>
+              <Pressable
+                key='delete'
+                onPress={ confirmDelete.bind(this) }
+                style={[
+                  pageStyles.pressable,
+                ]}>
+                <Text style={pageStyles.text}>Delete</Text>
+              </Pressable>
+              <Pressable
+                key='export'
+                onPress={ exportRecord }
+                style={[
+                  pageStyles.pressable,
+                ]}>
+                <Text style={pageStyles.text}>Export</Text>
+              </Pressable>
+            </>
           }
           <Pressable
             key='save'

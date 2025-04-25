@@ -2,7 +2,7 @@ import { createExpoSqlitePersister, ExpoSqlitePersister } from 'tinybase/persist
 import { migrations } from './migrations';
 import { deleteAsync, documentDirectory, getInfoAsync } from 'expo-file-system';
 import { openDatabaseSync } from 'expo-sqlite';
-import { Store } from 'tinybase';
+import { MergeableStore } from 'tinybase';
 import { tables } from './schema';
 import { captureEvent } from '@sentry/react-native';
 
@@ -31,22 +31,12 @@ const migrateWatermelon = async (persister: ExpoSqlitePersister) => {
   }
 };
 
-export async function setupDatabase(store: Store): Promise<void> {
+export async function setupDatabase(store: MergeableStore): Promise<void> {
   const db = openDatabaseSync('auto-myself.db');
 
   const persister = createExpoSqlitePersister(store, db, {
-    mode: 'tabular',
+    mode: 'json',
     autoLoadIntervalSeconds: 60,
-    tables: {
-      load: {
-        ...tables,
-        _schema_version: '_schema_version',
-      },
-      save: {
-        ...tables,
-        _schema_version: '_schema_version',
-      },
-    },
   },
   );
   await persister.load();

@@ -10,6 +10,12 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { TabParamList, HomeStackParamList } from '../../App';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { StyleSheet } from 'react-native';
+import { getDocumentAsync } from 'expo-document-picker';
+import { readAsStringAsync } from 'expo-file-system';
+import * as Clipboard from 'expo-clipboard';
+import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
+import { createMergeableStore } from 'tinybase/mergeable-store';
 
 type AppStackNavigationProps = NativeStackNavigationProp<TabParamList & HomeStackParamList>;
 
@@ -26,7 +32,6 @@ export default function Settings(): React.JSX.Element {
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
   const setTheme = useSetCellCallback(tables.settings, 'local', 'theme', (newValue: string) => newValue);
   const store = useStore();
-
 
   const convertValues = (newDistance) => {
     setDistanceUnit(newDistance);
@@ -56,6 +61,73 @@ export default function Settings(): React.JSX.Element {
         },
       ],
     );
+  };
+
+  const exportJson = () => {
+    const storeJson = store.getJson();
+    const today = new Date();
+    const asyncFunc = async () => {
+      if (await Sharing.isAvailableAsync()) {
+        const fileLocation = `${FileSystem.cacheDirectory}AutoMyself_Export_${today.toISOString().slice(0, 19)}.json`;
+        await FileSystem.writeAsStringAsync(fileLocation, storeJson, { encoding: FileSystem.EncodingType.UTF8 });
+        Sharing.shareAsync(fileLocation, { dialogTitle: 'Download File', mimeType: 'application/json' });
+      } else {
+        await Clipboard.setStringAsync(storeJson);
+        Alert.alert('Exported', 'Data copied to clipboard. Please save to a file');
+      }
+    };
+    asyncFunc();
+  };
+
+  const importJson = () => {
+    const asyncFunc = async () => {
+      const data = await getDocumentAsync({
+        type: 'application/json',
+        copyToCacheDirectory: true,
+        multiple: true,
+      });
+      // console.log(data);
+
+      for (const asset of data.assets) {
+        const to_import = await readAsStringAsync(asset.uri);
+        console.log(to_import);
+        const tmp_store = createMergeableStore();
+        tmp_store.setJson(to_import);
+        console.log(tmp_store.getJson());
+        store.merge(tmp_store);
+      }
+    };
+    asyncFunc();
+
+    console.log(store.isMergeable());
+    return 1;
+  };
+
+  const importFile = () => {
+    const asyncFunc = async () => {
+      const data = await getDocumentAsync({
+        type: 'application/json',
+        copyToCacheDirectory: true,
+        multiple: true,
+      });
+      for (const asset of data.assets) {
+        const to_import = JSON.parse(await readAsStringAsync(asset.uri));
+        console.log(JSON.stringify(to_import));
+        const car_id = store.addRow(tables.cars, Object.keys(to_import)
+          .filter(k => k !== 'records')
+          .reduce((o, k) => {
+            return {
+              ...o,
+              [k]: to_import[k],
+            };
+          }, {}),
+        );
+        for (const maintenance_record of to_import.records) {
+          store.addRow(tables.maintenance_records, { ...maintenance_record, car_id: car_id });
+        }
+      }
+    };
+    asyncFunc();
   };
 
   return (
@@ -88,6 +160,18 @@ export default function Settings(): React.JSX.Element {
             Provide Feedback
           </Text>
         </Pressable>
+        <Pressable onPress={ importJson }
+          style={ pageStyles.pressable }>
+          <Text style={ pageStyles.text }>
+            Import
+          </Text>
+        </Pressable>
+        <Pressable onPress={ exportJson }
+          style={ pageStyles.pressable }>
+          <Text style={ pageStyles.text }>
+            Export
+          </Text>
+        </Pressable>
       </FormElement>
     </View>
   );
@@ -97,6 +181,7 @@ const pageStyles = StyleSheet.create({
   pressable: {
     borderRadius: 5,
     padding: 10,
+    marginBottom: 15,
   },
   text: {
     fontSize: 18,

@@ -13,6 +13,7 @@ import { setupDatabase } from './database/database';
 import Home from './views/home';
 import Settings from './views/settings';
 import { NavigatorScreenParams, ParamListBase } from '@react-navigation/native';
+import { createMergeableStore } from 'tinybase/mergeable-store';
 
 // import { sync } from './database/synchronize';
 // import { supabase } from './helpers/supabase';
@@ -56,7 +57,7 @@ init({
   ],
 });
 
-const store = createStore();
+const store = createMergeableStore();
 const Tab = createBottomTabNavigator();
 
 preventAutoHideAsync();

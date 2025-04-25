@@ -37,7 +37,11 @@
     "react-native-screens": "~4.4.0",
     "react-native-url-polyfill": "^2.0.0",
     "tinybase": "^5.4.7",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "expo-clipboard": "~7.0.1",
+    "expo-document-picker": "~13.0.3",
+    "expo-file-system": "~18.0.12",
+    "expo-sharing": "~13.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
