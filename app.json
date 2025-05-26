@@ -28,7 +28,7 @@
         "backgroundColor": "#A67729"
       },
       "package": "com.anonymous.MyCarTotalControl",
-      "versionCode": 4
+      "versionCode": 5
     },
     "web": {
       "favicon": "./assets/favicon.png"
