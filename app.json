@@ -5,13 +5,8 @@
     "version": "1.2.0",
     "newArchEnabled": true,
     "orientation": "portrait",
-    "icon": "./assets/app-icon.png",
+    "icon": "./assets/app-icon-android.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/transparent-background.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#A67729"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
@@ -20,13 +15,14 @@
       "bundleIdentifier": "com.automyself.ios",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false
+      },
+      "icon": {
+        "dark": "./assets/app-icon-ios.png",
+        "light": "./assets/app-icon-ios.png",
+        "tinted": "./assets/app-icon-ios.png"
       }
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/transparent-background.png",
-        "backgroundColor": "#A67729"
-      },
       "package": "com.anonymous.MyCarTotalControl",
       "versionCode": 5
     },
@@ -53,7 +49,17 @@
           "iCloudContainerEnvironment": "Production"
         }
       ],
-      "expo-sqlite"
+      [
+        "expo-sqlite"
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#B18234",
+          "image": "./assets/splash.png",
+          "resizeMode": "contain"
+        }
+      ]
     ]
   }
 }
