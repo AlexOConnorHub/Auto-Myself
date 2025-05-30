@@ -20,10 +20,6 @@
       }
     },
     "android": {
-      "adaptiveIcon": {
-        "backgroundColor": "#B18234",
-        "foregroundImage": "./assets/splash.png"
-      },
       "package": "com.anonymous.MyCarTotalControl",
       "versionCode": 5
     },
