@@ -5,24 +5,24 @@
     "version": "1.2.0",
     "newArchEnabled": true,
     "orientation": "portrait",
-    "icon": "./assets/app-icon.png",
+    "icon": "./assets/app-icon-android.png",
     "userInterfaceStyle": "light",
-    "splash": {
-      "image": "./assets/transparent-background.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#A67729"
-    },
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.MyCarTotalControl"
+      "bundleIdentifier": "com.anonymous.MyCarTotalControl",
+      "icon": {
+        "dark": "./assets/app-icon-ios.png",
+        "light": "./assets/app-icon-ios.png",
+        "tinted": "./assets/app-icon-ios.png"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/transparent-background.png",
-        "backgroundColor": "#A67729"
+        "backgroundColor": "#B18234",
+        "foregroundImage": "./assets/splash.png"
       },
       "package": "com.anonymous.MyCarTotalControl",
       "versionCode": 5
@@ -42,6 +42,14 @@
           "url": "https://sentry.io/",
           "project": "auto-myself",
           "organization": "alex-oconnor"
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#B18234",
+          "image": "./assets/splash.png",
+          "resizeMode": "contain"
         }
       ]
     ]
