@@ -1,5 +1,7 @@
 import React from 'react';
-import { createStackNavigator } from '@react-navigation/stack';
+// import { createStackNavigator } from '@react-navigation/stack';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+
 import Index from './cars';
 import EditCar from './cars/edit';
 import EditRecord from './records/edit';
@@ -7,7 +9,7 @@ import Records from './records';
 import { useTheme } from '@react-navigation/native';
 import { HomeStackParamList } from '../../App';
 
-const Stack = createStackNavigator<HomeStackParamList>();
+const Stack = createNativeStackNavigator<HomeStackParamList>();
 
 export default function Home(): React.ReactElement {
   const theme = useTheme();
