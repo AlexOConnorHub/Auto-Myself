@@ -6,7 +6,6 @@ import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import React, { useEffect, useState, StrictMode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStore } from 'tinybase/store';
 import { Provider } from 'tinybase/ui-react';
 import { NavigationContainer, StatusBar, Ionicons } from './components/elements';
 import { setupDatabase } from './database/database';
