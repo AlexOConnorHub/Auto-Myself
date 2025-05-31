@@ -87,6 +87,10 @@ export default function Settings(): React.JSX.Element {
         multiple: true,
       });
 
+      if (data.canceled) {
+        return;
+      }
+
       for (const asset of data.assets) {
         const toImport: object = JSON.parse(await readAsStringAsync(asset.uri));
         let importFunction: (data: object) => void;
