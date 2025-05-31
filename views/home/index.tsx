@@ -1,13 +1,11 @@
 import React from 'react';
-// import { createStackNavigator } from '@react-navigation/stack';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
 import Index from './cars';
 import EditCar from './cars/edit';
 import EditRecord from './records/edit';
 import Records from './records';
 import { useTheme } from '@react-navigation/native';
-import { HomeStackParamList } from '../../App';
+import { HomeStackParamList } from '../../helpers/types';
 
 const Stack = createNativeStackNavigator<HomeStackParamList>();
 

@@ -7,7 +7,7 @@ import { tables } from '../../database/schema';
 import { Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { TabParamList, HomeStackParamList } from '../../App';
+import { TabParamList, HomeStackParamList } from '../../helpers/types';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { StyleSheet } from 'react-native';
 import { getDocumentAsync } from 'expo-document-picker';
