@@ -1,4 +1,4 @@
-import 'react-native-gesture-handler';
+// import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import { feedbackIntegration, init, wrap } from '@sentry/react-native';
@@ -6,13 +6,12 @@ import { hide, preventAutoHideAsync } from 'expo-splash-screen';
 import React, { useEffect, useState, StrictMode } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { createStore } from 'tinybase/store';
 import { Provider } from 'tinybase/ui-react';
 import { NavigationContainer, StatusBar, Ionicons } from './components/elements';
 import { setupDatabase } from './database/database';
 import Home from './views/home';
 import Settings from './views/settings';
-import { NavigatorScreenParams, ParamListBase } from '@react-navigation/native';
+import { createMergeableStore } from 'tinybase/mergeable-store';
 
 // import { sync } from './database/synchronize';
 // import { supabase } from './helpers/supabase';
@@ -31,18 +30,6 @@ import { NavigatorScreenParams, ParamListBase } from '@react-navigation/native';
 //   }
 // })
 
-export interface TabParamList extends ParamListBase {
-  Home: NavigatorScreenParams<HomeStackParamList>;
-  Settings: undefined;
-};
-
-export interface HomeStackParamList extends ParamListBase {
-  Index: undefined;
-  EditCar: undefined;
-  Records: undefined;
-  EditRecord: undefined;
-};
-
 init({
   dsn: 'https://ec4adae5dfe85a00b368745227de8d66@o4509037304807424.ingest.us.sentry.io/4509037306707968',
   integrations: [
@@ -56,7 +43,7 @@ init({
   ],
 });
 
-const store = createStore();
+const store = createMergeableStore();
 const Tab = createBottomTabNavigator();
 
 preventAutoHideAsync();

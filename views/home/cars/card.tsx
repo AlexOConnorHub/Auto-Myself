@@ -21,8 +21,8 @@ export default function Card({ car }): React.ReactElement {
       <ConditionalText condition={ car.vin } style={ [pageStyles.data, pageStyles.cardRow ] }>
         VIN: { car.vin }
       </ConditionalText>
-      <ConditionalText condition={ car.lpn } style={ [pageStyles.data, pageStyles.cardRow ] }>
-        License Plate: { car.lpn }
+      <ConditionalText condition={ car.license_plate } style={ [pageStyles.data, pageStyles.cardRow ] }>
+        License Plate: { car.license_plate }
       </ConditionalText>
     </Pressable>
   );
