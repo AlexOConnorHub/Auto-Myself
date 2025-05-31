@@ -12,7 +12,10 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.anonymous.MyCarTotalControl",
+      "bundleIdentifier": "com.automyself.ios",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      },
       "icon": {
         "dark": "./assets/app-icon-ios.png",
         "light": "./assets/app-icon-ios.png",
@@ -39,6 +42,15 @@
           "project": "auto-myself",
           "organization": "alex-oconnor"
         }
+      ],
+      [
+        "expo-document-picker",
+        {
+          "iCloudContainerEnvironment": "Production"
+        }
+      ],
+      [
+        "expo-sqlite"
       ],
       [
         "expo-splash-screen",

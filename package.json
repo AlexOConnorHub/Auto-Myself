@@ -23,9 +23,9 @@
     "@react-navigation/stack": "^6.3.18",
     "@supabase/supabase-js": "^2.49.4",
     "@sentry/react-native": "~6.10.0",
-    "expo": "^52.0.0",
-    "expo-splash-screen": "^0.29.21",
-    "expo-sqlite": "~15.1.0",
+    "expo": "~52.0.46",
+    "expo-splash-screen": "~0.29.24",
+    "expo-sqlite": "~15.1.4",
     "expo-status-bar": "~2.0.1",
     "expo-system-ui": "~4.0.7",
     "react": "18.3.1",
@@ -37,7 +37,11 @@
     "react-native-screens": "~4.4.0",
     "react-native-url-polyfill": "^2.0.0",
     "tinybase": "^5.4.7",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "expo-clipboard": "~7.0.1",
+    "expo-document-picker": "~13.0.3",
+    "expo-file-system": "~18.0.12",
+    "expo-sharing": "~13.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

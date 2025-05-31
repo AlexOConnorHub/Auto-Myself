@@ -80,7 +80,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     vin: {
       label: 'VIN',
     },
-    lpn: {
+    license_plate: {
       label: 'License Plate',
     },
     notes: {
@@ -95,7 +95,6 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     //   keyboardType: 'numeric',
     // },
   };
-
   const row = useRow(tables.cars, props.route.params.id) as Record<string, string>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
@@ -122,7 +121,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
 
   useEffect(() => {
     if (!isNewCar) {
-      navigation.setOptions({ title: (row.nickname || 'Edit Car') });
+      navigation.setOptions({ title: (row.nickname || 'Edit Vehicle') });
     }
   }, [row.nickname]);
 
@@ -168,7 +167,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       model: formState.model.toUpperCase(),
       model_id: formState.model_id,
       vin: formState.vin,
-      lpn: formState.lpn,
+      license_plate: formState.license_plate,
       notes: formState.notes,
       // annualUsage: formState.annualUsage,
     };
@@ -198,8 +197,8 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
   const remove = useDelRowCallback(tables.cars, props.route.params.id, store, () => goBack(), []);
   const confirmDelete = () => {
     return Alert.alert(
-      'Delete Car',
-      'Are you sure you want to delete this car?',
+      'Delete Vehicle',
+      'Are you sure you want to delete this vehicle?',
       [
         {
           text: 'Yes',
@@ -213,6 +212,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       ],
     );
   };
+
   return (
     <KeyboardAvoidingView>
       <ScrollView>

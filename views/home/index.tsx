@@ -23,7 +23,7 @@ export default function Home(): React.ReactElement {
       headerBackTitleVisible: false,
     }}>
       <Stack.Screen name='Index' component={ Index } options={{ title: 'Auto Myself' }} />
-      <Stack.Screen name='EditCar' component={ EditCar } options={{ title: 'Add Car' }}/>
+      <Stack.Screen name='EditCar' component={ EditCar } options={{ title: 'Add Vehicle' }}/>
       <Stack.Screen name='Records' component={ Records } options={{ title: 'History' }} />
       <Stack.Screen name='EditRecord' component={ EditRecord } options={{ title: 'Add Record' }} />
     </Stack.Navigator>
