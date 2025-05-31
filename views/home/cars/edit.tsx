@@ -222,16 +222,14 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
         <View style={ pageStyles.view }>
           {
             !isNewCar &&
-            <>
-              <Pressable
-                key='delete'
-                onPress={ confirmDelete.bind(this) }
-                style={[
-                  pageStyles.pressable,
-                ]}>
-                <Text style={pageStyles.text}>Delete</Text>
-              </Pressable>
-            </>
+            <Pressable
+              key='delete'
+              onPress={ confirmDelete.bind(this) }
+              style={[
+                pageStyles.pressable,
+              ]}>
+              <Text style={pageStyles.text}>Delete</Text>
+            </Pressable>
           }
           <Pressable
             key='save'
