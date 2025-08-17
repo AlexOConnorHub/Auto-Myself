@@ -25,7 +25,7 @@ export async function setupDatabase(store: MergeableStore): Promise<void> {
   }
 
   current_schema_version = store.getCell(tables.schema_version, 'local', 'version') as number;
-  if (current_schema_version >= migrations.length) {
+  if (current_schema_version > migrations.length) {
     captureMessage(`Too many migrations run! ${ current_schema_version } marked, ${ migrations.length } found`);
     store.setCell(tables.settings, 'local', 'version', migrations.length - 1);
   }

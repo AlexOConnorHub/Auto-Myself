@@ -12,6 +12,7 @@ import { setupDatabase } from './database/database';
 import Home from './views/home';
 import Settings from './views/settings';
 import { createMergeableStore } from 'tinybase/mergeable-store';
+import { tables } from './database/schema';
 
 // import { sync } from './database/synchronize';
 // import { supabase } from './helpers/supabase';
@@ -30,6 +31,9 @@ import { createMergeableStore } from 'tinybase/mergeable-store';
 //   }
 // })
 
+const store = createMergeableStore();
+const Tab = createBottomTabNavigator();
+
 init({
   dsn: 'https://ec4adae5dfe85a00b368745227de8d66@o4509037304807424.ingest.us.sentry.io/4509037306707968',
   integrations: [
@@ -41,10 +45,14 @@ init({
       successMessageText: 'Thank you for your feedback!',
     }),
   ],
+  beforeSend(event) {
+    const analyticsEnabled = store.getCell(tables.settings, 'local', 'analyticsEnabled');
+    if (analyticsEnabled) {
+      return event;
+    }
+    return null;
+  },
 });
-
-const store = createMergeableStore();
-const Tab = createBottomTabNavigator();
 
 preventAutoHideAsync();
 export default wrap(function App() {
