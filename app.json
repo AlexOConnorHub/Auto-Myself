@@ -24,7 +24,8 @@
     },
     "android": {
       "package": "com.anonymous.MyCarTotalControl",
-      "versionCode": 6
+      "versionCode": 6,
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"
