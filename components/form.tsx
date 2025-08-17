@@ -4,6 +4,7 @@ import { KeyboardType, Platform, StyleSheet } from 'react-native';
 import { OptionButtons } from './optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from '@react-navigation/native';
+import { displayTime, provideLocalTime } from '../helpers/localTime';
 
 interface FormStateGeneratorType {
   label: string;
@@ -61,26 +62,25 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
       if (Platform.OS === 'ios') {
         return <DateTimePicker
           mode='date'
-          value={ new Date(formState[formStateKey]) }
+          value={ provideLocalTime(formState[formStateKey]) }
           display='compact'
           onChange={(event, date) => {
             onFormStateChange(formStateKey, date);
           }}
         />;
       } else {
-        // android
         return <Pressable
           style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
           onPress={ () => DateTimePickerAndroid.open({
             mode: 'date',
-            value: new Date(formState[formStateKey]),
+            value: provideLocalTime(formState[formStateKey]),
             display: 'spinner',
             onChange: (event, date) => {
               onFormStateChange(formStateKey, date);
             },
           }) }>
           <Text style={ pageStyles.toggleText }>
-            { formState[formStateKey] instanceof Date ? formState[formStateKey].toISOString().split('T')[0] : formState[formStateKey] }
+            { displayTime(formState[formStateKey]) }
           </Text>
         </Pressable>;
       }
@@ -94,6 +94,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
         multiline={ element.textAreaOptions?.multiline || false }
         numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
         style={ pageStyles.textInput }
+        autoFocus={ element.autoFocus }
       />;
   }
 };
@@ -113,6 +114,9 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
           }
           if (element.condition.invert) {
             evaluation = !evaluation;
+          }
+          if (!Object.hasOwn(element, 'autoFocus')) {
+            element.autoFocus = true;
           }
           return evaluation;
         }

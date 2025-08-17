@@ -54,6 +54,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
         value: true,
         constant_or: !netInfo.isConnected,
       },
+      autoFocus: false,
     },
     model_id: {
       label: 'Model',

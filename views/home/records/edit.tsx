@@ -6,6 +6,7 @@ import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallbac
 import { tables } from '../../../database/schema';
 import Form from '../../../components/form';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { displayTime, provideLocalTime } from '../../../helpers/localTime';
 
 export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; }} }>): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
@@ -115,7 +116,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     if (key === 'date') {
       if (Object.hasOwn(row, 'date')) {
         const row_date = row[key] as string;
-        state[key] = new Date(row_date);
+        state[key] = provideLocalTime(row_date);
       } else {
         state[key] = new Date();
       }
@@ -157,8 +158,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     } else {
       newRow.type = formState.type;
     }
-    const new_date = new Date(formState.date);
-    newRow.date = new_date.toISOString().split('T')[0];
+    newRow.date = displayTime(provideLocalTime(formState.date));
     return newRow;
   };
 

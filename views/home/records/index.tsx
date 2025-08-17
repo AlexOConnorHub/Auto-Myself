@@ -14,9 +14,6 @@ export default function Records(props): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const records = useTable(tables.maintenance_records);
 
-  const RecordListItem = (record) =>
-    <Card key={ record.id } record={ record } />;
-
   const carName = useCell(tables.cars, props.route.params.car_id, 'nickname') as string;
 
   useEffect(() => {
@@ -60,17 +57,15 @@ export default function Records(props): React.ReactElement {
 
   return (
     <View style={ pageStyles.container }>
-      <View>
-        <FlatList
-          data={ Object.keys(records).filter((key) => records[key].car_id === props.route.params.car_id).map((key) => {
-            return { ...records[key], id: key };
-          }) }
-          renderItem={({ item }) => RecordListItem(item) }
-          ListEmptyComponent={() => (
-            <Text style={ pageStyles.emptyText }>No records</Text>
-          )}
-        />
-      </View>
+      <FlatList
+        data={ Object.keys(records).filter((key) => records[key].car_id === props.route.params.car_id).map((key) => {
+          return { ...records[key], id: key };
+        }) }
+        renderItem={({ item }) => <Card key={ (item as { id: string }).id } record={ item } /> }
+        ListEmptyComponent={
+          <Text style={ pageStyles.emptyText }>No records</Text>
+        }
+      />
       <View style={ pageStyles.actionButtonSection }>
         <Pressable onPress={() => {
           navigation.navigate('EditRecord', { id: undefined, car_id: props.route.params.car_id });

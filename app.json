@@ -2,7 +2,7 @@
   "expo": {
     "name": "Auto Myself",
     "slug": "MyCar-TotalControl",
-    "version": "1.3.0",
+    "version": "1.3.4",
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon-android.png",
@@ -24,7 +24,8 @@
     },
     "android": {
       "package": "com.anonymous.MyCarTotalControl",
-      "versionCode": 6
+      "versionCode": 7,
+      "edgeToEdgeEnabled": true
     },
     "web": {
       "favicon": "./assets/favicon.png"

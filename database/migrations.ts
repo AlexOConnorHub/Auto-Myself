@@ -4,6 +4,7 @@ import { openDatabaseSync } from 'expo-sqlite';
 import { MergeableStore } from 'tinybase/mergeable-store';
 import { captureEvent } from '@sentry/react-native';
 import { documentDirectory, getInfoAsync } from 'expo-file-system';
+import { Alert } from 'react-native';
 
 function incrementSchemaVersion(store: MergeableStore) {
   const currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
@@ -48,6 +49,24 @@ export const migrations = [
     } catch (e) {
       captureEvent(e);
     }
+    incrementSchemaVersion(store);
+  },
+  async (persister: ExpoSqlitePersister) => {
+    const store = persister.getStore() as MergeableStore;
+    Alert.alert('Anonymous Reporting', 'Allowing anonymous analytics can be helpful for improving the app and fixing issues. This can be changed at any time in the settings.', [
+      {
+        text: 'No',
+        onPress: () => {
+          store.setCell(tables.settings, 'local', 'analyticsEnabled', false);
+        },
+      },
+      {
+        text: 'Yes',
+        onPress: () => {
+          store.setCell(tables.settings, 'local', 'analyticsEnabled', true);
+        },
+      },
+    ]);
     incrementSchemaVersion(store);
   },
 ];
