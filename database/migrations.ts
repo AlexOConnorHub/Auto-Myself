@@ -2,7 +2,7 @@ import { tables } from './schema';
 import { ExpoSqlitePersister } from 'tinybase/persisters/persister-expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
 import { MergeableStore } from 'tinybase/mergeable-store';
-import { captureEvent, captureMessage } from '@sentry/react-native';
+import { captureEvent } from '@sentry/react-native';
 import { documentDirectory, getInfoAsync } from 'expo-file-system';
 import { Alert } from 'react-native';
 
@@ -58,14 +58,12 @@ export const migrations = [
         text: 'No',
         onPress: () => {
           store.setCell(tables.settings, 'local', 'analyticsEnabled', false);
-          captureMessage('User opted out of analytics');
         },
       },
       {
         text: 'Yes',
         onPress: () => {
           store.setCell(tables.settings, 'local', 'analyticsEnabled', true);
-          captureMessage('User opted into analytics');
         },
       },
     ]);
