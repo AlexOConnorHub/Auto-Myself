@@ -9,7 +9,6 @@ import {
   FlatList as FlatListPkg,
   KeyboardAvoidingView as KeyboardAvoidingViewPkg,
   Modal as ModalPkg,
-  Platform,
   Pressable as PressablePkg,
   ScrollView as ScrollViewPkg,
   StatusBar as StatusBarPkg,
@@ -96,7 +95,7 @@ export function Ionicons(props: React.ComponentProps<typeof IoniconsPkg>): React
 export function KeyboardAvoidingView(props: React.ComponentProps<typeof KeyboardAvoidingViewPkg>): React.ReactElement {
   const height = useHeaderHeight();
   return (
-    <KeyboardAvoidingViewPkg keyboardVerticalOffset={height} behavior={ Platform.select({ android: undefined, ios: 'padding' }) } { ...props }>
+    <KeyboardAvoidingViewPkg keyboardVerticalOffset={height} behavior={ 'padding' } { ...props }>
       { props.children }
     </KeyboardAvoidingViewPkg>
   );
