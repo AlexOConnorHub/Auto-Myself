@@ -68,7 +68,6 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
           }}
         />;
       } else {
-        // android
         return <Pressable
           style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
           onPress={ () => DateTimePickerAndroid.open({
@@ -94,6 +93,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
         multiline={ element.textAreaOptions?.multiline || false }
         numberOfLines={ element.textAreaOptions?.numberOfLines || 1 }
         style={ pageStyles.textInput }
+        autoFocus={ element.autoFocus }
       />;
   }
 };
@@ -113,6 +113,9 @@ export default function Form({ formMetaData, formState, onFormStateChange }): Re
           }
           if (element.condition.invert) {
             evaluation = !evaluation;
+          }
+          if (!Object.hasOwn(element, 'autoFocus')) {
+            element.autoFocus = true;
           }
           return evaluation;
         }
