@@ -1,4 +1,3 @@
-// import 'react-native-gesture-handler';
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import { feedbackIntegration, init, wrap } from '@sentry/react-native';
@@ -48,15 +47,20 @@ const Tab = createBottomTabNavigator();
 
 preventAutoHideAsync();
 export default wrap(function App() {
-  const [initializing, setInitializing] = useState(true);
   useEffect(() => {
     setupDatabase(store).then(() => setInitializing(false));
   }, []);
+
+  const [initializing, setInitializing] = useState(true);
+  useEffect(() => {
+    if (!initializing) {
+      hide();
+    }
+  }, [initializing]);
   if (initializing) {
     return null;
   }
 
-  hide();
   return (
     <StrictMode>
       <Provider store={store}>
