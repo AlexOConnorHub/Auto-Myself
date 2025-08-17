@@ -4,12 +4,11 @@ import { OptionButtons } from '../../components/optionButtons';
 import FormElement from '../../components/formElement';
 import { useCell, useSetCellCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '../../database/schema';
-import { Alert } from 'react-native';
+import { Alert, StyleSheet } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { TabParamList, HomeStackParamList } from '../../helpers/types';
 import { showFeedbackWidget } from '@sentry/react-native';
-import { StyleSheet } from 'react-native';
 import { getDocumentAsync } from 'expo-document-picker';
 import { readAsStringAsync } from 'expo-file-system';
 import * as Clipboard from 'expo-clipboard';
@@ -31,6 +30,7 @@ export default function Settings(): React.JSX.Element {
   const navigation = useNavigation<AppStackNavigationProps>();
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
   const setTheme = useSetCellCallback(tables.settings, 'local', 'theme', (newValue: string) => newValue);
+  const setAnalyticsEnabled = useSetCellCallback(tables.settings, 'local', 'analyticsEnabled', (newValue: string) => newValue === 'enabled');
   const store = useStore() as MergeableStore ;
 
   const convertValues = (newDistance) => {
@@ -154,6 +154,16 @@ export default function Settings(): React.JSX.Element {
           ]}
           value={ useCell(tables.settings, 'local', 'theme') }
           onSelect={ (newValue: string) => setTheme(newValue) }
+        />
+      </FormElement>
+      <FormElement label="Anonymous Reporting">
+        <OptionButtons
+          options={[
+            { label: 'Enabled', key: 'enabled' },
+            { label: 'Disabled', key: 'disabled' },
+          ]}
+          value={ useCell(tables.settings, 'local', 'analyticsEnabled') ? 'enabled' : 'disabled' }
+          onSelect={ (newValue: string) => setAnalyticsEnabled(newValue) }
         />
       </FormElement>
       <FormElement>
