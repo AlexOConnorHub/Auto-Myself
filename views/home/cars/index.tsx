@@ -8,24 +8,20 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 export default function Index(): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-  const CarListItem = (car) =>
-    <Card key={ car.id } car={ car } />;
 
   const cars = useTable('cars');
 
   return (
     <View style={ pageStyles.container }>
-      <View>
-        <FlatList
-          data={ Object.keys(cars).map((key) => {
-            return { ...cars[key], id: key };
-          }) }
-          renderItem={({ item }) => CarListItem(item) }
-          ListEmptyComponent={() => (
-            <Text style={ pageStyles.emptyText }>Add a car to get started!</Text>
-          )}
-        />
-      </View>
+      <FlatList
+        data={ Object.keys(cars).map((key) => {
+          return { ...cars[key], id: key };
+        }) }
+        renderItem={({ item }) => <Card key={ (item as { id: string }).id } car={ item } /> }
+        ListEmptyComponent={
+          <Text style={ pageStyles.emptyText }>Add a car to get started!</Text>
+        }
+      />
       <Pressable onPress={() => {
         navigation.navigate('EditCar', { id: undefined });
       }} style={ pageStyles.addCarButton }>
