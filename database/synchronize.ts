@@ -1,6 +1,7 @@
-// import { supabase } from '../helpers/supabase';
+// import { supabase } from '@app/helpers/supabase';
 
-export const sync = async () => {
+export const sync = async () =>
+{
   // const { data, error } = await supabase.rpc('test', {
   //   arg: 3
   // });

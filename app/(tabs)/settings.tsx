@@ -1,13 +1,13 @@
 import React from 'react';
-import { View, Pressable, Text } from '../../components/elements';
-import { OptionButtons } from '../../components/optionButtons';
-import FormElement from '../../components/formElement';
+import { View, Pressable, Text } from '@app/components/elements';
+import { OptionButtons } from '@app/components/optionButtons';
+import FormElement from '@app/components/formElement';
 import { useCell, useSetCellCallback, useStore } from 'tinybase/ui-react';
-import { tables } from '../../database/schema';
+import { tables } from '@app/database/schema';
 import { Alert, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { TabParamList, HomeStackParamList } from '../../helpers/types';
+import { TabParamList, HomeStackParamList } from '@app/helpers/types';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { getDocumentAsync } from 'expo-document-picker';
 import { readAsStringAsync } from 'expo-file-system';
@@ -26,12 +26,12 @@ const kilosToMiles = (kilos) => {
   return Math.floor(kilos / 1.60934);
 };
 
-export default function Settings(): React.JSX.Element {
+export default function Tab(): React.JSX.Element {
   const navigation = useNavigation<AppStackNavigationProps>();
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
   const setTheme = useSetCellCallback(tables.settings, 'local', 'theme', (newValue: string) => newValue);
   const setAnalyticsEnabled = useSetCellCallback(tables.settings, 'local', 'analyticsEnabled', (newValue: string) => newValue === 'enabled');
-  const store = useStore() as MergeableStore ;
+  const store = useStore() as MergeableStore;
 
   const convertValues = (newDistance) => {
     setDistanceUnit(newDistance);

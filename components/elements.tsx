@@ -21,7 +21,7 @@ import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
 import React from 'react';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useCell } from 'tinybase/ui-react';
-import { tables } from '../database/schema';
+import { tables } from '@app/database/schema';
 
 export function DateTimePicker(props): React.ReactElement {
   const theme = useTheme();

@@ -1,14 +1,11 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, Pressable, FlatList } from '../../../components/elements';
-import Card from './card';
+import { View, Text, Pressable, FlatList } from '@app/components/elements';
 import { useTable } from 'tinybase/ui-react';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { router } from 'expo-router';
+import { VehicleCard } from '@app/components/cardVehicle';
 
-export default function Index(): React.ReactElement {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
+export default function Tab(): React.ReactElement {
   const cars = useTable('cars');
 
   return (
@@ -17,13 +14,13 @@ export default function Index(): React.ReactElement {
         data={ Object.keys(cars).map((key) => {
           return { ...cars[key], id: key };
         }) }
-        renderItem={({ item }) => <Card key={ (item as { id: string }).id } car={ item } /> }
+        renderItem={({ item }) => <VehicleCard key={ (item as { id: string }).id } car={ item } /> }
         ListEmptyComponent={
           <Text style={ pageStyles.emptyText }>Add a car to get started!</Text>
         }
       />
       <Pressable onPress={() => {
-        navigation.navigate('EditCar', { id: undefined });
+        router.push('/vehicle/add');
       }} style={ pageStyles.addCarButton }>
         <Text style={ pageStyles.addCarText }>Add Car</Text>
       </Pressable>
@@ -32,6 +29,26 @@ export default function Index(): React.ReactElement {
 }
 
 const pageStyles = StyleSheet.create({
+  pressable: {
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    marginVertical: 10,
+    borderRadius: 12,
+    width: '95%',
+    alignSelf: 'center',
+  },
+  cardRow: {
+    marginHorizontal: 10,
+  },
+  title: {
+    fontSize: 24,
+  },
+  subtitle: {
+    fontSize: 18,
+  },
+  data: {
+    fontSize: 16,
+  },
   container: {
     height: '100%',
     justifyContent: 'space-between',

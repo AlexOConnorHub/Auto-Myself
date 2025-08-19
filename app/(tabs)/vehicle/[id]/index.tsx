@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { Alert, StyleSheet } from 'react-native';
-import { View, Text, FlatList, Pressable } from '../../../components/elements';
-import Card from './card';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { View, Text, FlatList, Pressable } from '@app/components/elements';
+import RecordCard from '@app/components/cardRecord';
+import { ParamListBase } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useTable, useCell, useRow } from 'tinybase/ui-react';
-import { tables } from '../../../database/schema';
+import { tables } from '@app/database/schema';
 import * as Clipboard from 'expo-clipboard';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system';
@@ -61,7 +62,7 @@ export default function Records(props): React.ReactElement {
         data={ Object.keys(records).filter((key) => records[key].car_id === props.route.params.car_id).map((key) => {
           return { ...records[key], id: key };
         }) }
-        renderItem={({ item }) => <Card key={ (item as { id: string }).id } record={ item } /> }
+        renderItem={({ item }) => <RecordCard key={ (item as { id: string }).id } record={ item } /> }
         ListEmptyComponent={
           <Text style={ pageStyles.emptyText }>No records</Text>
         }

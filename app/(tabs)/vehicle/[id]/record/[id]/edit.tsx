@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Alert, Keyboard, StyleSheet } from 'react-native';
-import { View, Text, ScrollView, KeyboardAvoidingView, Pressable } from '../../../components/elements';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { View, Text, ScrollView, KeyboardAvoidingView, Pressable } from '@app/components/elements';
+import { ParamListBase } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore, useTable } from 'tinybase/ui-react';
-import { tables } from '../../../database/schema';
-import Form from '../../../components/form';
+import { tables } from '@app/database/schema';
+import Form from '@app/components/form';
 import { StackNavigationProp } from '@react-navigation/stack';
-import { displayTime, provideLocalTime } from '../../../helpers/localTime';
+import { displayTime, provideLocalTime } from '@app/helpers/localTime';
 
 export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; }} }>): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();

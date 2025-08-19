@@ -1,11 +1,11 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Text, Pressable } from '../../../components/elements';
-import ConditionalText from '../../../components/conditionalText';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { ParamListBase } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { useNavigation } from 'expo-router';
+import { Pressable, Text } from './elements';
+import ConditionalText from './conditionalText';
+import { StyleSheet } from 'react-native';
 
-export default function Card({ car }): React.ReactElement {
+export function VehicleCard({ car }): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const onPress = () => {
     navigation.navigate('Records', { car_id: car.id });
@@ -48,5 +48,24 @@ const pageStyles = StyleSheet.create({
   },
   data: {
     fontSize: 16,
+  },
+  container: {
+    height: '100%',
+    justifyContent: 'space-between',
+  },
+  emptyText: {
+    fontSize: 24,
+    alignSelf: 'center',
+  },
+  addCarButton: {
+    alignSelf: 'center',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    marginVertical: 10,
+    width: '95%',
+  },
+  addCarText: {
+    fontSize: 24,
+    paddingLeft: 10,
   },
 });

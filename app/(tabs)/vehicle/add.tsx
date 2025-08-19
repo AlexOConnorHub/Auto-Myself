@@ -1,20 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, Keyboard, Alert } from 'react-native';
-import { Pressable, View, Text, ScrollView, KeyboardAvoidingView } from '../../../components/elements';
+import { StyleSheet, Keyboard } from 'react-native';
+import { Pressable, View, Text, ScrollView, KeyboardAvoidingView } from '@app/components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAddRowCallback, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
-import { tables } from '../../../database/schema';
-import Form from '../../../components/form';
-import { makes, models } from '../../../helpers/nhtsa';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { useAddRowCallback, useStore } from 'tinybase/ui-react';
+import { tables } from '@app/database/schema';
+import Form from '@app/components/form';
+import { makes, models } from '@app/helpers/nhtsa';
+import { router } from 'expo-router';
 
-export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; } } }>): React.ReactElement {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+export default function Edit(): React.ReactElement {
   const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
-  const isNewCar = props.route.params.id === undefined;
   const formMetaData = {
     nickname: {
       label: 'Nickname',
@@ -96,15 +93,11 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     //   keyboardType: 'numeric',
     // },
   };
-  const row = useRow(tables.cars, props.route.params.id) as Record<string, string>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
-      state[key] = (
-        (row.make?.length > 0 && row.make_id?.toString().length === 0) ||
-        (row.model?.length > 0 && row.model_id?.toString().length === 0)
-      );
+      state[key] = false;
     } else {
-      state[key] = row[key] || '';
+      state[key] = '';
     }
     return state;
   }, {}) as Record<string, string>);
@@ -119,12 +112,6 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     };
     doAsync();
   }, []);
-
-  useEffect(() => {
-    if (!isNewCar) {
-      navigation.setOptions({ title: (row.nickname || 'Edit Vehicle') });
-    }
-  }, [row.nickname]);
 
   useEffect(() => {
     if (typeof formState.make_id === 'object') {
@@ -186,32 +173,13 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
   };
 
   const addRecord = useAddRowCallback(tables.cars, saveFunction, [formState], store, () => goBack(), []);
-  const updateRecord = useSetRowCallback(tables.cars, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
 
   const goBack = (callback?: () => void) => {
     Keyboard.dismiss();
-    navigation.navigate('Index');
+    router.back();
     if (callback !== undefined) {
       callback();
     }
-  };
-  const remove = useDelRowCallback(tables.cars, props.route.params.id, store, () => goBack(), []);
-  const confirmDelete = () => {
-    return Alert.alert(
-      'Delete Vehicle',
-      'Are you sure you want to delete this vehicle?',
-      [
-        {
-          text: 'Yes',
-          onPress: () => {
-            remove();
-          },
-        },
-        {
-          text: 'No',
-        },
-      ],
-    );
   };
 
   return (
@@ -221,20 +189,9 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
           setFormState(prev => ({ ...prev, [key]: value }));
         } } />
         <View style={ pageStyles.view }>
-          {
-            !isNewCar &&
-            <Pressable
-              key='delete'
-              onPress={ confirmDelete.bind(this) }
-              style={[
-                pageStyles.pressable,
-              ]}>
-              <Text style={pageStyles.text}>Delete</Text>
-            </Pressable>
-          }
           <Pressable
             key='save'
-            onPress={ isNewCar ? addRecord : updateRecord }
+            onPress={ addRecord }
             style={[
               pageStyles.pressable,
             ]}>

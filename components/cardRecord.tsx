@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { Pressable } from '../../../components/elements';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
+import { Pressable } from '@app/components/elements';
+import { ParamListBase } from '@react-navigation/native';
+import { useNavigation } from 'expo-router';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useRow } from 'tinybase/ui-react';
-import { tables } from '../../../database/schema';
-import ConditionalText from '../../../components/conditionalText';
+import { tables } from '@app/database/schema';
+import ConditionalText from '@app/components/conditionalText';
 
-export default function Card(props): React.ReactElement {
+export default function RecordCard(props): React.ReactElement {
   const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
   const row = useRow(tables.maintenance_records, props.record.id) as Record<string, string | number>;
 

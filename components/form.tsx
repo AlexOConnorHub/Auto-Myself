@@ -4,7 +4,7 @@ import { KeyboardType, Platform, StyleSheet } from 'react-native';
 import { OptionButtons } from './optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from '@react-navigation/native';
-import { displayTime, provideLocalTime } from '../helpers/localTime';
+import { displayTime, provideLocalTime } from '@app/helpers/localTime';
 
 interface FormStateGeneratorType {
   label: string;

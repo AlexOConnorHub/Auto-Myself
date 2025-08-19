@@ -15,12 +15,9 @@ export async function setupDatabase(store: MergeableStore): Promise<void> {
     },
   );
   await persister.load();
-  console.log('Loaded mergeable persister');
 
   let current_schema_version = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
-  console.log(`Record of ${ current_schema_version } migrations`);
   for (current_schema_version; current_schema_version < migrations.length; current_schema_version++) {
-    console.log(`Performing ${current_schema_version} migration`);
     await migrations[current_schema_version](persister);
   }
 
