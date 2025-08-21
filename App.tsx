@@ -91,14 +91,20 @@ export default wrap(function App() {
                 }} component={ Account }/> */}
               <Tab.Screen name='Home' options={{
                 tabBarIcon: (props: {focused: boolean; }): React.ReactNode => {
-                  return <Ionicons size={48} name={props.focused ? 'car-sharp' : 'car-outline'} />;
+                  return <Ionicons size={48} name={props.focused ? 'car-sharp' : 'car-outline'} style={{
+                    height: 48,
+                    width: 48,
+                  }}/>;
                 },
                 tabBarAccessibilityLabel: 'Home',
                 headerShown: false,
               }} component={ Home } />
               <Tab.Screen name='Settings' options={{
                 tabBarIcon: (props: {focused: boolean; }): React.ReactNode => {
-                  return <Ionicons name={props.focused ? 'settings-sharp' : 'settings-outline'} />;
+                  return <Ionicons name={props.focused ? 'settings-sharp' : 'settings-outline'} style={{
+                    height: 48,
+                    width: 48,
+                  }} />;
                 },
                 tabBarAccessibilityLabel: 'Settings',
               }} component={ Settings }/>
