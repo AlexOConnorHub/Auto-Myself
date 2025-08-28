@@ -1,14 +1,14 @@
 import 'react-native-get-random-values';
 import 'react-native-url-polyfill/auto';
 import { feedbackIntegration, init, wrap } from '@sentry/react-native';
-import React, { useEffect, useState, StrictMode } from 'react';
-import { Provider } from 'tinybase/ui-react';
+import React, { useEffect, StrictMode } from 'react';
+import { Provider, useCell } from 'tinybase/ui-react';
 import { Slot, SplashScreen } from 'expo-router';
 import { createMergeableStore } from 'tinybase/mergeable-store';
 import { tables } from '../database/schema';
 import { setupDatabase } from '../database/database';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { StatusBar } from '@app/components/elements';
+import { ThemeProvider } from '@react-navigation/native';
+import { StatusBar, useColorScheme } from 'react-native';
 
 const store = createMergeableStore();
 
@@ -35,55 +35,49 @@ init({
 SplashScreen.preventAutoHideAsync();
 export default wrap(function RootLayout() {
   useEffect(() => {
-    setupDatabase(store).then(() => setInitializing(false));
+    setupDatabase(store).then(() => SplashScreen.hide());
   }, []);
 
-  const [initializing, setInitializing] = useState(true);
-  useEffect(() => {
-    if (!initializing) {
-      SplashScreen.hide();
-    }
-  }, [initializing]);
+  const storedTheme = useCell(tables.settings, 'local', 'theme', store);
+  const systemTheme = useColorScheme();
 
-  const storeTheme = store.getCell(tables.settings, 'local', 'theme') as string;
-  const lightColors = {
+  const lightTheme = {
     notification: '#E8E8E8',
     background: '#E8E8E8',
-    secondary: '#000000',
     primary: '#B18234',
     border: '#D0D0DF',
     card: '#D0D0DF',
     text: '#000000',
   };
-  const darkColors = {
+
+  const darkTheme = {
     notification: '#282A3A',
     background: '#282A3A',
-    secondary: '#FFFF66',
     primary: '#B18234',
     border: '#3D4153',
     card: '#3D4153',
     text: '#FFFFFF',
   };
-  const [theme, setTheme] = useState({
-    dark: true,
-    colors: darkColors,
-  });
-  useEffect(() => {
-    setTheme({
-      dark: storeTheme === 'dark',
-      colors: storeTheme === 'dark' ? darkColors : lightColors,
-    });
-  }, [storeTheme]);
 
-  // console.log(JSON.stringify(DefaultTheme));
-  // console.log(JSON.stringify(DarkTheme));
+  let theme;
+  if (storedTheme === 'light' || (storedTheme == 'auto' && systemTheme === 'light')) {
+    theme = {
+      dark: false,
+      colors: lightTheme,
+    };
+  } else {
+    theme = {
+      dark: true,
+      colors: darkTheme,
+    };
+  }
 
   return (
     <StrictMode>
       <Provider store={store}>
-        <ThemeProvider value={theme}>
-          {/* <StatusBar /> */}
+        <ThemeProvider value={ theme }>
           <Slot />
+          <StatusBar barStyle={ theme.dark ? 'light-content' : 'dark-content' } />
         </ThemeProvider>
       </Provider>
     </StrictMode>

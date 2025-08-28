@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, Keyboard, StyleSheet } from 'react-native';
-import { View, Text, ScrollView, KeyboardAvoidingView, Pressable } from '@app/components/elements';
-import { ParamListBase } from '@react-navigation/native';
-import { useNavigation } from 'expo-router';
+import { View, Text, Pressable } from '@app/components/elements';
 import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore, useTable } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { displayTime, provideLocalTime } from '@app/helpers/localTime';
+import { router, useLocalSearchParams } from 'expo-router';
+import CallbackButton from '../callbackButton';
 
-export default function Edit(props: Readonly<{ route: { params: { car_id: string; id: string; }} }>): React.ReactElement {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
+export default function RecordForm(): React.ReactElement {
+  const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
 
   const carRecords = useTable(tables.maintenance_records);
-  const row = useRow(tables.maintenance_records, props.route.params.id);
+  const record = useRow(tables.maintenance_records, record_id);
   const typesObj = {} as Record<string, Record<string, string>>;
 
   for (const key of Object.keys(carRecords)) {
@@ -56,7 +55,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     .map((item) => ({ value: item, label: item })));
   typesArray.sort((a, b) => a.label.localeCompare(b.label));
 
-  const isNewRecord = props.route.params.id === undefined;
+  const isNewRecord = record_id === undefined;
   const formMetaData = {
     type_custom: {
       label: 'Maintenance Type',
@@ -115,26 +114,20 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
   };
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'date') {
-      if (Object.hasOwn(row, 'date')) {
-        const row_date = row[key] as string;
+      if (Object.hasOwn(record, 'date')) {
+        const row_date = record[key] as string;
         state[key] = provideLocalTime(row_date);
       } else {
         state[key] = new Date();
       }
-    } else if (typeof row[key] === 'number') {
-      state[key] = row[key].toString();
+    } else if (typeof record[key] === 'number') {
+      state[key] = record[key].toString();
     } else {
-      state[key] = row[key] || '';
+      state[key] = record[key] || '';
     }
 
     return state;
   }, {}) as Record<string, string>);
-
-  useEffect(() => {
-    if (!isNewRecord) {
-      navigation.setOptions({ title: 'Edit Record' });
-    }
-  }, [props.route.params.id]);
 
   const store = useStore();
   const saveFunction = () => {
@@ -149,7 +142,7 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
       cost: formatNumber(formState.cost),
       odometer: formatNumber(formState.odometer),
       notes: formState.notes,
-      car_id: props.route.params.car_id,
+      car_id: vehicle_id,
     };
     if (formState.new_entry) {
       newRow.type = formState.type_custom;
@@ -164,17 +157,14 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
   };
 
   const addRecord = useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, () => goBack(), []);
-  const updateRecord = useSetRowCallback(tables.maintenance_records, props.route.params.id, saveFunction, [formState], store, () => goBack(), []);
+  const updateRecord = useSetRowCallback(tables.maintenance_records, record_id, saveFunction, [formState], store, () => goBack(), []);
 
-  const goBack = (callback?: () => void) => {
+  const goBack = () => {
     Keyboard.dismiss();
-    navigation.goBack();
-    if (callback !== undefined) {
-      callback();
-    }
+    router.back();
   };
 
-  const remove = useDelRowCallback(tables.maintenance_records, props.route.params.id, store, () => goBack(), []);
+  const remove = useDelRowCallback(tables.maintenance_records, record_id, store, () => goBack(), []);
   const confirmDelete = () => {
     return Alert.alert(
       'Delete Record',
@@ -193,12 +183,11 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
     );
   };
   return (
-    <KeyboardAvoidingView style={ pageStyles.container }>
-      <ScrollView>
-        <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key, value) => setFormState(prev => ({ ...prev, [key]: value })) } />
-        <View style={ pageStyles.view }>
-          {
-            !isNewRecord &&
+    <View style={ pageStyles.container }>
+      <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key, value) => setFormState(prev => ({ ...prev, [key]: value })) } />
+      <View style={ pageStyles.view }>
+        {
+          !isNewRecord &&
             <Pressable
               key='delete'
               onPress={ confirmDelete.bind(this) }
@@ -207,18 +196,15 @@ export default function Edit(props: Readonly<{ route: { params: { car_id: string
               ]}>
               <Text style={pageStyles.text}>Delete</Text>
             </Pressable>
-          }
-          <Pressable
-            key='save'
-            onPress={isNewRecord ? addRecord : updateRecord}
-            style={[
-              pageStyles.pressable,
-            ]}>
-            <Text style={pageStyles.text}>Save</Text>
-          </Pressable>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+        }
+        <CallbackButton
+          pressable={{ style: pageStyles.pressable }}
+          text={{ style: pageStyles.text }}
+          title="Save"
+          onPress={isNewRecord ? addRecord : updateRecord}
+        />
+      </View>
+    </View>
   );
 }
 
@@ -226,22 +212,6 @@ const pageStyles = StyleSheet.create({
   container: {
     height: '100%',
     justifyContent: 'space-between',
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 10,
-  },
-  headerText: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-  formField: {
-    marginBottom: 20,
-    padding: 10,
-  },
-  deleteButton: {
-    marginHorizontal: 10,
   },
   view: {
     justifyContent: 'center',
@@ -254,13 +224,6 @@ const pageStyles = StyleSheet.create({
     borderRadius: 5,
   },
   text: {
-    fontSize: 20,
     textAlign: 'center',
-  },
-  textInput: {
-    fontSize: 18,
-    padding: 10,
-    marginVertical: 10,
-    textAlignVertical: 'top',
   },
 });

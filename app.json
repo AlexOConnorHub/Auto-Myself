@@ -6,7 +6,7 @@
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon-android.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "assetBundlePatterns": [
       "**/*"
     ],

@@ -1,9 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, Pressable, FlatList } from '@app/components/elements';
+import { View, Text, FlatList } from '@app/components/elements';
 import { useTable } from 'tinybase/ui-react';
 import { router } from 'expo-router';
-import { VehicleCard } from '@app/components/cardVehicle';
+import { VehicleCard } from '@app/components/cards/vehicle';
+import CallbackButton from '@app/components/callbackButton';
 
 export default function Tab(): React.ReactElement {
   const cars = useTable('cars');
@@ -19,42 +20,24 @@ export default function Tab(): React.ReactElement {
           <Text style={ pageStyles.emptyText }>Add a car to get started!</Text>
         }
       />
-      <Pressable onPress={() => {
-        router.push('/vehicle/add');
-      }} style={ pageStyles.addCarButton }>
-        <Text style={ pageStyles.addCarText }>Add Car</Text>
-      </Pressable>
+      <CallbackButton
+        text={{ style: pageStyles.addCarText }}
+        title="Add Car"
+        pressable={{ style: pageStyles.addCarButton }}
+        onPress={() => {
+          router.push('/vehicle/add');
+        }}
+      />
     </View>
   );
 }
 
 const pageStyles = StyleSheet.create({
-  pressable: {
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    marginVertical: 10,
-    borderRadius: 12,
-    width: '95%',
-    alignSelf: 'center',
-  },
-  cardRow: {
-    marginHorizontal: 10,
-  },
-  title: {
-    fontSize: 24,
-  },
-  subtitle: {
-    fontSize: 18,
-  },
-  data: {
-    fontSize: 16,
-  },
   container: {
     height: '100%',
     justifyContent: 'space-between',
   },
   emptyText: {
-    fontSize: 24,
     alignSelf: 'center',
   },
   addCarButton: {
@@ -65,7 +48,6 @@ const pageStyles = StyleSheet.create({
     width: '95%',
   },
   addCarText: {
-    fontSize: 24,
     paddingLeft: 10,
   },
 });

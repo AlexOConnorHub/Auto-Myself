@@ -93,7 +93,6 @@ const pageStyles = StyleSheet.create({
     width: '95%'
   },
   showModalText: {
-    fontSize: 20,
     paddingLeft: 10,
   },
   modal: {
@@ -104,9 +103,6 @@ const pageStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-  },
-  modalHeaderText: {
-    fontSize: 24,
   },
   modalBody: {
     padding: 10,

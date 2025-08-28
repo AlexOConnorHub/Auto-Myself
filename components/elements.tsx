@@ -57,45 +57,45 @@ export function Dropdown(props: React.ComponentProps<typeof DropdownPkg>): React
   );
 }
 
-export function EvilIcons(props: React.ComponentProps<typeof EvilIconsPkg>): React.ReactElement {
+export function EvilIcons(props: Readonly<React.ComponentProps<typeof EvilIconsPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
     <EvilIconsPkg color={ theme.colors.text } size={40} { ...props }/>
   );
 }
 
-export function Feather(props: React.ComponentProps<typeof FeatherPkg>): React.ReactElement {
+export function Feather(props: Readonly<React.ComponentProps<typeof FeatherPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
     <FeatherPkg color={ theme.colors.text } size={40} { ...props }/>
   );
 }
 
-export function FlatList(props: React.ComponentProps<typeof FlatListPkg>): React.ReactElement {
+export function FlatList(props: Readonly<React.ComponentProps<typeof FlatListPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
     <FlatListPkg { ...props } style={{ backgroundColor: theme.colors.background, ...props.style as object }}/>
   );
 }
 
-export function FontAwesome(props: React.ComponentProps<typeof FontAwesomePkg>): React.ReactElement {
+export function FontAwesome(props: Readonly<React.ComponentProps<typeof FontAwesomePkg>>): React.ReactElement {
   const theme = useTheme();
   return (
     <FontAwesomePkg color={ theme.colors.text } size={40} { ...props }/>
   );
 }
 
-export function Ionicons(props: React.ComponentProps<typeof IoniconsPkg>): React.ReactElement {
+export function Ionicons(props: Readonly<React.ComponentProps<typeof IoniconsPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
     <IoniconsPkg color={ theme.colors.text } size={40} { ...props }/>
   );
 }
 
-export function KeyboardAvoidingView(props: React.ComponentProps<typeof KeyboardAvoidingViewPkg>): React.ReactElement {
-  const height = useHeaderHeight();
+export function KeyboardAvoidingView(props: Readonly<React.ComponentProps<typeof KeyboardAvoidingViewPkg>>): React.ReactElement {
+  const headerHeight = useHeaderHeight();
   return (
-    <KeyboardAvoidingViewPkg keyboardVerticalOffset={height} behavior={ 'padding' } { ...props }>
+    <KeyboardAvoidingViewPkg keyboardVerticalOffset={headerHeight} behavior={ 'padding' } { ...props }>
       { props.children }
     </KeyboardAvoidingViewPkg>
   );
@@ -147,31 +147,31 @@ export function Pressable(props: React.ComponentProps<typeof PressablePkg>): Rea
   );
 }
 
-export function ScrollView(props: React.ComponentProps<typeof ScrollViewPkg>): React.ReactElement {
+export function ScrollView(props: Readonly<React.ComponentProps<typeof ScrollViewPkg>>): React.ReactElement {
   return (
-    <ScrollViewPkg bounces={ false } { ...props }>
+    <ScrollViewPkg keyboardShouldPersistTaps="handled" bounces={ false } { ...props }>
       { props.children }
     </ScrollViewPkg>
   );
 }
 
-export function StatusBar(props: React.ComponentProps<typeof StatusBarPkg>): React.ReactElement {
+export function StatusBar(props: Readonly<React.ComponentProps<typeof StatusBarPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
     <StatusBarPkg backgroundColor={ theme.colors.border } barStyle={ theme.dark ? 'light-content' : 'dark-content' } { ...props }/>
   );
 }
 
-export function Text(props: React.ComponentProps<typeof TextPkg>): React.ReactElement {
+export function Text(props: Readonly<React.ComponentProps<typeof TextPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
-    <TextPkg ellipsizeMode='tail' numberOfLines={1} { ...props } style={{ color: theme.colors.text, ...props.style as object }}>
+    <TextPkg { ...props } style={{ color: theme.colors.text, ...props.style as object }}>
       { props.children }
     </TextPkg>
   );
 }
 
-export function TextInput(props: React.ComponentProps<typeof TextInputPkg>): React.ReactElement {
+export function TextInput(props: Readonly<React.ComponentProps<typeof TextInputPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
     <TextInputPkg { ...props } style={{ backgroundColor: theme.colors.border, color: theme.colors.text, ...props.style as object }}>
@@ -180,7 +180,7 @@ export function TextInput(props: React.ComponentProps<typeof TextInputPkg>): Rea
   );
 }
 
-export function View(props: React.ComponentProps<typeof ViewPkg>): React.ReactElement {
+export function View(props: Readonly<React.ComponentProps<typeof ViewPkg>>): React.ReactElement {
   return (
     <ViewPkg { ...props }>
       { props.children }
