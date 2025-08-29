@@ -1,16 +1,13 @@
 import {
   FontAwesome as FontAwesomePkg,
   Feather as FeatherPkg,
-  EvilIcons as EvilIconsPkg,
   Ionicons as IoniconsPkg,
 } from '@expo/vector-icons';
 import { useTheme } from '@react-navigation/native';
-import { KeyboardAvoidingView as KeyboardAvoidingViewPkg } from 'react-native-keyboard-controller';
 import {
   FlatList as FlatListPkg,
   Modal as ModalPkg,
   Pressable as PressablePkg,
-  ScrollView as ScrollViewPkg,
   StatusBar as StatusBarPkg,
   Text as TextPkg,
   TextInput as TextInputPkg,
@@ -19,7 +16,6 @@ import {
 import DateTimePickerPkg from '@react-native-community/datetimepicker';
 import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
 import React from 'react';
-import { useHeaderHeight } from '@react-navigation/elements';
 import { KeyboardAwareScrollView as KeyboardAwareScrollViewPkg } from 'react-native-keyboard-controller';
 
 export function DateTimePicker(props): React.ReactElement {

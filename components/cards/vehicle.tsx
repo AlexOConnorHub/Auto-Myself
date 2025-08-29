@@ -13,9 +13,9 @@ export function VehicleCard({ car }): React.ReactElement {
   const firstRow = [car.color, car.year, car.make, car.model].filter(Boolean).join(' ');
 
   return (
-    <Accordion title={car.nickname}>
+    <Accordion title={car.nickname || firstRow}>
       <View style={pageStyles.cardRow}>
-        <ConditionalText condition={firstRow}>{firstRow}</ConditionalText>
+        <ConditionalText condition={car.nickname && firstRow}>{firstRow}</ConditionalText>
         <ConditionalText condition={car.license_plate}>LPN: {car.license_plate}</ConditionalText>
         <ConditionalText condition={car.vin}>VIN: {car.vin}</ConditionalText>
         <ConditionalText condition={car.notes}>{car.notes}</ConditionalText>
