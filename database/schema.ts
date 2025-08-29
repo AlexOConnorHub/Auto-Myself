@@ -8,6 +8,7 @@ export const schema = {
     'model': { 'type': 'string' },
     'model_id': { 'type': 'number' },
     'year': { 'type': 'string' },
+    'color': { 'type': 'string' },
     'vin': { 'type': 'string' },
     'lpn': { 'type': 'string' },
     'nickname': { 'type': 'string' },

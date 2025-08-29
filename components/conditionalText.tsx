@@ -3,7 +3,7 @@ import { Text } from './elements';
 
 export default function ConditionalText(props): React.ReactElement {
   if (!props.condition) {
-    return null;
+    return <></>;
   }
   const localProps = { ...props };
   delete localProps.condition;

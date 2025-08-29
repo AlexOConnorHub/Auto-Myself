@@ -6,10 +6,11 @@
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon-android.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "assetBundlePatterns": [
       "**/*"
     ],
+    "scheme": "auto-myself",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.automyself.ios",
@@ -29,7 +30,8 @@
       "edgeToEdgeEnabled": true
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "extra": {
       "eas": {
@@ -61,7 +63,8 @@
           "image": "./assets/splash.png",
           "resizeMode": "contain"
         }
-      ]
+      ],
+      "expo-router"
     ]
   }
 }

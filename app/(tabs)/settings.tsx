@@ -1,22 +1,16 @@
 import React from 'react';
-import { View, Pressable, Text } from '../../components/elements';
-import { OptionButtons } from '../../components/optionButtons';
-import FormElement from '../../components/formElement';
+import { View } from '@app/components/elements';
+import { OptionButtons } from '@app/components/optionButtons';
+import FormElement from '@app/components/formElement';
 import { useCell, useSetCellCallback, useStore } from 'tinybase/ui-react';
-import { tables } from '../../database/schema';
-import { Alert, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { TabParamList, HomeStackParamList } from '../../helpers/types';
+import { tables } from '@app/database/schema';
+import { Alert } from 'react-native';
+import { router } from 'expo-router';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { getDocumentAsync } from 'expo-document-picker';
 import { readAsStringAsync } from 'expo-file-system';
-import * as Clipboard from 'expo-clipboard';
-import * as Sharing from 'expo-sharing';
-import * as FileSystem from 'expo-file-system';
 import { createMergeableStore, MergeableStore } from 'tinybase/mergeable-store';
-
-type AppStackNavigationProps = NativeStackNavigationProp<TabParamList & HomeStackParamList>;
+import { exportAsFile } from '@app/helpers/fileExport';
 
 const milesToKilos = (miles) => {
   return Math.floor(miles * 1.60934);
@@ -26,12 +20,11 @@ const kilosToMiles = (kilos) => {
   return Math.floor(kilos / 1.60934);
 };
 
-export default function Settings(): React.JSX.Element {
-  const navigation = useNavigation<AppStackNavigationProps>();
+export default function Tab(): React.JSX.Element {
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
   const setTheme = useSetCellCallback(tables.settings, 'local', 'theme', (newValue: string) => newValue);
   const setAnalyticsEnabled = useSetCellCallback(tables.settings, 'local', 'analyticsEnabled', (newValue: string) => newValue === 'enabled');
-  const store = useStore() as MergeableStore ;
+  const store = useStore() as MergeableStore;
 
   const convertValues = (newDistance) => {
     setDistanceUnit(newDistance);
@@ -52,8 +45,7 @@ export default function Settings(): React.JSX.Element {
                 }
               }
             });
-            // This is mostly to cover for the fact that
-            navigation.navigate('Home', { screen: 'Index' });
+            router.navigate('/');
           },
         },
         {
@@ -66,17 +58,7 @@ export default function Settings(): React.JSX.Element {
   const exportJson = () => {
     const storeJson = store.getJson();
     const today = new Date();
-    const asyncFunc = async () => {
-      if (await Sharing.isAvailableAsync()) {
-        const fileLocation = `${FileSystem.cacheDirectory}AutoMyself_Export_${today.toISOString().slice(0, 19)}.json`;
-        await FileSystem.writeAsStringAsync(fileLocation, storeJson, { encoding: FileSystem.EncodingType.UTF8 });
-        Sharing.shareAsync(fileLocation, { dialogTitle: 'Download File', mimeType: 'application/json' });
-      } else {
-        await Clipboard.setStringAsync(storeJson);
-        Alert.alert('Exported', 'Data copied to clipboard. Please save to a file');
-      }
-    };
-    asyncFunc();
+    exportAsFile(storeJson, `AutoMyself_Export_${today.toISOString().slice(0, 19)}.json`);
   };
 
   const importHelper = () => {
@@ -143,17 +125,24 @@ export default function Settings(): React.JSX.Element {
             { label: 'Kilometers', key: 'Kilometers' },
           ]}
           value={ useCell(tables.settings, 'local', 'distanceUnit') }
-          onSelect={ (newValue: string) => convertValues(newValue) }
+          onSelect={ (newValue: string, enable: () => void) => {
+            convertValues(newValue);
+            enable();
+          } }
         />
       </FormElement>
       <FormElement label="Theme">
         <OptionButtons
           options={[
+            { label: 'Auto', key: 'auto' },
             { label: 'Dark', key: 'dark' },
             { label: 'Light', key: 'light' },
           ]}
           value={ useCell(tables.settings, 'local', 'theme') }
-          onSelect={ (newValue: string) => setTheme(newValue) }
+          onSelect={ (newValue: string, enable: () => void) => {
+            setTheme(newValue);
+            enable();
+          } }
         />
       </FormElement>
       <FormElement label="Anonymous Reporting">
@@ -163,42 +152,54 @@ export default function Settings(): React.JSX.Element {
             { label: 'Disabled', key: 'disabled' },
           ]}
           value={ useCell(tables.settings, 'local', 'analyticsEnabled') ? 'enabled' : 'disabled' }
-          onSelect={ (newValue: string) => setAnalyticsEnabled(newValue) }
+          onSelect={ (newValue: string, enable: () => void) => {
+            setAnalyticsEnabled(newValue);
+            enable();
+          } }
         />
       </FormElement>
       <FormElement>
-        <Pressable onPress={ () => {
-          showFeedbackWidget();
-        } } style={ pageStyles.pressable }>
-          <Text style={ pageStyles.text }>
-            Provide Feedback
-          </Text>
-        </Pressable>
-        <Pressable onPress={ importHelper }
-          style={ pageStyles.pressable }>
-          <Text style={ pageStyles.text }>
-            Import
-          </Text>
-        </Pressable>
-        <Pressable onPress={ exportJson }
-          style={ pageStyles.pressable }>
-          <Text style={ pageStyles.text }>
-            Export All
-          </Text>
-        </Pressable>
+        <OptionButtons
+          options={[
+            { label: 'Provide Feedback', key: 'provide_feedback' },
+          ]}
+          value='provide_feedback'
+          onSelect={ (newValue: string, enable: () => void) => {
+            if (newValue === 'provide_feedback') {
+              showFeedbackWidget();
+            }
+            enable();
+          }}
+        />
+      </FormElement>
+      <FormElement>
+        <OptionButtons
+          options={[
+            { label: 'Import', key: 'import' },
+          ]}
+          value='import'
+          onSelect={ (newValue: string, enable: () => void) => {
+            if (newValue === 'import') {
+              importHelper();
+            }
+            enable();
+          }}
+        />
+      </FormElement>
+      <FormElement>
+        <OptionButtons
+          options={[
+            { label: 'Export All', key: 'export_all' },
+          ]}
+          value='export_all'
+          onSelect={ (newValue: string, enable: () => void) => {
+            if (newValue === 'export_all') {
+              exportJson();
+            }
+            enable();
+          }}
+        />
       </FormElement>
     </View>
   );
 }
-
-const pageStyles = StyleSheet.create({
-  pressable: {
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 15,
-  },
-  text: {
-    fontSize: 18,
-    marginLeft: 10,
-  },
-});
