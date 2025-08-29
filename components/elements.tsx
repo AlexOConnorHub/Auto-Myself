@@ -4,10 +4,10 @@ import {
   EvilIcons as EvilIconsPkg,
   Ionicons as IoniconsPkg,
 } from '@expo/vector-icons';
-import { NavigationContainer as NavigationContainerPkg, useTheme } from '@react-navigation/native';
+import { useTheme } from '@react-navigation/native';
+import { KeyboardAvoidingView as KeyboardAvoidingViewPkg } from 'react-native-keyboard-controller';
 import {
   FlatList as FlatListPkg,
-  KeyboardAvoidingView as KeyboardAvoidingViewPkg,
   Modal as ModalPkg,
   Pressable as PressablePkg,
   ScrollView as ScrollViewPkg,
@@ -20,8 +20,7 @@ import DateTimePickerPkg from '@react-native-community/datetimepicker';
 import { Dropdown as DropdownPkg } from 'react-native-element-dropdown';
 import React from 'react';
 import { useHeaderHeight } from '@react-navigation/elements';
-import { useCell } from 'tinybase/ui-react';
-import { tables } from '@app/database/schema';
+import { KeyboardAwareScrollView as KeyboardAwareScrollViewPkg } from 'react-native-keyboard-controller';
 
 export function DateTimePicker(props): React.ReactElement {
   const theme = useTheme();
@@ -57,13 +56,6 @@ export function Dropdown(props: React.ComponentProps<typeof DropdownPkg>): React
   );
 }
 
-export function EvilIcons(props: Readonly<React.ComponentProps<typeof EvilIconsPkg>>): React.ReactElement {
-  const theme = useTheme();
-  return (
-    <EvilIconsPkg color={ theme.colors.text } size={40} { ...props }/>
-  );
-}
-
 export function Feather(props: Readonly<React.ComponentProps<typeof FeatherPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
@@ -92,12 +84,11 @@ export function Ionicons(props: Readonly<React.ComponentProps<typeof IoniconsPkg
   );
 }
 
-export function KeyboardAvoidingView(props: Readonly<React.ComponentProps<typeof KeyboardAvoidingViewPkg>>): React.ReactElement {
-  const headerHeight = useHeaderHeight();
+export function KeyboardAwareScrollView(props): React.ReactElement {
   return (
-    <KeyboardAvoidingViewPkg keyboardVerticalOffset={headerHeight} behavior={ 'padding' } { ...props }>
+    <KeyboardAwareScrollViewPkg { ...props }>
       { props.children }
-    </KeyboardAvoidingViewPkg>
+    </KeyboardAwareScrollViewPkg>
   );
 }
 
@@ -106,35 +97,6 @@ export function Modal(props: React.ComponentProps<typeof ModalPkg>): React.React
     <ModalPkg { ...props }>
       { props.children }
     </ModalPkg>
-  );
-}
-
-export function NavigationContainer(props: React.ComponentProps<typeof NavigationContainerPkg>): React.ReactElement {
-  const theme = useCell(tables.settings, 'local', 'theme');
-
-  // theme: 'dark', // Theme for status bar
-  const colors = theme === 'light' ? {
-    notification: '#E8E8E8',
-    background: '#E8E8E8',
-    secondary: '#000000',
-    primary: '#B18234',
-    border: '#D0D0DF',
-    card: '#D0D0DF',
-    text: '#000000',
-  } : {
-    notification: '#282A3A',
-    background: '#282A3A',
-    secondary: '#FFFF66',
-    primary: '#B18234',
-    border: '#3D4153',
-    card: '#3D4153',
-    text: '#FFFFFF',
-  };
-
-  return (
-    <NavigationContainerPkg theme={{ dark: theme === 'dark', colors: colors }}>
-      { props.children }
-    </NavigationContainerPkg>
   );
 }
 
@@ -147,18 +109,10 @@ export function Pressable(props: React.ComponentProps<typeof PressablePkg>): Rea
   );
 }
 
-export function ScrollView(props: Readonly<React.ComponentProps<typeof ScrollViewPkg>>): React.ReactElement {
-  return (
-    <ScrollViewPkg keyboardShouldPersistTaps="handled" bounces={ false } { ...props }>
-      { props.children }
-    </ScrollViewPkg>
-  );
-}
-
 export function StatusBar(props: Readonly<React.ComponentProps<typeof StatusBarPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
-    <StatusBarPkg backgroundColor={ theme.colors.border } barStyle={ theme.dark ? 'light-content' : 'dark-content' } { ...props }/>
+    <StatusBarPkg barStyle={ theme.dark ? 'light-content' : 'dark-content' } { ...props }/>
   );
 }
 

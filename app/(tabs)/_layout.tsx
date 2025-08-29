@@ -1,5 +1,5 @@
 import { Ionicons } from '@app/components/elements';
-import { useTheme } from '@react-navigation/native';
+import { useKeyboardVisible } from '@app/components/keyboardVisible';
 import { Tabs } from 'expo-router';
 
 function HomeLogo(props): React.ReactNode {
@@ -11,39 +11,25 @@ function SettingLogo(props): React.ReactNode {
 }
 
 export default function TabLayout() {
-  const theme = useTheme();
+  const keyboardVisible = useKeyboardVisible();
 
   return (
     <Tabs screenOptions={{
       tabBarStyle: {
         borderTopWidth: 0,
+        display: keyboardVisible ? 'none' : 'flex',
       },
       tabBarShowLabel: false,
-      headerTitleStyle: {
-        color: theme.colors.text,
-      },
-      headerStyle: {
-        backgroundColor: theme.colors.border,
-      },
-      sceneStyle: {
-        backgroundColor: theme.colors.background,
-      },
     }}>
       <Tabs.Screen name='vehicle' options={{
         tabBarIcon: HomeLogo,
         tabBarAccessibilityLabel: 'Index',
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: theme.colors.border,
-        },
       }}/>
       <Tabs.Screen name='settings' options={{
         tabBarIcon: SettingLogo,
         tabBarAccessibilityLabel: 'Settings',
         headerTitle: 'Settings',
-        tabBarStyle: {
-          backgroundColor: theme.colors.border,
-        },
       }}/>
       <Tabs.Screen name='index' options={{
         href: null,

@@ -5,10 +5,12 @@ import React, { useEffect, StrictMode } from 'react';
 import { Provider, useCell } from 'tinybase/ui-react';
 import { Slot, SplashScreen } from 'expo-router';
 import { createMergeableStore } from 'tinybase/mergeable-store';
-import { tables } from '../database/schema';
-import { setupDatabase } from '../database/database';
-import { ThemeProvider } from '@react-navigation/native';
-import { StatusBar, useColorScheme } from 'react-native';
+import { tables } from '@app/database/schema';
+import { setupDatabase } from '@app/database/database';
+import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { useColorScheme } from 'react-native';
+import { StatusBar } from '@app/components/elements';
+import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 const store = createMergeableStore();
 
@@ -64,21 +66,25 @@ export default wrap(function RootLayout() {
     theme = {
       dark: false,
       colors: lightTheme,
+      fonts: DefaultTheme.fonts,
     };
   } else {
     theme = {
       dark: true,
       colors: darkTheme,
+      fonts: DefaultTheme.fonts,
     };
   }
 
   return (
     <StrictMode>
       <Provider store={store}>
-        <ThemeProvider value={ theme }>
-          <Slot />
-          <StatusBar barStyle={ theme.dark ? 'light-content' : 'dark-content' } />
-        </ThemeProvider>
+        <KeyboardProvider>
+          <ThemeProvider value={ theme }>
+            <Slot />
+            <StatusBar />
+          </ThemeProvider>
+        </KeyboardProvider>
       </Provider>
     </StrictMode>
   );

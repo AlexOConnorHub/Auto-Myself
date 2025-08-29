@@ -1,15 +1,13 @@
 import React from 'react';
-import { KeyboardAvoidingView, ScrollView } from '@app/components/elements';
+import { KeyboardAwareScrollView } from '@app/components/elements';
 import CarNicknameInHeader from '@app/components/carHeader';
 import VehicleForm from '@app/components/forms/vehicle';
 
 export default function Edit(): React.ReactElement {
   return (
-    <KeyboardAvoidingView>
+    <KeyboardAwareScrollView>
       <CarNicknameInHeader />
-      <ScrollView>
-        <VehicleForm />
-      </ScrollView>
-    </KeyboardAvoidingView>
+      <VehicleForm />
+    </KeyboardAwareScrollView>
   );
 }

@@ -235,7 +235,6 @@ export default function VehicleForm(): React.ReactElement {
 const pageStyles = StyleSheet.create({
   container: {
     height: '100%',
-    justifyContent: 'space-between',
   },
   view: {
     justifyContent: 'center',

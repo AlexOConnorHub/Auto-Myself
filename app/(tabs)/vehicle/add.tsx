@@ -1,14 +1,14 @@
 import React from 'react';
 import VehicleForm from '@app/components/forms/vehicle';
-import { KeyboardAvoidingView, ScrollView } from '@app/components/elements';
+import { KeyboardAwareScrollView } from '@app/components/elements';
+import CarNicknameInHeader from '@app/components/carHeader';
 
 export default function Add() {
 
   return (
-    <KeyboardAvoidingView>
-      <ScrollView >
-        <VehicleForm />
-      </ScrollView>
-    </KeyboardAvoidingView>
+    <KeyboardAwareScrollView>
+      <CarNicknameInHeader />
+      <VehicleForm />
+    </KeyboardAwareScrollView>
   );
 }
