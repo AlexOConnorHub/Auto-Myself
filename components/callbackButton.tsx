@@ -1,30 +1,29 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Pressable, Text } from './elements';
-import { StyleSheet } from 'react-native';
+import { useNavigation } from 'expo-router';
 
 export default function CallbackButton(props): React.ReactElement {
-  const [disabled, setDisabled] = React.useState(false);
-  const callback = () => {
-    setDisabled(false);
-  };
+  const disabledRef = useRef(false);
+  const navigation = useNavigation();
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      disabledRef.current = false;
+    });
+    return unsubscribe;
+  }, [navigation]);
+
   return (
     <Pressable
       {...props.pressable}
-      disabled={disabled}
+      disabled={disabledRef.current}
       onPress={() => {
-        setDisabled(true);
-        props.onPress(callback.bind(this));
+        if (disabledRef.current) return;
+        disabledRef.current = true;
+        props.onPress(() => disabledRef.current = false);
       }}
-      style={[pageStyles.pressable, props.pressable ? props.pressable.style : {}]}>
+    >
       <Text {...props.text}>{props.title}</Text>
     </Pressable>
   );
 }
-
-const pageStyles = StyleSheet.create({
-  pressable: {
-    alignItems: 'center',
-    borderRadius: 5,
-    padding: 10,
-  },
-});

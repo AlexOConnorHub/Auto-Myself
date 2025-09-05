@@ -1,11 +1,12 @@
 import React from 'react';
 import { Alert, StyleSheet } from 'react-native';
-import CallbackButton from '../../components/callbackButton';
-import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from '../../components/elements';
-import FormElement from '../../components/formElement';
-import { supabase } from '../../helpers/supabase';
+import CallbackButton from '@app/components/callbackButton';
+import { View, Text, Pressable, Modal, FontAwesome, Feather, TextInput } from '@app/components/elements';
+import FormElement from '@app/components/formElement';
+import { supabase } from '@app/helpers/supabase';
 
-export class Signup extends React.Component {
+export class Signup extends React.Component
+{
   state = {
     modalVisible: false,
     email: '',
@@ -13,48 +14,55 @@ export class Signup extends React.Component {
     password: '',
     confirmPassword: '',
   };
-  render() {
+  render()
+  {
     return (
       <View>
-        <Pressable style={ pageStyles.showModalPressable } onPress={() => { this.setState({ modalVisible: true }); }}>
-          <FontAwesome name="user" size={40} />
+        <Pressable style={ pageStyles.showModalPressable } onPress={ () => { this.setState({ modalVisible: true }); } }>
+          <FontAwesome name="user" size={ 40 } />
           <Text style={ pageStyles.showModalText }>Signup</Text>
         </Pressable>
-        <Modal animationType='slide' onRequestClose={() => { this.setState({ modalVisible: false }); }} visible={ this.state.modalVisible }>
+        <Modal animationType='slide' onRequestClose={ () => { this.setState({ modalVisible: false }); } } visible={ this.state.modalVisible }>
           <View style={ pageStyles.modal }>
             <View style={ pageStyles.modalHeader }>
-              <Pressable onPress={() => { this.setState({ modalVisible: false }); }}>
-                <Feather name='x-circle' size={40} />
+              <Pressable onPress={ () => { this.setState({ modalVisible: false }); } }>
+                <Feather name='x-circle' size={ 40 } />
               </Pressable>
               <Text style={ pageStyles.modalHeaderText }>Signup</Text>
               <CallbackButton
                 title="Signup"
-                onPress={async (callback) => {
+                onPress={ async (callback) =>
+                {
                   let email = this.state.email;
                   let confirmEmail = this.state.confirmEmail;
                   let password = this.state.password;
                   let confirmPassword = this.state.confirmPassword;
-                  if (email !== confirmEmail) {
+                  if (email !== confirmEmail)
+                  {
                     Alert.alert('Emails do not match');
-                  } else if (password !== confirmPassword) {
+                  } else if (password !== confirmPassword)
+                  {
                     Alert.alert('Passwords do not match');
-                  } else {
+                  } else
+                  {
                     const { error } = await supabase.auth.signUp({
                       email: email,
                       password: password,
                     });
-                    if (error) {
+                    if (error)
+                    {
                       Alert.alert(error.message);
-                    } else {
+                    } else
+                    {
                       Alert.alert('Account created');
                       this.setState({ modalVisible: false });
                     }
                   }
                   callback();
-                }} />
+                } } />
             </View>
             <View style={ pageStyles.modalBody }>
-              {[
+              { [
                 { label: 'E-Mail', keyboardType: 'email-address', model: 'email' },
                 { label: 'Confirm E-Mail', keyboardType: 'email-address', model: 'confirmEmail' },
                 { label: 'Password', keyboardType: 'default', model: 'password' },
@@ -63,10 +71,10 @@ export class Signup extends React.Component {
                 <FormElement label={ item.label }
                   key={ item.model }>
                   <TextInput
-                    onChangeText={(text) => this.setState({ [item.model]: text })}
+                    onChangeText={ (text) => this.setState({ [item.model]: text }) }
                     keyboardType={ item.keyboardType } />
                 </FormElement>
-              ))}
+              )) }
             </View>
           </View>
         </Modal>
@@ -85,7 +93,6 @@ const pageStyles = StyleSheet.create({
     width: '95%'
   },
   showModalText: {
-    fontSize: 20,
     paddingLeft: 10,
   },
   modal: {
@@ -96,9 +103,6 @@ const pageStyles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 10,
-  },
-  modalHeaderText: {
-    fontSize: 24,
   },
   modalBody: {
     padding: 10,

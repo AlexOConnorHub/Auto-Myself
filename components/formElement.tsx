@@ -30,12 +30,9 @@ export default function FormElement(props): React.ReactElement {
 
 const pageStyles = StyleSheet.create({
   formElementInputSection: {
-    marginBottom: 20,
     padding: 10,
   },
   formElementText: {
-    fontSize: 18,
     fontWeight: 'bold',
-    // padding: 10,
   },
 });

@@ -4,7 +4,7 @@ import { KeyboardType, Platform, StyleSheet } from 'react-native';
 import { OptionButtons } from './optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from '@react-navigation/native';
-import { displayTime, provideLocalTime } from '../helpers/localTime';
+import { displayTime, provideLocalTime } from '@app/helpers/localTime';
 
 interface FormStateGeneratorType {
   label: string;
@@ -24,6 +24,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
   const theme = useTheme();
   switch (element.input) {
     case 'dropdown':
+      // @ts-expect-error Defaults for dropdown set in abstraction, results in incomplete props here
       return <Dropdown
         value={ formState[`${formStateKey}_id`] || formState[formStateKey] }
         onChange={(newValue) => {
@@ -37,8 +38,9 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
     case 'optionButtons':
       return <OptionButtons
         value={ formState[formStateKey] }
-        onSelect={(newValue) => {
+        onSelect={(newValue, enable) => {
           onFormStateChange(formStateKey, newValue);
+          enable();
         }}
         options={ element.optionButtonOptions }
         direction="vertical"
@@ -155,7 +157,6 @@ const pageStyles = StyleSheet.create({
     marginVertical: 5,
   },
   dropdownInput: {
-    fontSize: 18,
     paddingLeft: 4,
     paddingVertical: 5,
   },
@@ -163,11 +164,9 @@ const pageStyles = StyleSheet.create({
     padding: 10,
   },
   formElementText: {
-    fontSize: 18,
     fontWeight: 'bold',
   },
   textInput: {
-    fontSize: 18,
     marginVertical: 5,
     paddingLeft: 4,
     paddingVertical: 5,
@@ -180,6 +179,5 @@ const pageStyles = StyleSheet.create({
   toggleText: {
     marginLeft: 10,
     marginVertical: 5,
-    fontSize: 18,
   },
 });

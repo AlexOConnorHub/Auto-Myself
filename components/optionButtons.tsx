@@ -1,29 +1,31 @@
 import React from 'react';
-import { View, Pressable, Text } from './elements';
+import { View } from './elements';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
+import CallbackButton from './callbackButton';
 
 export function OptionButtons(props): React.ReactElement {
   const theme = useTheme();
+
   return (
     <View style={[pageStyles.view, { flexDirection: props.direction === 'vertical' ? 'column' : 'row' }]}>
       {
-        props.options.map((option: { key: string; label: string;}) => {
+        props.options.map((option: { key: string; label: string; label_style?: object }) => {
           return (
-            <Pressable
+            <CallbackButton
               key={option.key}
-              onPress={() => {
-                props.onSelect(option.key);
+              onPress={(callback) => {
+                props.onSelect(option.key, callback);
               }}
-              style={[
-                pageStyles.pressable,
-                {
-                  backgroundColor: props.value === option.key ? theme.colors.primary : theme.colors.card,
-                  width: `${props.direction === 'vertical' ? 95 : 100 / props.options.length}%`,
+              pressable={{
+                style: {
+                  ...pageStyles.pressable,
+                  backgroundColor: props.value === option.key || props.highlightAll ? theme.colors.primary : theme.colors.card,
+                  width: `${props.direction === 'vertical' ? 95 : (100 / props.options.length) - 2}%`,
                 },
-              ]}>
-              <Text style={pageStyles.text}>{option.label}</Text>
-            </Pressable>
+              }}
+              title={option.label}
+            />
           );
         })
       }
@@ -39,9 +41,5 @@ const pageStyles = StyleSheet.create({
     padding: 10,
     margin: 5,
     borderRadius: 5,
-  },
-  text: {
-    fontSize: 20,
-    textAlign: 'center',
   },
 });

@@ -1,14 +1,12 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, Pressable, FlatList } from '../../../components/elements';
-import Card from './card';
+import { View, Text, FlatList } from '@app/components/elements';
 import { useTable } from 'tinybase/ui-react';
-import { ParamListBase, useNavigation } from '@react-navigation/native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import { router } from 'expo-router';
+import { VehicleCard } from '@app/components/cards/vehicle';
+import CallbackButton from '@app/components/callbackButton';
 
-export default function Index(): React.ReactElement {
-  const navigation = useNavigation<StackNavigationProp<ParamListBase>>();
-
+export default function Tab(): React.ReactElement {
   const cars = useTable('cars');
 
   return (
@@ -17,16 +15,19 @@ export default function Index(): React.ReactElement {
         data={ Object.keys(cars).map((key) => {
           return { ...cars[key], id: key };
         }) }
-        renderItem={({ item }) => <Card key={ (item as { id: string }).id } car={ item } /> }
+        renderItem={({ item }) => <VehicleCard key={ (item as { id: string }).id } car={ item } /> }
         ListEmptyComponent={
           <Text style={ pageStyles.emptyText }>Add a car to get started!</Text>
         }
       />
-      <Pressable onPress={() => {
-        navigation.navigate('EditCar', { id: undefined });
-      }} style={ pageStyles.addCarButton }>
-        <Text style={ pageStyles.addCarText }>Add Car</Text>
-      </Pressable>
+      <CallbackButton
+        text={{ style: pageStyles.addCarText }}
+        title="Add Car"
+        pressable={{ style: pageStyles.addCarButton }}
+        onPress={() => {
+          router.push('/vehicle/add');
+        }}
+      />
     </View>
   );
 }
@@ -37,7 +38,6 @@ const pageStyles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   emptyText: {
-    fontSize: 24,
     alignSelf: 'center',
   },
   addCarButton: {
@@ -48,7 +48,6 @@ const pageStyles = StyleSheet.create({
     width: '95%',
   },
   addCarText: {
-    fontSize: 24,
     paddingLeft: 10,
   },
 });
