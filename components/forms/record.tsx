@@ -132,7 +132,9 @@ export default function RecordForm(): React.ReactElement {
   const store = useStore();
   const saveFunction = () => {
     const formatNumber = (input) => {
-      return Number(input.replace(/\D/, ''));
+      const numericString = input.toString().replaceAll(/[^0-9.]/g, '');
+      const parsedNumber = Number.parseFloat(numericString);
+      return Number.isNaN(parsedNumber) ? 0 : parsedNumber;
     };
     const newRow = {
       type: undefined,

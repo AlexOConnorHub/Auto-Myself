@@ -124,7 +124,7 @@ export function Text(props: Readonly<React.ComponentProps<typeof TextPkg>>): Rea
 export function TextInput(props: Readonly<React.ComponentProps<typeof TextInputPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
-    <TextInputPkg { ...props } style={{ backgroundColor: theme.colors.border, color: theme.colors.text, ...props.style as object }}>
+    <TextInputPkg { ...props } style={{ backgroundColor: theme.colors.border, color: theme.colors.text, borderColor: theme.colors.border, ...props.style as object }}>
       { props.children }
     </TextInputPkg>
   );

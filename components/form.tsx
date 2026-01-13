@@ -30,6 +30,10 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
         onChange={(newValue) => {
           onFormStateChange(formStateKey, newValue);
         }}
+        searchQuery={ (keyword: string, labelValue: string) =>
+          // Case insensitive match to start of any word in label
+          labelValue.toLowerCase().split(' ').some(word => word.startsWith(keyword.toLowerCase()))
+        }
         data={ element.dropdownData }
         style={ pageStyles.dropdown }
         selectedTextStyle={ pageStyles.dropdownInput }
