@@ -69,4 +69,9 @@ export const migrations = [
     ]);
     incrementSchemaVersion(store);
   },
+  async (persister: ExpoSqlitePersister) => {
+    const store = persister.getStore() as MergeableStore;
+    store.setCell(tables.settings, 'local', 'sort', 'nickname');
+    incrementSchemaVersion(store);
+  },
 ];

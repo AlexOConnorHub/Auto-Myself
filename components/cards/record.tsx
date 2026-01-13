@@ -17,7 +17,7 @@ export default function RecordCard(props): React.ReactElement {
       <View style={pageStyles.cardRow}>
         <ConditionalText condition={record.odometer}>Odometer: {record.odometer} {distanceUnit}</ConditionalText>
         <ConditionalText condition={record.interval}>Maintenance Interval: {record.interval} {record.interval_unit === 'dist' ? distanceUnit : record.interval_unit}</ConditionalText>
-        <ConditionalText condition={record.cost}>Cost: {record.cost}</ConditionalText>
+        <ConditionalText condition={record.cost}>Cost: ${record.cost}</ConditionalText>
         <ConditionalText condition={record.notes}>{record.notes}</ConditionalText>
         <OptionButtons
           options={[
