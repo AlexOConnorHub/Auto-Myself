@@ -7,6 +7,7 @@ import Form from '@app/components/form';
 import { displayTime, provideLocalTime } from '@app/helpers/localTime';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '../callbackButton';
+import { formatNumberForSave } from '@app/helpers/numbers';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
@@ -131,18 +132,13 @@ export default function RecordForm(): React.ReactElement {
 
   const store = useStore();
   const saveFunction = () => {
-    const formatNumber = (input) => {
-      const numericString = input.toString().replaceAll(/[^0-9.]/g, '');
-      const parsedNumber = Number.parseFloat(numericString);
-      return Number.isNaN(parsedNumber) ? 0 : parsedNumber;
-    };
     const newRow = {
       type: undefined,
       date: undefined,
-      interval: formatNumber(formState.interval),
+      interval: formatNumberForSave(formState.interval, 0),
       interval_unit: formState.interval_unit,
-      cost: formatNumber(formState.cost),
-      odometer: formatNumber(formState.odometer),
+      cost: formatNumberForSave(formState.cost, 2),
+      odometer: formatNumberForSave(formState.odometer, 0),
       notes: formState.notes,
       car_id: vehicle_id,
     };
@@ -154,7 +150,7 @@ export default function RecordForm(): React.ReactElement {
     } else {
       newRow.type = formState.type;
     }
-    newRow.date = displayTime(provideLocalTime(formState.date));
+    newRow.date = displayTime(formState.date);
     return newRow;
   };
 
