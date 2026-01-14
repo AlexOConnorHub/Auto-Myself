@@ -8,7 +8,6 @@ import {
   FlatList as FlatListPkg,
   Modal as ModalPkg,
   Pressable as PressablePkg,
-  StatusBar as StatusBarPkg,
   Text as TextPkg,
   TextInput as TextInputPkg,
   View as ViewPkg,
@@ -102,13 +101,6 @@ export function Pressable(props: React.ComponentProps<typeof PressablePkg>): Rea
     <PressablePkg { ...props } style={[{ backgroundColor: theme.colors.primary, borderRadius: 30 }, props.style as object ]}>
       { props.children }
     </PressablePkg>
-  );
-}
-
-export function StatusBar(props: Readonly<React.ComponentProps<typeof StatusBarPkg>>): React.ReactElement {
-  const theme = useTheme();
-  return (
-    <StatusBarPkg barStyle={ theme.dark ? 'light-content' : 'dark-content' } { ...props }/>
   );
 }
 

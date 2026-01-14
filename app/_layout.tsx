@@ -9,7 +9,6 @@ import { tables } from '@app/database/schema';
 import { setupDatabase } from '@app/database/database';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
-import { StatusBar } from '@app/components/elements';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
 
 const store = createMergeableStore();
@@ -82,7 +81,6 @@ export default wrap(function RootLayout() {
         <KeyboardProvider>
           <ThemeProvider value={ theme }>
             <Slot />
-            <StatusBar />
           </ThemeProvider>
         </KeyboardProvider>
       </Provider>
