@@ -5,6 +5,7 @@ import { MergeableStore } from 'tinybase/mergeable-store';
 import { captureEvent } from '@sentry/react-native';
 import { documentDirectory, getInfoAsync } from 'expo-file-system';
 import { Alert } from 'react-native';
+import { formatNumberForSave } from '@app/helpers/numbers';
 
 function incrementSchemaVersion(store: MergeableStore) {
   const currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
@@ -72,6 +73,25 @@ export const migrations = [
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     store.setCell(tables.settings, 'local', 'sort', 'nickname');
+    incrementSchemaVersion(store);
+  },
+  async (persister: ExpoSqlitePersister) => {
+    const store = persister.getStore() as MergeableStore;
+
+    const ids = store.getRowIds(tables.maintenance_records);
+    for (const id of ids) {
+      const cost = store.getCell(tables.maintenance_records, id, 'cost') as string;
+      const costToSave = formatNumberForSave(cost, 2);
+      store.setCell(tables.maintenance_records, id, 'cost', costToSave);
+
+      const odometer = store.getCell(tables.maintenance_records, id, 'odometer') as string;
+      const odometerToSave = formatNumberForSave(odometer, 0);
+      store.setCell(tables.maintenance_records, id, 'odometer', odometerToSave);
+
+      const interval = store.getCell(tables.maintenance_records, id, 'interval') as string;
+      const intervalToSave = formatNumberForSave(interval, 0);
+      store.setCell(tables.maintenance_records, id, 'interval', intervalToSave);
+    }
     incrementSchemaVersion(store);
   },
 ];
