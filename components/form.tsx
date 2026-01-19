@@ -4,7 +4,7 @@ import { KeyboardType, Platform, StyleSheet } from 'react-native';
 import { OptionButtons } from './optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from '@react-navigation/native';
-import { displayTime, provideLocalTime } from '@app/helpers/localTime';
+import { formatDate, provideDateObj } from '@app/helpers/numbers';
 
 interface FormStateGeneratorType {
   label: string;
@@ -68,7 +68,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
       if (Platform.OS === 'ios') {
         return <DateTimePicker
           mode='date'
-          value={ provideLocalTime(formState[formStateKey]) }
+          value={ provideDateObj(formState[formStateKey]) }
           display='compact'
           onChange={(event, date) => {
             onFormStateChange(formStateKey, date);
@@ -79,14 +79,14 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
           style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
           onPress={ () => DateTimePickerAndroid.open({
             mode: 'date',
-            value: provideLocalTime(formState[formStateKey]),
+            value: provideDateObj(formState[formStateKey]),
             display: 'spinner',
             onChange: (event, date) => {
               onFormStateChange(formStateKey, date);
             },
           }) }>
           <Text style={ pageStyles.toggleText }>
-            { displayTime(formState[formStateKey]) }
+            { formatDate(formState[formStateKey]) }
           </Text>
         </Pressable>;
       }

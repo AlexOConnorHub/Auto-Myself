@@ -11,6 +11,7 @@ import { getDocumentAsync } from 'expo-document-picker';
 import { readAsStringAsync } from 'expo-file-system';
 import { createMergeableStore, MergeableStore } from 'tinybase/mergeable-store';
 import { exportAsFile } from '@app/helpers/fileExport';
+import { getDateString, provideDateObj } from '@app/helpers/numbers';
 
 const milesToKilos = (miles) => {
   return Math.floor(miles * 1.60934);
@@ -56,9 +57,7 @@ export default function Tab(): React.JSX.Element {
   };
 
   const exportJson = () => {
-    const storeJson = store.getJson();
-    const today = new Date();
-    exportAsFile(storeJson, `AutoMyself_Export_${today.toISOString().slice(0, 19)}.json`);
+    exportAsFile(store.getJson(), `AutoMyself_Export_${getDateString(provideDateObj(''))}.json`);
   };
 
   const importHelper = () => {

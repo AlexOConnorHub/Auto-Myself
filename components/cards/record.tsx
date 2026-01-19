@@ -6,7 +6,7 @@ import ConditionalText from '@app/components/conditionalText';
 import Accordion from '../accordion';
 import { OptionButtons } from '../optionButtons';
 import { useDistanceUnit } from '../distanceUnit';
-import { costFormatter, dateFormatter, numberFormatter } from '@app/helpers/numbers';
+import { costFormatter, formatDate, numberFormatter } from '@app/helpers/numbers';
 
 export default function RecordCard(props): React.ReactElement {
   const record = props.record;
@@ -14,7 +14,7 @@ export default function RecordCard(props): React.ReactElement {
   const distanceUnit = useDistanceUnit();
 
   return (
-    <Accordion title={[dateFormatter.format(new Date(record.date)), record.type].join(' ')}>
+    <Accordion title={[formatDate(record.date), record.type].join(' ')}>
       <View style={pageStyles.cardRow}>
         <ConditionalText condition={record.odometer}>Odometer: {numberFormatter.format(record.odometer)} {distanceUnit}</ConditionalText>
         <ConditionalText condition={record.interval}>Maintenance Interval: {numberFormatter.format(record.interval)} {record.interval_unit === 'dist' ? distanceUnit : record.interval_unit}</ConditionalText>
