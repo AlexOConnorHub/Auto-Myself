@@ -28,11 +28,11 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
       return <Dropdown
         value={ formState[`${formStateKey}_id`] || formState[formStateKey] }
         onChange={(newValue) => {
-          onFormStateChange(formStateKey, newValue);
+          onFormStateChange(formStateKey, newValue.value);
         }}
         searchQuery={ (keyword: string, labelValue: string) =>
           // Case insensitive match to start of any word in label
-          labelValue.toLowerCase().split(' ').some(word => word.startsWith(keyword.toLowerCase()))
+          labelValue.toLowerCase().split(' ').some(word => word.startsWith(keyword.toLowerCase().trim()))
         }
         data={ element.dropdownData }
         style={ pageStyles.dropdown }

@@ -1,19 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Keyboard, Alert } from 'react-native';
-import { Pressable, View, Text } from '@app/components/elements';
+import { Pressable, View, Text, Ionicons } from '@app/components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useAddRowCallback, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
-import { makes, models } from '@app/helpers/nhtsa';
+import { makes, models, vinDecode } from '@app/helpers/nhtsa';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '../callbackButton';
+import VinScanner from '../vinScanner';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
   const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
+  const [scanVin, setScanVin] = useState(false);
   const isNewCar = vehicle_id === undefined;
   const formMetaData = {
     nickname: {
@@ -95,18 +97,18 @@ export default function VehicleForm(): React.ReactElement {
       },
     },
   };
-  const row = useRow(tables.cars, vehicle_id) as Record<string, string>;
+  const row = useRow(tables.cars, vehicle_id) as Record<string, (string | number)>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
       state[key] = (
-        (row.make?.length > 0 && row.make_id?.toString().length === 0) ||
-        (row.model?.length > 0 && row.model_id?.toString().length === 0)
+        (`${row.make}`.length > 0 && row.make_id?.toString().length === 0) ||
+        (`${row.model}`.length > 0 && row.model_id?.toString().length === 0)
       );
     } else {
       state[key] = row[key] || '';
     }
     return state;
-  }, {}) as Record<string, string>);
+  }, {}) as Record<string, (string | number)>);
 
   useEffect(() => {
     const doAsync = async () => {
@@ -143,7 +145,7 @@ export default function VehicleForm(): React.ReactElement {
         id_for_uri = formState.make_id;
       }
 
-      setModelArray((await models({ make_id: id_for_uri, modelyear: parseInt(formState.year) })).Results.map((item) => ({
+      setModelArray((await models({ make_id: id_for_uri, modelyear: Number.parseInt(`${formState.year}`) })).Results.map((item) => ({
         value: item.Model_ID,
         label: item.Model_Name,
       })));
@@ -156,9 +158,9 @@ export default function VehicleForm(): React.ReactElement {
     const newRow = {
       nickname: formState.nickname,
       year: formState.year,
-      make: formState.make.toUpperCase(),
+      make: `${formState.make}`.toUpperCase(),
       make_id: formState.make_id,
-      model: formState.model.toUpperCase(),
+      model: `${formState.model}`.toUpperCase(),
       model_id: formState.model_id,
       color: formState.color,
       vin: formState.vin,
@@ -167,11 +169,11 @@ export default function VehicleForm(): React.ReactElement {
     };
 
     if (typeof formState.make_id === 'object') {
-      const make_obj = formState.make_id as { value: string };
+      const make_obj = formState.make_id as { value: number };
       newRow.make_id = make_obj.value;
     }
     if (typeof formState.model_id === 'object') {
-      const model_obj = formState.model_id as { value: string };
+      const model_obj = formState.model_id as { value: number };
       newRow.model_id = model_obj.value;
     };
 
@@ -206,6 +208,41 @@ export default function VehicleForm(): React.ReactElement {
 
   return (
     <View style={ pageStyles.container }>
+      {
+        scanVin ?
+          <>
+            <VinScanner callback={ (vin: string) => {
+              setFormState(prev => ({ ...prev, vin }));
+              vinDecode(vin).then((data) => {
+                console.log(data);
+                if (data.Count > 0) {
+                  const result = data.Results[0];
+                  const newData = {
+                    make_id: Number.parseInt(result.MakeID),
+                    make: result.Make,
+                    model_id: Number.parseInt(result.ModelID),
+                    model: result.Model,
+                    year: result.ModelYear,
+                  };
+                  setFormState(prev => ({
+                    ...newData,
+                    ...prev,
+                  }));
+                }
+              });
+            } } />
+            <Pressable style={pageStyles.pressable} onPress={() => {
+              setScanVin(false);
+            }}>
+              <Text>Cancel</Text>
+            </Pressable>
+          </>
+          :
+          <Pressable style={pageStyles.pressable} onPress={() => setScanVin(true)}>
+            <Ionicons name="camera" size={30} />
+            <Text style={pageStyles.text}>Scan VIN</Text>
+          </Pressable>
+      }
       <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key: string, value: string) => {
         setFormState(prev => ({ ...prev, [key]: value }));
       } } />
@@ -217,12 +254,13 @@ export default function VehicleForm(): React.ReactElement {
               onPress={ confirmDelete.bind(this) }
               style={[
                 pageStyles.pressable,
+                pageStyles.flex,
               ]}>
               <Text style={pageStyles.text}>Delete</Text>
             </Pressable>
         }
         <CallbackButton
-          pressable={{ style: pageStyles.pressable }}
+          pressable={{ style: [pageStyles.pressable, pageStyles.flex] }}
           text={{ style: pageStyles.text }}
           title="Save"
           onPress={isNewCar ? addRecord : updateRecord}
@@ -240,13 +278,18 @@ const pageStyles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  pressable: {
+  flex: {
     flex: 1,
+  },
+  pressable: {
     padding: 10,
     margin: 5,
     borderRadius: 5,
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   text: {
     textAlign: 'center',
+    margin: 5,
   },
 });
