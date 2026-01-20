@@ -3,7 +3,7 @@ import { ExpoSqlitePersister } from 'tinybase/persisters/persister-expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
 import { MergeableStore } from 'tinybase/mergeable-store';
 import { captureEvent } from '@sentry/react-native';
-import { documentDirectory, getInfoAsync } from 'expo-file-system';
+import { Paths, File } from 'expo-file-system';
 import { Alert } from 'react-native';
 import { formatNumberForSave } from '@app/helpers/numbers';
 
@@ -21,9 +21,10 @@ export const migrations = [
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     try {
-      const watermelonDBDirectory = documentDirectory.replace('/files', '');
+      const watermelonDBDirectory = Paths.document.uri.replace('/files', '');
       const watermelonDBFile = 'mycars.db';
-      if ((await getInfoAsync(`${ watermelonDBDirectory }${ watermelonDBFile }`)).exists) {
+      const file = new File(`${ watermelonDBDirectory }${ watermelonDBFile }`);
+      if (file.exists) {
 
         const watermelonDB = openDatabaseSync(watermelonDBFile, {}, watermelonDBDirectory);
         const cars = watermelonDB.getAllSync('SELECT id, nickname, upper(make), model, year, vin, lpn, created_at, updated_at FROM cars;');
