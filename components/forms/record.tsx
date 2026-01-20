@@ -4,10 +4,9 @@ import { View, Text, Pressable } from '@app/components/elements';
 import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore, useTable } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
-import { displayTime, provideLocalTime } from '@app/helpers/localTime';
+import { getDateString, provideDateObj, formatNumberForSave } from '@app/helpers/numbers';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '../callbackButton';
-import { formatNumberForSave } from '@app/helpers/numbers';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
@@ -117,9 +116,9 @@ export default function RecordForm(): React.ReactElement {
     if (key === 'date') {
       if (Object.hasOwn(record, 'date')) {
         const row_date = record[key] as string;
-        state[key] = provideLocalTime(row_date);
+        state[key] = provideDateObj(row_date);
       } else {
-        state[key] = new Date();
+        state[key] = provideDateObj('');
       }
     } else if (typeof record[key] === 'number') {
       state[key] = record[key].toString();
@@ -150,7 +149,12 @@ export default function RecordForm(): React.ReactElement {
     } else {
       newRow.type = formState.type;
     }
-    newRow.date = displayTime(formState.date);
+
+    if (formState.date as Date | string instanceof Date) {
+      newRow.date = getDateString((formState.date as unknown) as Date);
+    } else {
+      newRow.date = formState.date;
+    }
     return newRow;
   };
 
