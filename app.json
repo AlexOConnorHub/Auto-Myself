@@ -2,7 +2,7 @@
   "expo": {
     "name": "Auto Myself",
     "slug": "MyCar-TotalControl",
-    "version": "1.4.3",
+    "version": "1.4.4",
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon-android.png",
@@ -14,7 +14,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.automyself.ios",
-      "buildNumber": "6",
+      "buildNumber": "7",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera for taking photos and videos."
@@ -27,7 +27,7 @@
     },
     "android": {
       "package": "com.anonymous.MyCarTotalControl",
-      "versionCode": 11,
+      "versionCode": 12,
       "edgeToEdgeEnabled": true
     },
     "web": {
