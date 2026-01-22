@@ -8,7 +8,6 @@ import {
   FlatList as FlatListPkg,
   Modal as ModalPkg,
   Pressable as PressablePkg,
-  StatusBar as StatusBarPkg,
   Text as TextPkg,
   TextInput as TextInputPkg,
   View as ViewPkg,
@@ -105,13 +104,6 @@ export function Pressable(props: React.ComponentProps<typeof PressablePkg>): Rea
   );
 }
 
-export function StatusBar(props: Readonly<React.ComponentProps<typeof StatusBarPkg>>): React.ReactElement {
-  const theme = useTheme();
-  return (
-    <StatusBarPkg barStyle={ theme.dark ? 'light-content' : 'dark-content' } { ...props }/>
-  );
-}
-
 export function Text(props: Readonly<React.ComponentProps<typeof TextPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
@@ -124,7 +116,7 @@ export function Text(props: Readonly<React.ComponentProps<typeof TextPkg>>): Rea
 export function TextInput(props: Readonly<React.ComponentProps<typeof TextInputPkg>>): React.ReactElement {
   const theme = useTheme();
   return (
-    <TextInputPkg { ...props } style={{ backgroundColor: theme.colors.border, color: theme.colors.text, ...props.style as object }}>
+    <TextInputPkg { ...props } style={{ backgroundColor: theme.colors.border, color: theme.colors.text, borderColor: theme.colors.border, ...props.style as object }}>
       { props.children }
     </TextInputPkg>
   );
