@@ -8,7 +8,7 @@ import { Alert } from 'react-native';
 import { router } from 'expo-router';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { getDocumentAsync } from 'expo-document-picker';
-import { readAsStringAsync } from 'expo-file-system';
+import { File } from 'expo-file-system';
 import { createMergeableStore, MergeableStore } from 'tinybase/mergeable-store';
 import { exportAsFile } from '@app/helpers/fileExport';
 import { getDateString, provideDateObj } from '@app/helpers/numbers';
@@ -73,7 +73,8 @@ export default function Tab(): React.JSX.Element {
       }
 
       for (const asset of data.assets) {
-        const toImport: object = JSON.parse(await readAsStringAsync(asset.uri));
+        const file = new File(asset.uri);
+        const toImport: object = JSON.parse(await file.text());
         let importFunction: (data: object) => void;
         if (toImport.constructor.name === 'Array') {
           importFunction = importFullDatabase;
