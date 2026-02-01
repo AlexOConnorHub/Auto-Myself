@@ -203,7 +203,14 @@ export default function RecordForm(): React.ReactElement {
           pressable={{ style: pageStyles.pressable }}
           text={{ style: pageStyles.text }}
           title="Save"
-          onPress={isNewRecord ? addRecord : updateRecord}
+          onPress={(callback) => {
+            if (isNewRecord) {
+              addRecord();
+            } else {
+              updateRecord();
+            }
+            callback();
+          }}
         />
       </View>
     </View>

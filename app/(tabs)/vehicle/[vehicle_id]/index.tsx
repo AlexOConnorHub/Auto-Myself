@@ -57,8 +57,9 @@ export default function Records(): React.ReactElement {
           pressable={{ style: pageStyles.actionButton }}
           text={{ style: pageStyles.actionButtonText }}
           title="Add Maintenance"
-          onPress={() => {
+          onPress={(callback) => {
             router.push(`/vehicle/${vehicle_id}/record/add`);
+            callback();
           }}
         />
       </View>

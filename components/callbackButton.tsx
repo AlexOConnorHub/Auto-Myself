@@ -1,26 +1,17 @@
-import React, { useEffect, useRef } from 'react';
+import { useState } from 'react';
 import { Pressable, Text } from './elements';
-import { useNavigation } from 'expo-router';
 
-export default function CallbackButton(props): React.ReactElement {
-  const disabledRef = useRef(false);
-  const navigation = useNavigation();
-
-  useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      disabledRef.current = false;
-    });
-    return unsubscribe;
-  }, [navigation]);
+export default function CallbackButton(props: Readonly<{ pressable?: React.ComponentProps<typeof Pressable>; text?: React.ComponentProps<typeof Text>; title: string; onPress: (callback: () => void) => void }>): React.ReactElement {
+  const [disabled, setDisabled] = useState(false);
 
   return (
     <Pressable
       {...props.pressable}
-      disabled={disabledRef.current}
+      disabled={disabled}
       onPress={() => {
-        if (disabledRef.current) return;
-        disabledRef.current = true;
-        props.onPress(() => disabledRef.current = false);
+        if (disabled) return;
+        setDisabled(true);
+        props.onPress(() => setDisabled(false));
       }}
     >
       <Text {...props.text}>{props.title}</Text>

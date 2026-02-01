@@ -77,8 +77,9 @@ export default function Tab(): React.ReactElement {
         text={{ style: pageStyles.addCarText }}
         title="Add Car"
         pressable={{ style: pageStyles.addCarButton }}
-        onPress={() => {
+        onPress={(callback) => {
           router.push('/vehicle/add');
+          callback();
         }}
       />
     </View>

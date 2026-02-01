@@ -263,7 +263,14 @@ export default function VehicleForm(): React.ReactElement {
           pressable={{ style: [pageStyles.pressable, pageStyles.flex] }}
           text={{ style: pageStyles.text }}
           title="Save"
-          onPress={isNewCar ? addRecord : updateRecord}
+          onPress={(callback) => {
+            if (isNewCar) {
+              addRecord();
+            } else {
+              updateRecord();
+            }
+            callback();
+          }}
         />
       </View>
     </View>
