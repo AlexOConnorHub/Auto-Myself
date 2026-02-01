@@ -213,8 +213,8 @@ export default function VehicleForm(): React.ReactElement {
           <>
             <VinScanner callback={ (vin: string) => {
               setFormState(prev => ({ ...prev, vin }));
+              setScanVin(false);
               vinDecode(vin).then((data) => {
-                console.log(data);
                 if (data.Count > 0) {
                   const result = data.Results[0];
                   const newData = {
@@ -225,8 +225,8 @@ export default function VehicleForm(): React.ReactElement {
                     year: result.ModelYear,
                   };
                   setFormState(prev => ({
-                    ...newData,
                     ...prev,
+                    ...newData,
                   }));
                 }
               });

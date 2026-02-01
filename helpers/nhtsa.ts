@@ -12,13 +12,12 @@ export const makes: () => Promise<{
   url.searchParams.append('format', 'json');
   return fetch(url)
     .then(response => response.json())
-    .then(json => json)
-    .catch(error => console.error(`${url.toString()}: ${error.toString()}`));
+    .then(json => json);
 };
 
 export const models: (data: {
   make_id: number,
-  modelyear: number|null,
+  modelyear?: number,
 }) => Promise<{
   Count: number,
   Message: string,
@@ -31,33 +30,33 @@ export const models: (data: {
   }[]
 }> = async (data) => {
   let uri = 'https://vpic.nhtsa.dot.gov/api/vehicles';
-  if (data.modelyear > 1600 && data.make_id > 0) {
+  if (data.modelyear && data.modelyear > 1600) {
     uri += `/GetModelsForMakeIdYear/makeId/${encodeURIComponent(data.make_id)}/modelyear/${encodeURIComponent(data.modelyear)}`;
   } else {
-    uri += `/GetModelsForMakeId/${encodeURIComponent(data.make_id || 0)}`;
+    uri += `/GetModelsForMakeId/${encodeURIComponent(data.make_id)}`;
   }
   const url = new URL(uri);
   url.searchParams.append('format', 'json');
   return fetch(url)
     .then(response => response.json())
-    .then(json => json)
-    .catch(error => console.error(`${url.toString()}: ${error.toString()}`));
+    .then(json => json);
 };
 
 export const vinDecode: (vin: string) => Promise<{
   Count: number,
   Message: string,
   SearchCriteria: string,
-  Results: {
-    MakeID: number,
-    ModelID: number,
-    ModelYear: number,
-  },
+  Results: [{
+    MakeID: string,
+    Make: string,
+    ModelID: string,
+    Model: string,
+    ModelYear: string,
+  }],
 }> = async (vin) => {
   const url = new URL(`https://vpic.nhtsa.dot.gov/api/vehicles/decodevinvalues/${ encodeURIComponent(vin) }`);
   url.searchParams.append('format', 'json');
   return fetch(url)
     .then(response => response.json())
-    .then(json => json)
-    .catch(error => console.error(`${url.toString()}: ${error.toString()}`));
+    .then(json => json);
 };

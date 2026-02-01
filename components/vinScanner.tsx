@@ -1,6 +1,6 @@
 import { StyleSheet } from 'react-native';
 import { useCameraDevice } from 'react-native-vision-camera';
-import { processScannedTextForVin } from '@app/helpers/vin';
+import { VinFromFragments } from '@app/helpers/vin';
 import { Barcode, useBarcodeScanner } from '@mgcrea/vision-camera-barcode-scanner';
 import { Worklets } from 'react-native-worklets-core';
 import Camera from './camera';
@@ -8,10 +8,12 @@ import { View } from './elements';
 
 export default function VinScanner(props) {
   const device = useCameraDevice('back');
+  const VinFragments = new VinFromFragments();
 
   const processScannedText = Worklets.createRunOnJS((newFragment: string) => {
-    const vin = processScannedTextForVin(newFragment);
-    if (vin.length !== 0) {
+    VinFragments.addFragment(newFragment);
+    const vin = VinFragments.getVin();
+    if (vin !== null) {
       props.callback(vin);
     }
   });
