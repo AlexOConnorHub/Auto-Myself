@@ -1,7 +1,7 @@
 import React from 'react';
-import { DateTimePicker, Dropdown, Ionicons, Pressable, Text, TextInput, View } from './elements';
+import { DateTimePicker, Dropdown, Ionicons, Pressable, Text, TextInput, View } from '@app/components/elements';
 import { KeyboardType, Platform, StyleSheet } from 'react-native';
-import { OptionButtons } from './optionButtons';
+import { OptionButtons } from '@app/components/elements/optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from '@react-navigation/native';
 import { formatDate, provideDateObj } from '@app/helpers/numbers';

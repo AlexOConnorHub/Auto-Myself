@@ -6,7 +6,7 @@ import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { getDateString, provideDateObj, formatNumberForSave } from '@app/helpers/numbers';
 import { router, useLocalSearchParams } from 'expo-router';
-import CallbackButton from '../callbackButton';
+import CallbackButton from '@app/components/elements/callbackButton';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();

@@ -4,7 +4,7 @@ import { View, Text, FlatList, TextInput, Dropdown } from '@app/components/eleme
 import { useCell, useSetCellCallback, useTable } from 'tinybase/ui-react';
 import { router } from 'expo-router';
 import { VehicleCard } from '@app/components/cards/vehicle';
-import CallbackButton from '@app/components/callbackButton';
+import CallbackButton from '@app/components/elements/callbackButton';
 import { tables } from '@app/database/schema';
 import { useTheme } from '@react-navigation/native';
 

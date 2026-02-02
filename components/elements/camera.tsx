@@ -1,5 +1,5 @@
 import { StyleSheet } from 'react-native';
-import { Pressable, Text, View } from './elements';
+import { Pressable, Text, View } from '@app/components/elements';
 import { Camera as CameraPkg, useCameraPermission } from 'react-native-vision-camera';
 import { openSettings } from 'react-native-permissions';
 

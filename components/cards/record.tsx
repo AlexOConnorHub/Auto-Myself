@@ -2,10 +2,10 @@ import React from 'react';
 import { StyleSheet } from 'react-native';
 import { View } from '@app/components/elements';
 import { router } from 'expo-router';
-import ConditionalText from '@app/components/conditionalText';
-import Accordion from '../accordion';
-import { OptionButtons } from '../optionButtons';
-import { useDistanceUnit } from '../distanceUnit';
+import ConditionalText from '@app/components/elements/conditionalText';
+import Accordion from '@app/components/elements/accordion';
+import { OptionButtons } from '@app/components/elements/optionButtons';
+import { useDistanceUnit } from '@app/components/hooks/distanceUnit';
 import { costFormatter, formatDate, numberFormatter } from '@app/helpers/numbers';
 
 export default function RecordCard(props): React.ReactElement {
@@ -24,8 +24,9 @@ export default function RecordCard(props): React.ReactElement {
           options={[
             { label: 'Edit', key: 'edit' },
           ]}
-          onSelect={() => {
+          onSelect={(key, enable) => {
             router.push(`/vehicle/${record.car_id}/record/edit?record_id=${record.id}`);
+            enable();
           }}
           highlightAll={true}
         />

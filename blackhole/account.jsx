@@ -1,7 +1,7 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { View } from '@app/components/elements';
-import CallbackButton from '@app/components/callbackButton';
+import CallbackButton from '@app/components/elements/callbackButton';
 import { Signup } from '@app/blackhole/account/signup.jsx';
 import { Login } from '@app/blackhole/account/login.jsx';
 import { supabase } from '@app/helpers/supabase';

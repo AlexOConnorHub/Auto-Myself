@@ -1,8 +1,8 @@
 import React from 'react';
-import { View } from './elements';
+import { View } from '@app/components/elements';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import CallbackButton from './callbackButton';
+import CallbackButton from '@app/components/elements/callbackButton';
 
 export function OptionButtons(props): React.ReactElement {
   const theme = useTheme();

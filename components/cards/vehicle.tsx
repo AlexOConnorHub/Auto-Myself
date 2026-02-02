@@ -1,9 +1,9 @@
 import { router } from 'expo-router';
-import { View } from '../elements';
-import ConditionalText from '../conditionalText';
+import { View } from '@app/components/elements';
+import ConditionalText from '@app/components/elements/conditionalText';
 import { StyleSheet } from 'react-native';
-import Accordion from '../accordion';
-import { OptionButtons } from '../optionButtons';
+import Accordion from '@app/components/elements/accordion';
+import { OptionButtons } from '../elements/optionButtons';
 import { useStore } from 'tinybase/ui-react';
 import { exportVehicle } from '@app/helpers/vehicleExport';
 
@@ -25,7 +25,7 @@ export function VehicleCard({ car }): React.ReactElement {
             { label: 'Export', key: 'export' },
             { label: 'Records', key: 'records' },
           ]}
-          onSelect={(value) => {
+          onSelect={(value, enable) => {
             switch (value) {
               case 'edit':
                 router.push(`/vehicle/${car.id}/edit`);
@@ -37,6 +37,7 @@ export function VehicleCard({ car }): React.ReactElement {
                 exportVehicle(store, car.id);
                 break;
             }
+            enable();
           }}
           highlightAll={true}
         />

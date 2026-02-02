@@ -7,8 +7,8 @@ import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { makes, models, vinDecode } from '@app/helpers/nhtsa';
 import { router, useLocalSearchParams } from 'expo-router';
-import CallbackButton from '../callbackButton';
-import VinScanner from '../vinScanner';
+import CallbackButton from '@app/components/elements/callbackButton';
+import VinScanner from '@app/components/elements/vinScanner';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();

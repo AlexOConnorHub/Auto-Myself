@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text } from './elements';
+import { Text } from '@app/components/elements';
 
 export default function ConditionalText(props): React.ReactElement {
   if (!props.condition) {

@@ -1,5 +1,5 @@
 import { Ionicons } from '@app/components/elements';
-import { useKeyboardVisible } from '@app/components/keyboardVisible';
+import { useKeyboardVisible } from '@app/components/hooks/keyboardVisible';
 import { Tabs } from 'expo-router';
 
 function HomeLogo(props): React.ReactNode {

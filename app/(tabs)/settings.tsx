@@ -1,7 +1,7 @@
 import React from 'react';
 import { View } from '@app/components/elements';
-import { OptionButtons } from '@app/components/optionButtons';
-import FormElement from '@app/components/formElement';
+import { OptionButtons } from '@app/components/elements/optionButtons';
+import FormElement from '@app/components/elements/formElement';
 import { useCell, useSetCellCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import { Alert } from 'react-native';

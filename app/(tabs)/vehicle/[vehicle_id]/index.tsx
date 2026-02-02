@@ -6,8 +6,8 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { useStore } from 'tinybase/ui-react';
 import { schema, tables } from '@app/database/schema';
 import { createQueries } from 'tinybase';
-import CarNicknameInHeader from '@app/components/carHeader';
-import CallbackButton from '@app/components/callbackButton';
+import CarNicknameInHeader from '@app/components/hooks/carHeader';
+import CallbackButton from '@app/components/elements/callbackButton';
 
 export default function Records(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();

@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect } from 'react';
-import { Ionicons, View, Text, Pressable } from './elements';
+import { Ionicons, View, Text, Pressable } from '@app/components/elements';
 import { useTheme } from '@react-navigation/native';
 import { Animated, LayoutChangeEvent, StyleSheet } from 'react-native';
 
