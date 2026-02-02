@@ -91,7 +91,7 @@ export default function Tab(): React.JSX.Element {
     Alert.alert(
       'Warning',
       'Importing may overwrite existing data! ' +
-      'It is sugested to only use a full export when setting up a new device.',
+      'It is suggested to only use a full export when setting up a new device.',
       [
         {
           text: 'I Understand',
@@ -109,8 +109,8 @@ export default function Tab(): React.JSX.Element {
   };
 
   const importVehicle = (toImport) => {
-    const { records, ...vehcle } = toImport;
-    const car_id = store.addRow(tables.cars, vehcle);
+    const { records, ...vehicle } = toImport;
+    const car_id = store.addRow(tables.cars, vehicle);
     for (const maintenance_record of records) {
       store.addRow(tables.maintenance_records, { ...maintenance_record, car_id: car_id });
     }
