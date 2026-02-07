@@ -5,6 +5,7 @@ import { OptionButtons } from '@app/components/elements/optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
 import { useTheme } from '@react-navigation/native';
 import { formatDate, provideDateObj } from '@app/helpers/numbers';
+import ImagePicker from './elements/imagePicker';
 
 interface FormStateGeneratorType {
   label: string;
@@ -14,7 +15,7 @@ interface FormStateGeneratorType {
   keyboardType?: KeyboardType;
   condition?: { formStateKey: string; value: string; invert?: boolean; };
   disable?: { disable: boolean; label: string; };
-  input?: 'dropdown' | 'text' | 'optionButtons' | 'toggle' | 'date';
+  input?: 'dropdown' | 'text' | 'optionButtons' | 'toggle' | 'date' | 'photoPicker';
   optionButtonOptions?: { key: string; label: string; }[];
   textAreaOptions?: { multiline: boolean; numberOfLines: number; };
   dropdownData?: { label: string; value: string; }[];
@@ -90,6 +91,10 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
           </Text>
         </Pressable>;
       }
+    case 'photoPicker':
+      return <ImagePicker
+        onChange={(result) => onFormStateChange(formStateKey, result)}
+        data={formState[formStateKey]} />;
     default:
       return <TextInput
         value={ formState[formStateKey] }

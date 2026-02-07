@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet } from 'react-native';
 import { View, Text, FlatList } from '@app/components/elements';
 import RecordCard from '@app/components/cards/record';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useStore } from 'tinybase/ui-react';
+import { useResultTable, useStore } from 'tinybase/ui-react';
 import { schema, tables } from '@app/database/schema';
 import { createQueries } from 'tinybase';
 import CarNicknameInHeader from '@app/components/hooks/carHeader';
@@ -14,13 +14,7 @@ export default function Records(): React.ReactElement {
   const store = useStore();
   const queries = createQueries(store);
 
-  const [records, setRecords] = useState({});
-
   useEffect(() => {
-    const toRemove = queries.addResultTableListener('vehicleRecords', (queries) => {
-      setRecords(queries.getResultTable('vehicleRecords'));
-    });
-
     queries.setQueryDefinition(
       'vehicleRecords',
       tables.maintenance_records,
@@ -33,11 +27,12 @@ export default function Records(): React.ReactElement {
     );
 
     return () => {
-      queries.delListener(toRemove);
       queries.delQueryDefinition('vehicleRecords');
+      queries.destroy();
     };
-  }, [vehicle_id]);
+  }, [vehicle_id, queries, store]);
 
+  const records = useResultTable('vehicleRecords', queries);
   return (
     <View style={ pageStyles.container }>
       <CarNicknameInHeader />

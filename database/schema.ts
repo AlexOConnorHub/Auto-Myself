@@ -31,6 +31,12 @@ export const schema = {
   'settings': {
     'distance_unit': { 'type': 'string', 'default': 'Miles' },
     'theme': { 'type': 'string', 'default': 'dark' },
+    'analyticsEnabled': { 'type': 'string', 'default': 'disabled' },
+  },
+  'files': {
+    'local_path': { 'type': 'string' },
+    'related_table': { 'type': 'string' },
+    'related_id': { 'type': 'string' },
   },
   // 'users': {
   //   'name': { 'type': 'string' },
@@ -46,4 +52,5 @@ export const tables = {
   'settings': 'settings',
   // 'users': 'users',
   'schema_version': 'schema_version',
+  'files': 'files',
 };

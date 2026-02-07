@@ -2,13 +2,16 @@ import React, { useEffect, useState } from 'react';
 import { StyleSheet, Keyboard, Alert } from 'react-native';
 import { Pressable, View, Text, Ionicons } from '@app/components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAddRowCallback, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
+import { useAddRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { makes, models, vinDecode } from '@app/helpers/nhtsa';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '@app/components/elements/callbackButton';
 import VinScanner from '@app/components/elements/vinScanner';
+import { createQueries } from 'tinybase';
+import { deleteRecord } from '@app/helpers/delete';
+import { Directory, Paths } from 'expo-file-system';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
@@ -187,7 +190,7 @@ export default function VehicleForm(): React.ReactElement {
     Keyboard.dismiss();
     router.back();
   };
-  const remove = useDelRowCallback(tables.cars, vehicle_id, store, () => goBack(), []);
+
   const confirmDelete = () => {
     return Alert.alert(
       'Delete Vehicle',
@@ -196,7 +199,25 @@ export default function VehicleForm(): React.ReactElement {
         {
           text: 'Yes',
           onPress: () => {
-            remove();
+            const queries = createQueries(store);
+            queries.setQueryDefinition('maintenance_record_for_vehicle_id', tables.maintenance_records, ({ select, where }) => {
+              select('type');
+              where('car_id', vehicle_id);
+            });
+            Object.keys(queries.getResultTable('maintenance_record_for_vehicle_id')).forEach((key) => {
+              deleteRecord(store, key);
+            });
+            queries.delQueryDefinition('maintenance_record_for_vehicle_id');
+            queries.destroy();
+
+            const dir = new Directory(Paths.document, `${vehicle_id}`);
+            if (dir.exists) {
+              dir.delete();
+            }
+
+            store.delRow(tables.vehicles, vehicle_id);
+
+            goBack();
           },
         },
         {

@@ -17,7 +17,7 @@
       "buildNumber": "7",
       "infoPlist": {
         "ITSAppUsesNonExemptEncryption": false,
-        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera for taking photos and videos."
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera"
       },
       "icon": {
         "dark": "./assets/app-icon-ios.png",
@@ -71,7 +71,14 @@
           "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera"
         }
       ],
-      "expo-router"
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+        }
+      ]
     ]
   }
 }

@@ -20,6 +20,7 @@ export const exportVehicle = (store, id: string) => {
   }, null, 4);
 
   queries.delQueryDefinition('exportVehicle_records');
+  queries.destroy();
 
   exportAsFile(final, 'export.json');
 };

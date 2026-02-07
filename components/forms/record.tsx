@@ -1,23 +1,50 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Keyboard, StyleSheet } from 'react-native';
 import { View, Text, Pressable } from '@app/components/elements';
-import { useAddRowCallback, useCell, useDelRowCallback, useRow, useSetRowCallback, useStore, useTable } from 'tinybase/ui-react';
+import { useAddRowCallback, useCell, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { getDateString, provideDateObj, formatNumberForSave } from '@app/helpers/numbers';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '@app/components/elements/callbackButton';
+import { Directory, File, Paths } from 'expo-file-system';
+import { createQueries, Store } from 'tinybase';
+import { deleteRecord } from '@app/helpers/delete';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
+  const store = useStore();
 
-  const carRecords = useTable(tables.maintenance_records);
   const record = useRow(tables.maintenance_records, record_id);
-  const typesObj = {} as Record<string, Record<string, string>>;
 
-  for (const key of Object.keys(carRecords)) {
-    const carRecord = carRecords[key] as Record<string, string>;
+  const queries = createQueries(store);
+
+  useEffect(() => {
+    queries.setQueryDefinition('record_files', tables.files, ({ select, where }) => {
+      select('related_id');
+      where('related_table', tables.maintenance_records);
+      where('related_id', record_id);
+    });
+    queries.setQueryDefinition('record_types', tables.maintenance_records, ({ select, where }) => {
+      select('type');
+      select('date');
+      select('interval');
+      select('interval_unit');
+      where('car_id', vehicle_id);
+    });
+    return () => {
+      queries.delQueryDefinition('record_files');
+      queries.delQueryDefinition('record_types');
+      queries.destroy();
+    };
+  }, [record_id, vehicle_id, store, queries]);
+
+  const fileIds = Object.keys(queries.getResultTable('record_files'));
+  const recordRows = queries.getResultTable('record_types');
+
+  const typesObj = {} as Record<string, Record<string, string>>;
+  for (const carRecord of Object.values(recordRows) as Record<string, string>[]) {
     if (!Object.hasOwn(typesObj, carRecord.type) || carRecord.date > typesObj[carRecord.type].date) {
       typesObj[carRecord.type] ||= {};
       typesObj[carRecord.type].date = carRecord.date;
@@ -104,6 +131,10 @@ export default function RecordForm(): React.ReactElement {
       label: 'Date',
       input: 'date',
     },
+    photos: {
+      label: 'Photos',
+      input: 'photoPicker',
+    },
     notes: {
       label: 'Notes',
       textAreaOptions: {
@@ -120,6 +151,8 @@ export default function RecordForm(): React.ReactElement {
       } else {
         state[key] = provideDateObj('');
       }
+    } else if (key === 'photos') {
+      state[key] = fileIds.map((id) => `${Paths.document.uri}/${vehicle_id}/${record_id}/${id}.jpg`);
     } else if (typeof record[key] === 'number') {
       state[key] = record[key].toString();
     } else {
@@ -129,7 +162,6 @@ export default function RecordForm(): React.ReactElement {
     return state;
   }, {}) as Record<string, string>);
 
-  const store = useStore();
   const saveFunction = () => {
     const newRow = {
       type: undefined,
@@ -158,15 +190,45 @@ export default function RecordForm(): React.ReactElement {
     return newRow;
   };
 
-  const addRecord = useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, () => goBack(), []);
-  const updateRecord = useSetRowCallback(tables.maintenance_records, record_id, saveFunction, [formState], store, () => goBack(), []);
+  const saveFiles = (newId: string | Store) => {
+    const rowId = (isNewRecord ? newId : record_id) as string;
+
+    const files = formState.photos;
+    if (files.length !== 0) {
+      let dir = new Directory(Paths.document, `${vehicle_id}`);
+      if (!dir.exists) {
+        dir.create();
+      }
+      dir = new Directory(Paths.document, `${vehicle_id}/${rowId}`);
+      if (!dir.exists) {
+        dir.create();
+      }
+
+      for (const filePath of files) {
+        const newId = store.addRow(tables.files, {
+          related_table: tables.maintenance_records,
+          related_id: rowId,
+        });
+
+        const currentFile = new File(filePath);
+        const finalFile = new File(dir, `${newId}.jpg`);
+        currentFile.copy(finalFile);
+
+        currentFile.delete();
+      }
+    }
+
+    goBack();
+  };
+
+  const addRecord = useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, saveFiles, [formState]);
+  const updateRecord = useSetRowCallback(tables.maintenance_records, record_id, saveFunction, [formState], store, saveFiles, [formState]);
 
   const goBack = () => {
     Keyboard.dismiss();
     router.back();
   };
 
-  const remove = useDelRowCallback(tables.maintenance_records, record_id, store, () => goBack(), []);
   const confirmDelete = () => {
     return Alert.alert(
       'Delete Record',
@@ -175,7 +237,8 @@ export default function RecordForm(): React.ReactElement {
         {
           text: 'Yes',
           onPress: () => {
-            remove();
+            deleteRecord(store, record_id);
+            goBack();
           },
         },
         {
@@ -204,12 +267,12 @@ export default function RecordForm(): React.ReactElement {
           text={{ style: pageStyles.text }}
           title="Save"
           onPress={(callback) => {
+            callback();
             if (isNewRecord) {
               addRecord();
             } else {
               updateRecord();
             }
-            callback();
           }}
         />
       </View>
