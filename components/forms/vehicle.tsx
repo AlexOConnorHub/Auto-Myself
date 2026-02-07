@@ -97,7 +97,7 @@ export default function VehicleForm(): React.ReactElement {
       },
     },
   };
-  const row = useRow(tables.cars, vehicle_id) as Record<string, (string | number)>;
+  const row = useRow(tables.vehicles, vehicle_id) as Record<string, (string | number)>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
       state[key] = (
@@ -180,8 +180,8 @@ export default function VehicleForm(): React.ReactElement {
     return newRow;
   };
 
-  const addRecord = useAddRowCallback(tables.cars, saveFunction, [formState], store, () => goBack(), []);
-  const updateRecord = useSetRowCallback(tables.cars, vehicle_id, saveFunction, [formState], store, () => goBack(), []);
+  const addRecord = useAddRowCallback(tables.vehicles, saveFunction, [formState], store, () => goBack(), []);
+  const updateRecord = useSetRowCallback(tables.vehicles, vehicle_id, saveFunction, [formState], store, () => goBack(), []);
 
   const goBack = () => {
     Keyboard.dismiss();

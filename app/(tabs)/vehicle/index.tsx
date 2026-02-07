@@ -15,7 +15,7 @@ export default function Tab(): React.ReactElement {
   const sort = useCell(tables.settings, 'local', 'sort') as string;
   const setSort = useSetCellCallback(tables.settings, 'local', 'sort', (newValue: { value: string }) => newValue.value);
 
-  const cars = useTable('cars');
+  const cars = useTable(tables.vehicles);
   const [carsToList, setCarsToList] = useState<Record<string, string | number>[]>([]);
 
   useEffect(() => {

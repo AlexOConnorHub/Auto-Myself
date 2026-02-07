@@ -39,7 +39,7 @@ export const migrations = [
         for (const car of cars) {
           const oldId = (car as Record<string, string>).id;
           delete (car as Record<string, string>).id;
-          const newId = store.addRow(tables.cars, (car as Record<string, string>));
+          const newId = store.addRow(tables.vehicles, (car as Record<string, string>));
           car_mapping[oldId] = newId;
         }
         for (const maintenance_record of maintenance_records) {

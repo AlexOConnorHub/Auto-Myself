@@ -110,7 +110,7 @@ export default function Tab(): React.JSX.Element {
 
   const importVehicle = (toImport) => {
     const { records, ...vehicle } = toImport;
-    const car_id = store.addRow(tables.cars, vehicle);
+    const car_id = store.addRow(tables.vehicles, vehicle);
     for (const maintenance_record of records) {
       store.addRow(tables.maintenance_records, { ...maintenance_record, car_id: car_id });
     }

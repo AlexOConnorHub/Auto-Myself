@@ -3,7 +3,7 @@ import { createQueries } from 'tinybase';
 import { exportAsFile } from './fileExport';
 
 export const exportVehicle = (store, id: string) => {
-  const vehicle = store.getRow(tables.cars, id);
+  const vehicle = store.getRow(tables.vehicles, id);
   delete vehicle.uuid;
   delete vehicle.id;
 

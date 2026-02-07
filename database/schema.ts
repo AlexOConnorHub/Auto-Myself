@@ -40,7 +40,7 @@ export const schema = {
 };
 
 export const tables = {
-  'cars': 'cars',
+  'vehicles': 'cars',
   'maintenance_records': 'maintenance_records',
   // 'permissions': 'permissions',
   'settings': 'settings',
