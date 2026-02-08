@@ -1,5 +1,3 @@
-# Learn more https://docs.github.com/en/get-started/getting-started-with-git/ignoring-files
-
 # dependencies
 node_modules/
 
@@ -30,9 +28,6 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
-.env*.local
-
 # typescript
 *.tsbuildinfo
 
@@ -42,8 +37,8 @@ yarn-error.*
 
 # Secrets
 secrets/*
-
 eas.json
 cert-auto-myself.json
-.env.local
-coverage
+
+# Coverage
+coverage/*
