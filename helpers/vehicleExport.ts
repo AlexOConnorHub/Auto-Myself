@@ -1,26 +1,25 @@
-import { schema, tables } from '@app/database/schema';
-import { createQueries } from 'tinybase';
+import { tables } from '@app/database/schema';
+import { createIndexes, Store } from 'tinybase';
 import { exportAsFile } from './fileExport';
 
-export const exportVehicle = (store, id: string) => {
+export const exportVehicle = (store: Store, id: string) => {
   const vehicle = store.getRow(tables.vehicles, id);
   delete vehicle.uuid;
   delete vehicle.id;
 
-  const queries = createQueries(store);
-  queries.setQueryDefinition('exportVehicle_records', tables.maintenance_records, ({ select, where }) => {
-    for (const column of Object.keys(schema.maintenance_records).filter((col) => !['uuid', 'id', 'car_id'].includes(col))) {
-      select(column);
-    }
-    where('car_id', id);
+  const indexes = createIndexes(store);
+  const records = indexes.getSliceRowIds('byVehicle', id).map((recordId) => {
+    const record = store.getRow(tables.maintenance_records, recordId);
+    delete record.uuid;
+    delete record.id;
+    delete record.car_id;
+    return record;
   });
+
   const final = JSON.stringify({
     ...vehicle,
-    records: Object.values(queries.getResultTable('exportVehicle_records')),
+    records,
   }, null, 4);
 
-  queries.delQueryDefinition('exportVehicle_records');
-  queries.destroy();
-
-  exportAsFile(final, 'export.json');
+  exportAsFile(final, 'export.json', { mimeType: 'application/json', dialogTitle: `Export ${vehicle.name}` });
 };

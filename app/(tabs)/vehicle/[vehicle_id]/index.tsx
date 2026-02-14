@@ -1,48 +1,22 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { StyleSheet } from 'react-native';
 import { View, Text, FlatList } from '@app/components/elements';
 import RecordCard from '@app/components/cards/record';
 import { router, useLocalSearchParams } from 'expo-router';
-import { useResultTable, useStore } from 'tinybase/ui-react';
-import { schema, tables } from '@app/database/schema';
-import { createQueries } from 'tinybase';
+import { useSliceRowIds } from 'tinybase/ui-react';
 import CarNicknameInHeader from '@app/components/hooks/carHeader';
 import CallbackButton from '@app/components/elements/callbackButton';
 
 export default function Records(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
-  const store = useStore();
-  const queries = createQueries(store);
 
-  useEffect(() => {
-    queries.setQueryDefinition(
-      'vehicleRecords',
-      tables.maintenance_records,
-      ({ select, where }) => {
-        for (const column of Object.keys(schema.maintenance_records)) {
-          select(column);
-        }
-        where('car_id', vehicle_id);
-      },
-    );
-
-    return () => {
-      queries.delQueryDefinition('vehicleRecords');
-      queries.destroy();
-    };
-  }, [vehicle_id, queries, store]);
-
-  const records = useResultTable('vehicleRecords', queries);
+  const recordIDs = useSliceRowIds('byVehicle', vehicle_id);
   return (
     <View style={ pageStyles.container }>
       <CarNicknameInHeader />
       <FlatList
-        data={ Object.keys(records).sort((a, b) => {
-          return records[a].date < records[b].date ? 1 : -1;
-        }).map((key) => {
-          return { ...records[key], id: key };
-        }) }
-        renderItem={({ item }) => <RecordCard key={ (item as { id: string }).id } record={ item } /> }
+        data={ recordIDs }
+        renderItem={({ item }) => <RecordCard key={ item } record_id={ item } /> }
         ListEmptyComponent={
           <Text style={ pageStyles.emptyText }>No records</Text>
         }

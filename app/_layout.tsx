@@ -10,8 +10,10 @@ import { setupDatabase } from '@app/database/database';
 import { DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useColorScheme } from 'react-native';
 import { KeyboardProvider } from 'react-native-keyboard-controller';
+import { createIndexes } from 'tinybase';
 
 const store = createMergeableStore();
+const indexes = createIndexes(store);
 
 init({
   dsn: 'https://ec4adae5dfe85a00b368745227de8d66@o4509037304807424.ingest.us.sentry.io/4509037306707968',
@@ -36,7 +38,11 @@ init({
 SplashScreen.preventAutoHideAsync();
 export default wrap(function RootLayout() {
   useEffect(() => {
-    setupDatabase(store).then(() => SplashScreen.hide());
+    setupDatabase(store).then(() => {
+      indexes.setIndexDefinition('byVehicle', tables.maintenance_records, 'car_id', 'date', undefined, (a: string, b: string) => b.localeCompare(a));
+      indexes.setIndexDefinition('byRecord', tables.files, 'related_id');
+      SplashScreen.hide();
+    });
   }, []);
 
   const storedTheme = useCell(tables.settings, 'local', 'theme', store);
@@ -77,7 +83,7 @@ export default wrap(function RootLayout() {
 
   return (
     <StrictMode>
-      <Provider store={store}>
+      <Provider store={store} indexes={indexes}>
         <KeyboardProvider>
           <ThemeProvider value={ theme }>
             <Slot />

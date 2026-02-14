@@ -9,12 +9,11 @@ import { makes, models, vinDecode } from '@app/helpers/nhtsa';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '@app/components/elements/callbackButton';
 import VinScanner from '@app/components/elements/vinScanner';
-import { createQueries } from 'tinybase';
-import { deleteRecord } from '@app/helpers/delete';
-import { Directory, Paths } from 'expo-file-system';
+import { deleteVehicle } from '@app/helpers/delete';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
+  const store = useStore();
   const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
@@ -125,16 +124,14 @@ export default function VehicleForm(): React.ReactElement {
   }, []);
 
   useEffect(() => {
-    if (typeof formState.make_id === 'object') {
-      const make_obj = formState.make_id as { label: string };
-      setFormState(prev => ({ ...prev, make: make_obj.label }));
+    if (!Number.isNaN(Number.parseInt(`${formState.make_id}`))) {
+      setFormState(prev => ({ ...prev, make: makeArray.find((item) => item.value === formState.make_id)?.label || '' }));
     }
   }, [formState.make_id]);
 
   useEffect(() => {
-    if (typeof formState.model_id === 'object') {
-      const model_obj = formState.model_id as { label: string };
-      setFormState(prev => ({ ...prev, model: model_obj.label }));
+    if (!Number.isNaN(Number.parseInt(`${formState.model_id}`))) {
+      setFormState(prev => ({ ...prev, model: modelArray.find((item) => item.value === formState.model_id)?.label || '' }));
     }
   }, [formState.model_id]);
 
@@ -156,7 +153,6 @@ export default function VehicleForm(): React.ReactElement {
     doAsync();
   }, [formState.make_id, (formState.year.toString().length === 4 ? formState.year : null)]);
 
-  const store = useStore();
   const saveFunction = () => {
     const newRow = {
       nickname: formState.nickname,
@@ -199,24 +195,7 @@ export default function VehicleForm(): React.ReactElement {
         {
           text: 'Yes',
           onPress: () => {
-            const queries = createQueries(store);
-            queries.setQueryDefinition('maintenance_record_for_vehicle_id', tables.maintenance_records, ({ select, where }) => {
-              select('type');
-              where('car_id', vehicle_id);
-            });
-            Object.keys(queries.getResultTable('maintenance_record_for_vehicle_id')).forEach((key) => {
-              deleteRecord(store, key);
-            });
-            queries.delQueryDefinition('maintenance_record_for_vehicle_id');
-            queries.destroy();
-
-            const dir = new Directory(Paths.document, `${vehicle_id}`);
-            if (dir.exists) {
-              dir.delete();
-            }
-
-            store.delRow(tables.vehicles, vehicle_id);
-
+            deleteVehicle(store, vehicle_id);
             goBack();
           },
         },

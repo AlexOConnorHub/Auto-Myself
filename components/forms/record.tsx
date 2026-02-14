@@ -1,51 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Alert, Keyboard, StyleSheet } from 'react-native';
 import { View, Text, Pressable } from '@app/components/elements';
-import { useAddRowCallback, useCell, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
+import { useAddRowCallback, useCell, useRow, useSetRowCallback, useSliceRowIds, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { getDateString, provideDateObj, formatNumberForSave } from '@app/helpers/numbers';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '@app/components/elements/callbackButton';
-import { Directory, File, Paths } from 'expo-file-system';
-import { createQueries, Store } from 'tinybase';
+import { MergeableStore, Store } from 'tinybase';
 import { deleteRecord } from '@app/helpers/delete';
+import ImagePicker from '../elements/imagePicker';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
-  const store = useStore();
+  const store = useStore() as MergeableStore;
 
   const record = useRow(tables.maintenance_records, record_id);
 
-  const queries = createQueries(store);
+  const fileIds = useSliceRowIds('byRecord', record_id);
+  const [newFileIds, setNewFileIds] = useState([] as Record<string, string>[]);
+  const recordRows = useSliceRowIds('byVehicle', vehicle_id);
 
-  useEffect(() => {
-    queries.setQueryDefinition('record_files', tables.files, ({ select, where }) => {
-      select('related_id');
-      where('related_table', tables.maintenance_records);
-      where('related_id', record_id);
-    });
-    queries.setQueryDefinition('record_types', tables.maintenance_records, ({ select, where }) => {
-      select('type');
-      select('date');
-      select('interval');
-      select('interval_unit');
-      where('car_id', vehicle_id);
-    });
-    return () => {
-      queries.delQueryDefinition('record_files');
-      queries.delQueryDefinition('record_types');
-      queries.destroy();
-    };
-  }, [record_id, vehicle_id, store, queries]);
-
-  const fileIds = Object.keys(queries.getResultTable('record_files'));
-  const recordRows = queries.getResultTable('record_types');
+  const filesMapped = record_id ? fileIds.map((id) => ({ fileId: id, local_path: store.getCell(tables.files, id, 'local_path'), related_table: store.getCell(tables.files, id, 'related_table') }))
+    .filter((file_data) => file_data.related_table === tables.maintenance_records) : newFileIds;
 
   const typesObj = {} as Record<string, Record<string, string>>;
-  for (const carRecord of Object.values(recordRows) as Record<string, string>[]) {
-    if (!Object.hasOwn(typesObj, carRecord.type) || carRecord.date > typesObj[carRecord.type].date) {
+  for (const carRecordId of recordRows) {
+    const carRecord = store.getRow(tables.maintenance_records, carRecordId) as Record<string, string>;
+    if (!Object.hasOwn(typesObj, carRecord.type)) {
       typesObj[carRecord.type] ||= {};
       typesObj[carRecord.type].date = carRecord.date;
       typesObj[carRecord.type].interval = carRecord.interval;
@@ -53,9 +36,7 @@ export default function RecordForm(): React.ReactElement {
     }
   }
 
-  const typesArray = Object.keys(typesObj).map((key) => {
-    return { ...typesObj[key], label: key, value: key };
-  }).concat([
+  const typesArray = Object.keys(typesObj).concat([
     'Oil change',
     'Coolant flush',
     'Cabin air filter',
@@ -78,9 +59,23 @@ export default function RecordForm(): React.ReactElement {
     'Fuel filter',
     'Fuel injector',
     'Fuel pump',
-  ].filter((item) => !Object.keys(typesObj).includes(item))
-    .map((item) => ({ value: item, label: item })));
-  typesArray.sort((a, b) => a.label.localeCompare(b.label));
+  ].filter((item) => !Object.keys(typesObj).includes(item)))
+    .sort((a, b) => a.localeCompare(b))
+    .map((item) => ({ value: item, label: item }));
+
+  const handleFileChange = (result: Record<string, string>[]) => {
+    for (const file of result) {
+      if (record_id) {
+        store.setRow(tables.files, file.fileId, {
+          local_path: file.local_path,
+          related_table: tables.maintenance_records,
+          related_id: record_id,
+        });
+      } else {
+        setNewFileIds(result);
+      }
+    }
+  };
 
   const isNewRecord = record_id === undefined;
   const formMetaData = {
@@ -133,7 +128,8 @@ export default function RecordForm(): React.ReactElement {
     },
     photos: {
       label: 'Photos',
-      input: 'photoPicker',
+      input: 'custom',
+      element: <ImagePicker onChange={handleFileChange} data={filesMapped} />,
     },
     notes: {
       label: 'Notes',
@@ -143,16 +139,13 @@ export default function RecordForm(): React.ReactElement {
       },
     },
   };
-  const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
+  const [formState, setFormState] = useState(Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'date') {
       if (Object.hasOwn(record, 'date')) {
-        const row_date = record[key] as string;
-        state[key] = provideDateObj(row_date);
+        state[key] = provideDateObj(record[key] as string);
       } else {
         state[key] = provideDateObj('');
       }
-    } else if (key === 'photos') {
-      state[key] = fileIds.map((id) => `${Paths.document.uri}/${vehicle_id}/${record_id}/${id}.jpg`);
     } else if (typeof record[key] === 'number') {
       state[key] = record[key].toString();
     } else {
@@ -166,11 +159,11 @@ export default function RecordForm(): React.ReactElement {
     const newRow = {
       type: undefined,
       date: undefined,
-      interval: formatNumberForSave(formState.interval, 0),
-      interval_unit: formState.interval_unit,
-      cost: formatNumberForSave(formState.cost, 2),
-      odometer: formatNumberForSave(formState.odometer, 0),
-      notes: formState.notes,
+      interval: formatNumberForSave(`${formState.interval}`, 0),
+      interval_unit: formState.interval_unit as unknown as string,
+      cost: formatNumberForSave(`${formState.cost}`, 2),
+      odometer: formatNumberForSave(`${formState.odometer}`, 0),
+      notes: formState.notes as unknown as string,
       car_id: vehicle_id,
     };
     if (formState.new_entry) {
@@ -182,7 +175,7 @@ export default function RecordForm(): React.ReactElement {
       newRow.type = formState.type;
     }
 
-    if (formState.date as Date | string instanceof Date) {
+    if (formState.date as unknown as Date | string instanceof Date) {
       newRow.date = getDateString((formState.date as unknown) as Date);
     } else {
       newRow.date = formState.date;
@@ -191,34 +184,15 @@ export default function RecordForm(): React.ReactElement {
   };
 
   const saveFiles = (newId: string | Store) => {
-    const rowId = (isNewRecord ? newId : record_id) as string;
-
-    const files = formState.photos;
-    if (files.length !== 0) {
-      let dir = new Directory(Paths.document, `${vehicle_id}`);
-      if (!dir.exists) {
-        dir.create();
-      }
-      dir = new Directory(Paths.document, `${vehicle_id}/${rowId}`);
-      if (!dir.exists) {
-        dir.create();
-      }
-
-      for (const filePath of files) {
-        const newId = store.addRow(tables.files, {
+    if (isNewRecord) {
+      for (const file of filesMapped) {
+        store.setRow(tables.files, file.fileId, {
+          local_path: file.local_path,
           related_table: tables.maintenance_records,
-          related_id: rowId,
+          related_id: newId as string,
         });
-
-        const currentFile = new File(filePath);
-        const finalFile = new File(dir, `${newId}.jpg`);
-        currentFile.copy(finalFile);
-
-        currentFile.delete();
       }
     }
-
-    goBack();
   };
 
   const addRecord = useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, saveFiles, [formState]);
@@ -273,6 +247,7 @@ export default function RecordForm(): React.ReactElement {
             } else {
               updateRecord();
             }
+            goBack();
           }}
         />
       </View>

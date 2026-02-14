@@ -1,6 +1,6 @@
 import { router } from 'expo-router';
-import { View } from '@app/components/elements';
-import ConditionalText from '@app/components/elements/conditionalText';
+import { Text, View } from '@app/components/elements';
+import ConditionalView from '@app/components/elements/conditionalView';
 import { StyleSheet } from 'react-native';
 import Accordion from '@app/components/elements/accordion';
 import { OptionButtons } from '../elements/optionButtons';
@@ -15,10 +15,10 @@ export function VehicleCard({ car }): React.ReactElement {
   return (
     <Accordion title={car.nickname || firstRow}>
       <View style={pageStyles.cardRow}>
-        <ConditionalText condition={car.nickname && firstRow}>{firstRow}</ConditionalText>
-        <ConditionalText condition={car.license_plate}>LPN: {car.license_plate}</ConditionalText>
-        <ConditionalText condition={car.vin}>VIN: {car.vin}</ConditionalText>
-        <ConditionalText condition={car.notes}>{car.notes}</ConditionalText>
+        <ConditionalView condition={car.nickname && firstRow}><Text>{firstRow}</Text></ConditionalView>
+        <ConditionalView condition={car.license_plate}><Text>LPN: {car.license_plate}</Text></ConditionalView>
+        <ConditionalView condition={car.vin}><Text>VIN: {car.vin}</Text></ConditionalView>
+        <ConditionalView condition={car.notes}><Text>{car.notes}</Text></ConditionalView>
         <OptionButtons
           options={[
             { label: 'Edit', key: 'edit' },

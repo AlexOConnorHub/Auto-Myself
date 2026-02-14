@@ -1,11 +1,18 @@
 import { ImagePickerOptions, ImagePickerResult, launchCameraAsync, launchImageLibraryAsync, requestCameraPermissionsAsync } from 'expo-image-picker';
 import { FlatList, Ionicons, Text, View } from '../elements';
-import { Image, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { OptionButtons } from './optionButtons';
 import { openSettings } from 'react-native-permissions';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
+import { useStore } from 'tinybase/ui-react';
+import { v7 } from 'uuid';
+import { tables } from '@app/database/schema';
+import { File, Paths } from 'expo-file-system';
+import ImageWithPreview from './imageWithPreview';
 
 export default function ImagePicker(props) {
+  const store = useStore();
+
   const addImages = async (result: ImagePickerResult) => {
     const assets = result.assets.filter((asset) => asset.uri !== undefined);
     const newImages = [];
@@ -16,7 +23,14 @@ export default function ImagePicker(props) {
         format: SaveFormat.JPEG,
         compress: 0.75,
       });
-      newImages.push(result.uri);
+
+      const currentFile = new File(result.uri);
+      const fileID = v7();
+      const destinationFile = new File(Paths.document, 'files', `${fileID}.jpg`);
+      currentFile.copy(destinationFile);
+
+      store.setRow(tables.files, fileID, { local_path: destinationFile.uri });
+      newImages.push({ fileId: fileID, local_path: destinationFile.uri });
     }
     props.onChange([...props.data, ...newImages]);
   };
@@ -73,7 +87,7 @@ export default function ImagePicker(props) {
         horizontal={true}
         keyExtractor={(_, index) => `${index}`}
         data={props.data}
-        renderItem={({ item }) => <Image source={{ uri: item as string }} style={{ width: 100, height: 100, margin: 5 }} />}
+        renderItem={({ item }) => <ImageWithPreview data={item} />}
       />
     </View>
   );

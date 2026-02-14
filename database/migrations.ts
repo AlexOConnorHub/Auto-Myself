@@ -55,6 +55,7 @@ export const migrations = [
   },
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
+    store.setCell(tables.settings, 'local', 'analyticsEnabled', false);
     Alert.alert('Anonymous Reporting', 'Allowing anonymous analytics can be helpful for improving the app and fixing issues. This can be changed at any time in the settings.', [
       {
         text: 'No',

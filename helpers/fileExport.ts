@@ -3,13 +3,30 @@ import { File, Paths } from 'expo-file-system';
 import { isAvailableAsync, shareAsync } from 'expo-sharing';
 import { Alert } from 'react-native';
 
-export async function exportAsFile(data: string, filename: string) {
+export async function exportAsFile(data: string, filename: string, shareData: { mimeType: string, dialogTitle: string }) {
   if (await isAvailableAsync()) {
-    const file = new File(Paths.cache, filename);
-    file.write(data);
-    shareAsync(file.uri, { mimeType: 'application/json', dialogTitle: 'Export AutoMyself Data' });
+    let filepath;
+    let writeData = false;
+    if (filename.length > 0) {
+      filepath = [Paths.cache, filename];
+      writeData = true;
+    } else {
+      filepath = [data];
+    }
+    console.log(filepath);
+    const file = new File(...filepath);
+    if (writeData) {
+      file.write(data);
+    }
+    await shareAsync(file.uri, shareData);
+    file.delete();
   } else {
-    await setStringAsync(data);
-    Alert.alert('Exported', 'Data copied to clipboard. Please save to a file');
+    let alertMessage = 'Data copied to clipboard. Please save to a file';
+    if (filename.length > 0) {
+      alertMessage = 'Failed to export.';
+    } else {
+      await setStringAsync(data);
+    }
+    Alert.alert('Exported', alertMessage);
   }
 }

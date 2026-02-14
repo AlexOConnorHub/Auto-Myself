@@ -1,7 +1,7 @@
 import { VinFromFragments } from './vin';
 
 // All vins are randomly generated from https://www.randomvinbarcode.com
-describe('vin helpers', () => {
+describe('helpers/vin', () => {
   class TestVinFromFragments extends VinFromFragments {
     public testBuildOverlapGraph(strings: string[]): Record<number, number[]> {
       return this.buildOverlapGraph(strings);

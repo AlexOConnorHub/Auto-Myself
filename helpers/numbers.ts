@@ -14,7 +14,7 @@ export const numberFormatter = new Intl.NumberFormat('en-US', { maximumFractionD
  * @param fixed Number of decimal places to fix to
  * @returns
  */
-export const formatNumberForSave = (input: string, fixed: number): number => {
+export const formatNumberForSave = (input: string, fixed = 0): number => {
   const numericString = input.toString().replaceAll(/[^0-9.]/g, '');
   const parsedNumber = Number.parseFloat(numericString);
   return Number.parseFloat(parsedNumber.toFixed(fixed));
@@ -64,3 +64,22 @@ export const provideDateObj = (date: Date | string): Date => {
   }
   return date;
 };
+
+/**
+ * Converts miles to kilometers
+ * @param miles
+ * @returns
+ */
+export const milesToKilos = (miles: number): number => {
+  return miles * 1.60934;
+};
+
+/**
+ * Convert kilometers to miles
+ * @param kilos
+ * @returns
+ */
+export const kilosToMiles = (kilos: number): number => {
+  return kilos / 1.60934;
+};
+

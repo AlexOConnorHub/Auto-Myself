@@ -11,15 +11,7 @@ import { getDocumentAsync } from 'expo-document-picker';
 import { File } from 'expo-file-system';
 import { createMergeableStore, MergeableStore } from 'tinybase/mergeable-store';
 import { exportAsFile } from '@app/helpers/fileExport';
-import { getDateString, provideDateObj } from '@app/helpers/numbers';
-
-const milesToKilos = (miles) => {
-  return Math.floor(miles * 1.60934);
-};
-
-const kilosToMiles = (kilos) => {
-  return Math.floor(kilos / 1.60934);
-};
+import { formatNumberForSave, getDateString, kilosToMiles, milesToKilos, provideDateObj } from '@app/helpers/numbers';
 
 export default function Tab(): React.JSX.Element {
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
@@ -40,9 +32,9 @@ export default function Tab(): React.JSX.Element {
             store.forEachRow(tables.maintenance_records, (rowId) => {
               const row = store.getRow(tables.maintenance_records, rowId);
               if (row) {
-                store.setCell(tables.maintenance_records, rowId, 'odometer', convert(row.odometer));
+                store.setCell(tables.maintenance_records, rowId, 'odometer', formatNumberForSave(`${convert(row.odometer as number)}`));
                 if (row.interval_unit === 'dist') {
-                  store.setCell(tables.maintenance_records, rowId, 'interval', convert(row.interval));
+                  store.setCell(tables.maintenance_records, rowId, 'interval', formatNumberForSave(`${convert(row.interval as number)}`));
                 }
               }
             });
@@ -57,7 +49,7 @@ export default function Tab(): React.JSX.Element {
   };
 
   const exportJson = () => {
-    exportAsFile(store.getJson(), `AutoMyself_Export_${getDateString(provideDateObj(''))}.json`);
+    exportAsFile(store.getJson(), `AutoMyself_Export_${getDateString(provideDateObj(''))}.json`, { mimeType: 'application/json', dialogTitle: 'Export AutoMyself Data' });
   };
 
   const importHelper = () => {

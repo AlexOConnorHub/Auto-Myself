@@ -1,6 +1,6 @@
-import { provideDateObj, getDateString, formatDate, formatNumberForSave, costFormatter, numberFormatter } from './numbers';
+import { provideDateObj, getDateString, formatDate, formatNumberForSave, costFormatter, numberFormatter, kilosToMiles, milesToKilos } from './numbers';
 
-describe('numbers helpers', () => {
+describe('helpers/numbers', () => {
   test('costFormatter', () => {
     expect(costFormatter.format(1234.5)).toBe('$1,234.50');
     expect(costFormatter.format(1000000)).toBe('$1,000,000.00');
@@ -52,5 +52,17 @@ describe('numbers helpers', () => {
     expect(providedToday.getMonth()).toBe(today.getMonth());
     expect(providedToday.getDate()).toBe(today.getDate());
     jest.restoreAllMocks();
+  });
+
+  test('milesToKilos', () => {
+    expect(milesToKilos(0)).toBe(0);
+    expect(milesToKilos(1)).toBeCloseTo(1.60934);
+    expect(milesToKilos(100)).toBeCloseTo(160.934);
+  });
+
+  test('kilosToMiles', () => {
+    expect(kilosToMiles(0)).toBe(0);
+    expect(kilosToMiles(1)).toBeCloseTo(0.621371);
+    expect(kilosToMiles(100)).toBeCloseTo(62.1371);
   });
 });

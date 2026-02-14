@@ -1,6 +1,6 @@
 import { makes, models, vinDecode } from './nhtsa';
 
-describe('nhtsa helpers', () => {
+describe('helpers/nhtsa', () => {
   const makeId = 440; // Example Make_ID for Toyota
 
   test('makes', async () => {
