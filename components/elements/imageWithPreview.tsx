@@ -9,7 +9,6 @@ import { View } from '../elements';
 import { OptionButtons } from './optionButtons';
 import { deleteFile } from '@app/helpers/delete';
 import { useStore } from 'tinybase/ui-react';
-import { File } from 'expo-file-system';
 import { exportAsFile } from '@app/helpers/fileExport';
 
 export default function ImageWithPreview(props) {
@@ -37,6 +36,9 @@ export default function ImageWithPreview(props) {
             onSelect={ (newValue: string, callback: () => void) => {
               if (newValue === 'delete') {
                 deleteFile(store, props.data.fileId);
+                if (props.onDelete) {
+                  props.onDelete(props.data.fileId);
+                }
               } else if (newValue === 'download') {
                 exportAsFile(props.data.local_path, '', { mimeType: 'image/jpeg', dialogTitle: 'Download Image' });
               }

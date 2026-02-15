@@ -33,7 +33,7 @@ export const models: (data: {
   if (data.modelyear && data.modelyear > 1600) {
     uri += `/GetModelsForMakeIdYear/makeId/${encodeURIComponent(data.make_id)}/modelyear/${encodeURIComponent(data.modelyear)}`;
   } else {
-    uri += `/GetModelsForMakeId/${encodeURIComponent(data.make_id)}`;
+    uri += `/GetModelsForMakeId/${encodeURIComponent(data.make_id || 0)}`;
   }
   const url = new URL(uri);
   url.searchParams.append('format', 'json');

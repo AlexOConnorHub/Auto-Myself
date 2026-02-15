@@ -7,7 +7,7 @@ import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { useStore } from 'tinybase/ui-react';
 import { v7 } from 'uuid';
 import { tables } from '@app/database/schema';
-import { File, Paths } from 'expo-file-system';
+import { Directory, File, Paths } from 'expo-file-system';
 import ImageWithPreview from './imageWithPreview';
 
 export default function ImagePicker(props) {
@@ -26,7 +26,11 @@ export default function ImagePicker(props) {
 
       const currentFile = new File(result.uri);
       const fileID = v7();
-      const destinationFile = new File(Paths.document, 'files', `${fileID}.jpg`);
+      const directory = new Directory(Paths.document, 'files');
+      if (!directory.exists) {
+        directory.create();
+      }
+      const destinationFile = new File(directory, `${fileID}.jpg`);
       currentFile.copy(destinationFile);
 
       store.setRow(tables.files, fileID, { local_path: destinationFile.uri });
@@ -67,6 +71,10 @@ export default function ImagePicker(props) {
     }
   };
 
+  const onDelete = (fileId) => {
+    props.onChange(props.data.filter((image) => image.fileId !== fileId));
+  };
+
   return (
     <View {...props.viewProps}>
       <OptionButtons
@@ -87,7 +95,7 @@ export default function ImagePicker(props) {
         horizontal={true}
         keyExtractor={(_, index) => `${index}`}
         data={props.data}
-        renderItem={({ item }) => <ImageWithPreview data={item} />}
+        renderItem={({ item }) => <ImageWithPreview data={item} onDelete={onDelete} />}
       />
     </View>
   );
