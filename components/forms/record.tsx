@@ -9,7 +9,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '@app/components/elements/callbackButton';
 import { MergeableStore, Store } from 'tinybase';
 import { deleteRecord } from '@app/helpers/delete';
-import ImagePicker from '../elements/imagePicker';
+import ImagePicker from '@app/components/elements/imagePicker';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
@@ -26,13 +26,13 @@ export default function RecordForm(): React.ReactElement {
     .filter((file_data) => file_data.related_table === tables.maintenance_records) : newFileIds;
 
   const typesObj = {} as Record<string, Record<string, string>>;
-  for (const carRecordId of recordRows) {
-    const carRecord = store.getRow(tables.maintenance_records, carRecordId) as Record<string, string>;
-    if (!Object.hasOwn(typesObj, carRecord.type)) {
-      typesObj[carRecord.type] ||= {};
-      typesObj[carRecord.type].date = carRecord.date;
-      typesObj[carRecord.type].interval = carRecord.interval;
-      typesObj[carRecord.type].interval_unit = carRecord.interval_unit;
+  for (const vehicleRecordId of recordRows) {
+    const vehicleRecord = store.getRow(tables.maintenance_records, vehicleRecordId) as Record<string, string>;
+    if (!Object.hasOwn(typesObj, vehicleRecord.type)) {
+      typesObj[vehicleRecord.type] ||= {};
+      typesObj[vehicleRecord.type].date = vehicleRecord.date;
+      typesObj[vehicleRecord.type].interval = vehicleRecord.interval;
+      typesObj[vehicleRecord.type].interval_unit = vehicleRecord.interval_unit;
     }
   }
 
@@ -164,7 +164,7 @@ export default function RecordForm(): React.ReactElement {
       cost: formatNumberForSave(`${formState.cost}`, 2),
       odometer: formatNumberForSave(`${formState.odometer}`, 0),
       notes: formState.notes as unknown as string,
-      car_id: vehicle_id,
+      vehicle_id: vehicle_id,
     };
     if (formState.new_entry) {
       newRow.type = formState.type_custom;

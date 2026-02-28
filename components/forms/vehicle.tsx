@@ -18,7 +18,7 @@ export default function VehicleForm(): React.ReactElement {
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
   const [scanVin, setScanVin] = useState(false);
-  const isNewCar = vehicle_id === undefined;
+  const isNewVehicle = vehicle_id === undefined;
   const formMetaData = {
     nickname: {
       label: 'Nickname',
@@ -248,7 +248,7 @@ export default function VehicleForm(): React.ReactElement {
       } } />
       <View style={ pageStyles.view }>
         {
-          !isNewCar &&
+          !isNewVehicle &&
             <Pressable
               key='delete'
               onPress={ confirmDelete.bind(this) }
@@ -264,7 +264,7 @@ export default function VehicleForm(): React.ReactElement {
           text={{ style: pageStyles.text }}
           title="Save"
           onPress={(callback) => {
-            if (isNewCar) {
+            if (isNewVehicle) {
               addRecord();
             } else {
               updateRecord();

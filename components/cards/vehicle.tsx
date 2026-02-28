@@ -3,22 +3,22 @@ import { Text, View } from '@app/components/elements';
 import ConditionalView from '@app/components/elements/conditionalView';
 import { StyleSheet } from 'react-native';
 import Accordion from '@app/components/elements/accordion';
-import { OptionButtons } from '../elements/optionButtons';
+import { OptionButtons } from '@app/components/elements/optionButtons';
 import { useStore } from 'tinybase/ui-react';
-import { exportVehicle } from '@app/helpers/vehicleExport';
+import { exportVehicle } from '@app/helpers/export';
 
-export function VehicleCard({ car }): React.ReactElement {
+export default function VehicleCard({ vehicle }): React.ReactElement {
   const store = useStore();
 
-  const firstRow = [car.color, car.year, car.make, car.model].filter(Boolean).join(' ');
+  const firstRow = [vehicle.color, vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(' ');
 
   return (
-    <Accordion title={car.nickname || firstRow}>
+    <Accordion title={vehicle.nickname || firstRow}>
       <View style={pageStyles.cardRow}>
-        <ConditionalView condition={car.nickname && firstRow}><Text>{firstRow}</Text></ConditionalView>
-        <ConditionalView condition={car.license_plate}><Text>LPN: {car.license_plate}</Text></ConditionalView>
-        <ConditionalView condition={car.vin}><Text>VIN: {car.vin}</Text></ConditionalView>
-        <ConditionalView condition={car.notes}><Text>{car.notes}</Text></ConditionalView>
+        <ConditionalView condition={vehicle.nickname && firstRow}><Text>{firstRow}</Text></ConditionalView>
+        <ConditionalView condition={vehicle.license_plate}><Text>LPN: {vehicle.license_plate}</Text></ConditionalView>
+        <ConditionalView condition={vehicle.vin}><Text>VIN: {vehicle.vin}</Text></ConditionalView>
+        <ConditionalView condition={vehicle.notes}><Text>{vehicle.notes}</Text></ConditionalView>
         <OptionButtons
           options={[
             { label: 'Edit', key: 'edit' },
@@ -28,13 +28,13 @@ export function VehicleCard({ car }): React.ReactElement {
           onSelect={(value, enable) => {
             switch (value) {
               case 'edit':
-                router.push(`/vehicle/${car.id}/edit`);
+                router.push(`/vehicle/${vehicle.id}/edit`);
                 break;
               case 'records':
-                router.push(`/vehicle/${car.id}`);
+                router.push(`/vehicle/${vehicle.id}`);
                 break;
               case 'export':
-                exportVehicle(store, car.id);
+                exportVehicle(store, vehicle.id, true, (vehicle.nickname || firstRow).replaceAll(/\s/g, '_'));
                 break;
             }
             enable();

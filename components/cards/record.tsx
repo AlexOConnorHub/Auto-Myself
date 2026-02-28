@@ -27,7 +27,7 @@ export default function RecordCard(props): React.ReactElement {
             { label: 'Edit', key: 'edit' },
           ]}
           onSelect={(key, enable) => {
-            router.push(`/vehicle/${record.car_id}/record/edit?record_id=${props.record_id}`);
+            router.push(`/vehicle/${record.vehicle_id}/record/edit?record_id=${props.record_id}`);
             enable();
           }}
           highlightAll={true}

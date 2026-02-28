@@ -2,7 +2,7 @@ export const schema = {
   'schema_version': {
     'version': { 'type': 'number' },
   },
-  'cars': {
+  'vehicles': {
     'make': { 'type': 'string' },
     'make_id': { 'type': 'number' },
     'model': { 'type': 'string' },
@@ -22,7 +22,7 @@ export const schema = {
     'notes': { 'type': 'string' },
     'cost': { 'type': 'string' },
     'created_at': { 'type': 'number' },
-    'car_id': { 'type': 'string' },
+    'vehicle_id': { 'type': 'string' },
     'type': { 'type': 'string' },
     'interval': { 'type': 'number' },
     'interval_unit': { 'type': 'string' },
@@ -46,7 +46,7 @@ export const schema = {
 };
 
 export const tables = {
-  'vehicles': 'cars',
+  'vehicles': 'vehicles',
   'maintenance_records': 'maintenance_records',
   // 'permissions': 'permissions',
   'settings': 'settings',

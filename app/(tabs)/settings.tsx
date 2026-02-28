@@ -9,9 +9,10 @@ import { router } from 'expo-router';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { getDocumentAsync } from 'expo-document-picker';
 import { File } from 'expo-file-system';
-import { createMergeableStore, MergeableStore } from 'tinybase/mergeable-store';
-import { exportAsFile } from '@app/helpers/fileExport';
-import { formatNumberForSave, getDateString, kilosToMiles, milesToKilos, provideDateObj } from '@app/helpers/numbers';
+import { MergeableStore } from 'tinybase/mergeable-store';
+import { exportAllVehicles } from '@app/helpers/export';
+import { formatNumberForSave, kilosToMiles, milesToKilos } from '@app/helpers/numbers';
+import { importData } from '@app/helpers/import';
 
 export default function Tab(): React.JSX.Element {
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
@@ -48,64 +49,21 @@ export default function Tab(): React.JSX.Element {
     );
   };
 
-  const exportJson = () => {
-    exportAsFile(store.getJson(), `AutoMyself_Export_${getDateString(provideDateObj(''))}.json`, { mimeType: 'application/json', dialogTitle: 'Export AutoMyself Data' });
-  };
-
   const importHelper = () => {
-    const asyncFunc = async () => {
-      const data = await getDocumentAsync({
-        type: 'application/json',
-        copyToCacheDirectory: true,
-        multiple: true,
-      });
-
+    getDocumentAsync({
+      type: ['application/json', 'application/zip'],
+      copyToCacheDirectory: true,
+      multiple: true,
+    }).then((data) => {
       if (data.canceled) {
         return;
       }
 
       for (const asset of data.assets) {
         const file = new File(asset.uri);
-        const toImport: object = JSON.parse(await file.text());
-        let importFunction: (data: object) => void;
-        if (toImport.constructor.name === 'Array') {
-          importFunction = importFullDatabase;
-        } else {
-          importFunction = importVehicle;
-        }
-        importFunction(toImport);
+        importData(store, file);
       }
-    };
-    asyncFunc();
-  };
-
-  const importFullDatabase = (toImport) => {
-    Alert.alert(
-      'Warning',
-      'Importing may overwrite existing data! ' +
-      'It is suggested to only use a full export when setting up a new device.',
-      [
-        {
-          text: 'I Understand',
-          onPress: () => {
-            const tmp_store = createMergeableStore();
-            tmp_store.setJson(JSON.stringify(toImport));
-            store.merge(tmp_store);
-          },
-        },
-        {
-          text: 'Abort',
-        },
-      ],
-    );
-  };
-
-  const importVehicle = (toImport) => {
-    const { records, ...vehicle } = toImport;
-    const car_id = store.addRow(tables.vehicles, vehicle);
-    for (const maintenance_record of records) {
-      store.addRow(tables.maintenance_records, { ...maintenance_record, car_id: car_id });
-    }
+    });
   };
 
   return (
@@ -186,7 +144,7 @@ export default function Tab(): React.JSX.Element {
           value='export_all'
           onSelect={ (newValue: string, enable: () => void) => {
             if (newValue === 'export_all') {
-              exportJson();
+              exportAllVehicles(store, true);
             }
             enable();
           }}

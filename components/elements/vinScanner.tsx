@@ -3,8 +3,8 @@ import { useCameraDevice } from 'react-native-vision-camera';
 import { VinFromFragments } from '@app/helpers/vin';
 import { Barcode, useBarcodeScanner } from '@mgcrea/vision-camera-barcode-scanner';
 import { Worklets } from 'react-native-worklets-core';
-import Camera from './camera';
-import { Text, View } from '../elements';
+import Camera from '@app/components/elements/camera';
+import { Text, View } from '@app/components/elements';
 
 export default function VinScanner(props) {
   const device = useCameraDevice('back');

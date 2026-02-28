@@ -1,4 +1,4 @@
-import { tables } from './schema';
+import { tables } from '@app/database/schema';
 import { ExpoSqlitePersister } from 'tinybase/persisters/persister-expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
 import { MergeableStore } from 'tinybase/mergeable-store';
@@ -95,5 +95,17 @@ export const migrations = [
       store.setCell(tables.maintenance_records, id, 'interval', intervalToSave);
     }
     incrementSchemaVersion(store);
+  },
+  async (persister: ExpoSqlitePersister) => {
+    const store = persister.getStore() as MergeableStore;
+    const vehicles_data = store.getTable('cars');
+    store.setTable(tables.vehicles, vehicles_data);
+    store.delTable('cars');
+    store.getRowIds(tables.maintenance_records).forEach((id) => {
+      const car_id = store.getCell(tables.maintenance_records, id, 'car_id') as string;
+      store.setCell(tables.maintenance_records, id, 'vehicle_id', car_id);
+      store.delCell(tables.maintenance_records, id, 'car_id');
+    });
+    // incrementSchemaVersion(store);
   },
 ];

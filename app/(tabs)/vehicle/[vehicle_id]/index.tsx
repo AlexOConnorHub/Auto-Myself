@@ -4,7 +4,7 @@ import { View, Text, FlatList } from '@app/components/elements';
 import RecordCard from '@app/components/cards/record';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useSliceRowIds } from 'tinybase/ui-react';
-import CarNicknameInHeader from '@app/components/hooks/carHeader';
+import VehicleNicknameInHeader from '@app/components/hooks/vehicleHeader';
 import CallbackButton from '@app/components/elements/callbackButton';
 
 export default function Records(): React.ReactElement {
@@ -13,7 +13,7 @@ export default function Records(): React.ReactElement {
   const recordIDs = useSliceRowIds('byVehicle', vehicle_id);
   return (
     <View style={ pageStyles.container }>
-      <CarNicknameInHeader />
+      <VehicleNicknameInHeader />
       <FlatList
         data={ recordIDs }
         renderItem={({ item }) => <RecordCard key={ item } record_id={ item } /> }

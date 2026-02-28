@@ -5,11 +5,11 @@ import {
   StyleSheet,
   Modal,
 } from 'react-native';
-import { View } from '../elements';
-import { OptionButtons } from './optionButtons';
+import { View } from '@app/components/elements';
+import { OptionButtons } from '@app/components/elements/optionButtons';
 import { deleteFile } from '@app/helpers/delete';
 import { useStore } from 'tinybase/ui-react';
-import { exportAsFile } from '@app/helpers/fileExport';
+import { shareAsFile } from '@app/helpers/export';
 
 export default function ImageWithPreview(props) {
   const [open, setOpen] = useState(false);
@@ -40,7 +40,7 @@ export default function ImageWithPreview(props) {
                   props.onDelete(props.data.fileId);
                 }
               } else if (newValue === 'download') {
-                exportAsFile(props.data.local_path, '', { mimeType: 'image/jpeg', dialogTitle: 'Download Image' });
+                shareAsFile({ file: props.data.local_path }, { mimeType: 'image/jpeg', dialogTitle: 'Download Image' });
               }
               callback();
               close();

@@ -3,7 +3,7 @@ import { useLocalSearchParams, useNavigation } from 'expo-router';
 import { useEffect } from 'react';
 import { useRow } from 'tinybase/ui-react';
 
-export default function CarNicknameInHeader() {
+export default function VehicleNicknameInHeader() {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id?: string }>();
   const navigation = useNavigation();
   const row = useRow(tables.vehicles, vehicle_id ?? '');

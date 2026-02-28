@@ -39,7 +39,7 @@ SplashScreen.preventAutoHideAsync();
 export default wrap(function RootLayout() {
   useEffect(() => {
     setupDatabase(store).then(() => {
-      indexes.setIndexDefinition('byVehicle', tables.maintenance_records, 'car_id', 'date', undefined, (a: string, b: string) => b.localeCompare(a));
+      indexes.setIndexDefinition('byVehicle', tables.maintenance_records, 'vehicle_id', 'date', undefined, (a: string, b: string) => b.localeCompare(a));
       indexes.setIndexDefinition('byRecord', tables.files, 'related_id');
       SplashScreen.hide();
     });
