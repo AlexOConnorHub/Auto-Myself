@@ -6,6 +6,7 @@ import { captureEvent } from '@sentry/react-native';
 import { Paths, File } from 'expo-file-system';
 import { Alert } from 'react-native';
 import { formatNumberForSave } from '@app/helpers/numbers';
+import { v7 } from 'uuid';
 
 function incrementSchemaVersion(store: MergeableStore) {
   const currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
@@ -13,11 +14,17 @@ function incrementSchemaVersion(store: MergeableStore) {
 }
 
 export const migrations = [
+  /**
+   * Initial state of database. This is where fresh installs get their default settings.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
-    store.setRow(tables.settings, 'local', { distanceUnit: 'Miles', theme: 'auto', analyticsEnabled: false });
+    store.setRow(tables.settings, 'local', { distanceUnit: 'Miles', theme: 'auto', analyticsEnabled: false, sort: 'nickname' });
     incrementSchemaVersion(store);
   },
+  /**
+   * Migrate from WatermelonDB. Likely no longer needed as all known users have updated.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     try {
@@ -53,6 +60,9 @@ export const migrations = [
     }
     incrementSchemaVersion(store);
   },
+  /**
+   * Introducing analytics with opt-in model.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     store.setCell(tables.settings, 'local', 'analyticsEnabled', false);
@@ -72,11 +82,17 @@ export const migrations = [
     ]);
     incrementSchemaVersion(store);
   },
+  /**
+   * Set default sort order for vehicles.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     store.setCell(tables.settings, 'local', 'sort', 'nickname');
     incrementSchemaVersion(store);
   },
+  /**
+   * Introduced stricter number formatting on save. Update all records in database to conform to new formatting.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
 
@@ -96,16 +112,37 @@ export const migrations = [
     }
     incrementSchemaVersion(store);
   },
+  /**
+   * Updating all verbage from "car" to "vehicle".
+   * Also, migrating to uuids instead of sequential ids for all records.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     const vehicles_data = store.getTable('cars');
     store.setTable(tables.vehicles, vehicles_data);
     store.delTable('cars');
-    store.getRowIds(tables.maintenance_records).forEach((id) => {
-      const car_id = store.getCell(tables.maintenance_records, id, 'car_id') as string;
-      store.setCell(tables.maintenance_records, id, 'vehicle_id', car_id);
-      store.delCell(tables.maintenance_records, id, 'car_id');
+
+    store.getRowIds(tables.vehicles).forEach((id) => {
+      const row = store.getRow(tables.vehicles, id) as Record<string, string>;
+      const newVehicleId = v7();
+      store.setRow(tables.vehicles, newVehicleId, row);
+      store.delRow(tables.vehicles, id);
+      store.getRowIds(tables.maintenance_records).forEach((recordId) => {
+        const vehicle_id = store.getCell(tables.maintenance_records, recordId, 'vehicle_id') as string;
+        if (vehicle_id === id) {
+          store.setCell(tables.maintenance_records, recordId, 'car_id', newVehicleId);
+        }
+      });
     });
-    // incrementSchemaVersion(store);
+
+    store.getRowIds(tables.maintenance_records).forEach((id) => {
+      const row = store.getRow(tables.maintenance_records, id) as Record<string, string>;
+      row.vehicle_id = row.car_id;
+      delete row.car_id;
+      const newMaintenanceRecordId = v7();
+      store.setRow(tables.maintenance_records, newMaintenanceRecordId, row);
+      store.delRow(tables.maintenance_records, id);
+    });
+    incrementSchemaVersion(store);
   },
 ];

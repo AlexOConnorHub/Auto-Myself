@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Keyboard, Alert } from 'react-native';
 import { Pressable, View, Text, Ionicons } from '@app/components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAddRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
+import { useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { makes, models, vinDecode } from '@app/helpers/nhtsa';
@@ -10,10 +10,13 @@ import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '@app/components/elements/callbackButton';
 import VinScanner from '@app/components/elements/vinScanner';
 import { deleteVehicle } from '@app/helpers/delete';
+import { Cell, MergeableStore } from 'tinybase';
+import { v7 } from 'uuid';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
-  const store = useStore();
+  const random_id = v7();
+  const store = useStore() as MergeableStore;
   const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
@@ -102,17 +105,32 @@ export default function VehicleForm(): React.ReactElement {
   const row = useRow(tables.vehicles, vehicle_id) as Record<string, (string | number)>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
+      console.log(row);
       state[key] = (
-        (`${row.make}`.length > 0 && row.make_id?.toString().length === 0) ||
-        (`${row.model}`.length > 0 && row.model_id?.toString().length === 0)
+        (`${row.make}`.length > 0 && row.make_id === null) ||
+        (`${row.model}`.length > 0 && row.model_id === null)
       );
+    } else if (['make_id', 'model_id'].includes(key)) {
+      state[key] = { value: row[key], label: row[key.substring(0, key.length - 3)] };
     } else {
       state[key] = row[key] || '';
     }
     return state;
-  }, {}) as Record<string, (string | number)>);
+  }, {} as {
+    nickname: string,
+    year: string,
+    make: string,
+    make_id: { value: number, label: string },
+    model: string,
+    model_id: { value: number, label: string },
+    color: string,
+    vin: string,
+    license_plate: string,
+    notes: string,
+    manual_entry: boolean,
+  }));
 
-  useEffect(() => {
+  useMemo(() => {
     const doAsync = async () => {
       const theMakes = await makes();
       setMakeArray(theMakes.Results.map((item) => ({
@@ -123,64 +141,64 @@ export default function VehicleForm(): React.ReactElement {
     doAsync();
   }, []);
 
-  useEffect(() => {
-    if (!Number.isNaN(Number.parseInt(`${formState.make_id}`))) {
-      setFormState(prev => ({ ...prev, make: makeArray.find((item) => item.value === formState.make_id)?.label || '' }));
-    }
-  }, [formState.make_id]);
-
-  useEffect(() => {
-    if (!Number.isNaN(Number.parseInt(`${formState.model_id}`))) {
-      setFormState(prev => ({ ...prev, model: modelArray.find((item) => item.value === formState.model_id)?.label || '' }));
-    }
-  }, [formState.model_id]);
-
-  useEffect(() => {
+  useMemo(() => {
     const doAsync = async () => {
-      let id_for_uri;
-      if (typeof formState.make_id === 'object') {
-        const make_obj = formState.make_id as { label: string, value: number };
-        id_for_uri = make_obj.value;
-      } else {
-        id_for_uri = formState.make_id;
-      }
+      const make_obj = formState.make_id as unknown as { label: string, value: number };
 
-      setModelArray((await models({ make_id: id_for_uri, modelyear: Number.parseInt(`${formState.year}`) })).Results.map((item) => ({
+      setModelArray((await models({ make_id: make_obj.value, modelyear: Number.parseInt(`${formState.year}`) })).Results.map((item) => ({
         value: item.Model_ID,
         label: item.Model_Name,
       })));
     };
     doAsync();
-  }, [formState.make_id, (formState.year.toString().length === 4 ? formState.year : null)]);
+  }, [formState.make_id.value, (formState.year.toString().length === 4 ? formState.year : null)]);
+
+  useEffect(() => {
+    const makeObj = formState.make_id as unknown as Record<string, string>;
+    if (makeObj.value === 'new_item') {
+      setFormState(prev => ({ ...prev, make: makeObj.search, manual_entry: true }));
+    } else {
+      setFormState(prev => ({ ...prev, make: makeObj.label }));
+    }
+  }, [formState.make_id.value]);
+
+  useEffect(() => {
+    const modelObj = formState.model_id as unknown as Record<string, string>;
+    if (modelObj.value === 'new_item') {
+      setFormState(prev => ({ ...prev, model: modelObj.search, manual_entry: true }));
+    } else {
+      setFormState(prev => ({ ...prev, model: modelObj.label }));
+    }
+  }, [formState.model_id.value]);
 
   const saveFunction = () => {
     const newRow = {
       nickname: formState.nickname,
       year: formState.year,
-      make: `${formState.make}`.toUpperCase(),
-      make_id: formState.make_id,
-      model: `${formState.model}`.toUpperCase(),
-      model_id: formState.model_id,
       color: formState.color,
+      make: null,
+      make_id: null,
+      model: null,
+      model_id: null,
       vin: formState.vin,
       license_plate: formState.license_plate,
       notes: formState.notes,
     };
 
-    if (typeof formState.make_id === 'object') {
-      const make_obj = formState.make_id as { value: number };
-      newRow.make_id = make_obj.value;
+    if (formState.manual_entry) {
+      newRow.make = formState.make;
+      newRow.model = formState.model;
+    } else {
+      newRow.make = formState.make_id.label;
+      newRow.make_id = formState.make_id.value;
+      newRow.model = formState.model_id.label;
+      newRow.model_id = formState.model_id.value;
     }
-    if (typeof formState.model_id === 'object') {
-      const model_obj = formState.model_id as { value: number };
-      newRow.model_id = model_obj.value;
-    };
 
     return newRow;
   };
 
-  const addRecord = useAddRowCallback(tables.vehicles, saveFunction, [formState], store, () => goBack(), []);
-  const updateRecord = useSetRowCallback(tables.vehicles, vehicle_id, saveFunction, [formState], store, () => goBack(), []);
+  const updateRecord = useSetRowCallback(tables.vehicles, isNewVehicle ? random_id : vehicle_id, saveFunction, [formState], store, () => goBack(), []);
 
   const goBack = () => {
     Keyboard.dismiss();
@@ -218,9 +236,9 @@ export default function VehicleForm(): React.ReactElement {
                 if (data.Count > 0) {
                   const result = data.Results[0];
                   const newData = {
-                    make_id: Number.parseInt(result.MakeID),
+                    make_id: { value: Number.parseInt(result.MakeID), label: result.Make },
                     make: result.Make,
-                    model_id: Number.parseInt(result.ModelID),
+                    model_id: { value: Number.parseInt(result.ModelID), label: result.Model },
                     model: result.Model,
                     year: result.ModelYear,
                   };
@@ -243,9 +261,7 @@ export default function VehicleForm(): React.ReactElement {
             <Text style={pageStyles.text}>Scan VIN</Text>
           </Pressable>
       }
-      <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key: string, value: string) => {
-        setFormState(prev => ({ ...prev, [key]: value }));
-      } } />
+      <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ setFormState } />
       <View style={ pageStyles.view }>
         {
           !isNewVehicle &&
@@ -264,11 +280,7 @@ export default function VehicleForm(): React.ReactElement {
           text={{ style: pageStyles.text }}
           title="Save"
           onPress={(callback) => {
-            if (isNewVehicle) {
-              addRecord();
-            } else {
-              updateRecord();
-            }
+            updateRecord();
             callback();
           }}
         />

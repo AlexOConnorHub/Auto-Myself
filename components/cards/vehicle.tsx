@@ -6,9 +6,10 @@ import Accordion from '@app/components/elements/accordion';
 import { OptionButtons } from '@app/components/elements/optionButtons';
 import { useStore } from 'tinybase/ui-react';
 import { exportVehicle } from '@app/helpers/export';
+import { MergeableStore } from 'tinybase';
 
 export default function VehicleCard({ vehicle }): React.ReactElement {
-  const store = useStore();
+  const store = useStore() as MergeableStore;
 
   const firstRow = [vehicle.color, vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(' ');
 

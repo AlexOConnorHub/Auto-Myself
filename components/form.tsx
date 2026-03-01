@@ -28,15 +28,22 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
     case 'dropdown':
       // @ts-expect-error Defaults for dropdown set in abstraction, results in incomplete props here
       return <Dropdown
-        value={ formState[`${formStateKey}_id`] || formState[formStateKey] }
+        value={ formState[formStateKey] }
         onChange={(newValue) => {
-          onFormStateChange(formStateKey, newValue.value);
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: { ...prev[formStateKey], value: newValue.value, label: newValue.label } }));
         }}
-        searchQuery={ (keyword: string, labelValue: string) =>
-          // Case insensitive match to start of any word in label
-          labelValue.toLowerCase().split(' ').some(word => word.startsWith(keyword.toLowerCase().trim()))
-        }
-        data={ element.dropdownData }
+        onChangeText={ (newValue) => {
+          if (newValue.length !== 0) {
+            onFormStateChange(prev => ({ ...prev, [formStateKey]: { ...prev[formStateKey], search: newValue } }));
+          }
+        }}
+        searchQuery={ (keyword: string, labelValue: string) => {
+          if (labelValue === 'New Item') {
+            return true;
+          }
+          return labelValue.toLowerCase().split(' ').some(word => word.startsWith((formState[formStateKey].search || '').toLowerCase().trim()));
+        }}
+        data={ [...element.dropdownData, { label: 'New Item', value: 'new_item' }] }
         style={ pageStyles.dropdown }
         selectedTextStyle={ pageStyles.dropdownInput }
         placeholderStyle={ pageStyles.dropdownInput }
@@ -45,7 +52,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
       return <OptionButtons
         value={ formState[formStateKey] }
         onSelect={(newValue, enable) => {
-          onFormStateChange(formStateKey, newValue);
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: newValue }));
           enable();
         }}
         options={ element.optionButtonOptions }
@@ -55,7 +62,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
       return <Pressable
         style={ pageStyles.togglePressable }
         onPress={() => {
-          onFormStateChange(formStateKey, !formState[formStateKey]);
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: !prev[formStateKey] }));
         }}
       >
         <Text style={ pageStyles.toggleText }>
@@ -73,7 +80,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
           value={ provideDateObj(formState[formStateKey]) }
           display='compact'
           onChange={(event, date) => {
-            onFormStateChange(formStateKey, date);
+            onFormStateChange(prev => ({ ...prev, [formStateKey]: date }));
           }}
         />;
       } else {
@@ -84,7 +91,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
             value: provideDateObj(formState[formStateKey]),
             display: 'spinner',
             onChange: (event, date) => {
-              onFormStateChange(formStateKey, date);
+              onFormStateChange(prev => ({ ...prev, [formStateKey]: date }));
             },
           }) }>
           <Text style={ pageStyles.toggleText }>
@@ -96,7 +103,7 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
       return <TextInput
         value={ formState[formStateKey] }
         onChangeText={(newValue) => {
-          onFormStateChange(formStateKey, newValue);
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: newValue }));
         }}
         keyboardType={ element.keyboardType || 'default' }
         multiline={ element.textAreaOptions?.multiline || false }

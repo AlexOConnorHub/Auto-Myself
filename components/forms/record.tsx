@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { Alert, Keyboard, StyleSheet } from 'react-native';
 import { View, Text, Pressable } from '@app/components/elements';
-import { useAddRowCallback, useCell, useRow, useSetRowCallback, useSliceRowIds, useStore } from 'tinybase/ui-react';
+import { useCell, useRow, useSetRowCallback, useSliceRowIds, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { getDateString, provideDateObj, formatNumberForSave } from '@app/helpers/numbers';
 import { router, useLocalSearchParams } from 'expo-router';
 import CallbackButton from '@app/components/elements/callbackButton';
-import { MergeableStore, Store } from 'tinybase';
+import { MergeableStore } from 'tinybase';
 import { deleteRecord } from '@app/helpers/delete';
 import ImagePicker from '@app/components/elements/imagePicker';
+import { v7 } from 'uuid';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
+  const random_id = v7();
   const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const store = useStore() as MergeableStore;
 
@@ -183,20 +185,19 @@ export default function RecordForm(): React.ReactElement {
     return newRow;
   };
 
-  const saveFiles = (newId: string | Store) => {
+  const saveFiles = () => {
     if (isNewRecord) {
       for (const file of filesMapped) {
         store.setRow(tables.files, file.fileId, {
           local_path: file.local_path,
           related_table: tables.maintenance_records,
-          related_id: newId as string,
+          related_id: random_id,
         });
       }
     }
   };
 
-  const addRecord = useAddRowCallback(tables.maintenance_records, saveFunction, [formState], store, saveFiles, [formState]);
-  const updateRecord = useSetRowCallback(tables.maintenance_records, record_id, saveFunction, [formState], store, saveFiles, [formState]);
+  const updateRecord = useSetRowCallback(tables.maintenance_records, isNewRecord ? random_id : record_id, saveFunction, [formState], store, saveFiles, [formState]);
 
   const goBack = () => {
     Keyboard.dismiss();
@@ -223,7 +224,7 @@ export default function RecordForm(): React.ReactElement {
   };
   return (
     <View style={ pageStyles.container }>
-      <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key, value) => setFormState(prev => ({ ...prev, [key]: value })) } />
+      <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ setFormState } />
       <View style={ pageStyles.view }>
         {
           !isNewRecord &&
@@ -242,11 +243,7 @@ export default function RecordForm(): React.ReactElement {
           title="Save"
           onPress={(callback) => {
             callback();
-            if (isNewRecord) {
-              addRecord();
-            } else {
-              updateRecord();
-            }
+            updateRecord();
             goBack();
           }}
         />

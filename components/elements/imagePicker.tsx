@@ -9,9 +9,10 @@ import { v7 } from 'uuid';
 import { tables } from '@app/database/schema';
 import { Directory, File, Paths } from 'expo-file-system';
 import ImageWithPreview from '@app/components/elements/imageWithPreview';
+import { MergeableStore } from 'tinybase';
 
 export default function ImagePicker(props) {
-  const store = useStore();
+  const store = useStore() as MergeableStore;
 
   const addImages = async (result: ImagePickerResult) => {
     const assets = result.assets.filter((asset) => asset.uri !== undefined);

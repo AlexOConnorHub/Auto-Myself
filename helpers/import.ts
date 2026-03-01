@@ -8,14 +8,16 @@ import { v7 } from 'uuid';
 
 const importVehicle = (store: Store, vehicleData: Record<string, string|object[]>, importDirectory: Directory) => {
   const { records, ...vehicle } = vehicleData;
-  const vehicle_id = store.addRow(tables.vehicles, vehicle as Record<string, string>);
+  const vehicle_id = v7();
+  store.setRow(tables.vehicles, vehicle_id, vehicle as Record<string, string>);
   const destinationDirectory = new Directory(Paths.document, 'files');
   if (!destinationDirectory.exists) {
     destinationDirectory.create();
   }
   for (const maintenance_record of records) {
     const { files, ...record } = maintenance_record as Record<string, string|string[]>;
-    const record_id = store.addRow(tables.maintenance_records, { ...record, vehicle_id: vehicle_id });
+    const record_id = v7();
+    store.setRow(tables.maintenance_records, record_id, { ...record, vehicle_id: vehicle_id });
     for (const file of files as string[]) {
       const fileFromImport = new File(importDirectory, file);
       const fileID = v7();
@@ -58,9 +60,11 @@ const legacyImportFullDatabase = (store, toImport) => {
 
 const legacyImportVehicle = (store, toImport) => {
   const { records, ...vehicle } = toImport;
-  const vehicle_id = store.addRow(tables.vehicles, vehicle);
+  const vehicle_id = v7();
+  store.setRow(tables.vehicles, vehicle_id, vehicle as Record<string, string>);
   for (const maintenance_record of records) {
-    store.addRow(tables.maintenance_records, { ...maintenance_record, vehicle_id: vehicle_id });
+    const record_id = v7();
+    store.setRow(tables.maintenance_records, record_id, { ...maintenance_record, vehicle_id: vehicle_id });
   }
 };
 

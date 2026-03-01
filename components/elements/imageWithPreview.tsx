@@ -10,11 +10,12 @@ import { OptionButtons } from '@app/components/elements/optionButtons';
 import { deleteFile } from '@app/helpers/delete';
 import { useStore } from 'tinybase/ui-react';
 import { shareAsFile } from '@app/helpers/export';
+import { MergeableStore } from 'tinybase';
 
 export default function ImageWithPreview(props) {
   const [open, setOpen] = useState(false);
   const source = { uri: props.data.local_path };
-  const store = useStore();
+  const store = useStore() as MergeableStore;
   const close = () => setOpen(false);
 
   return (
