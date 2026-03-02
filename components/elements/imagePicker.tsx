@@ -1,6 +1,5 @@
 import { ImagePickerOptions, ImagePickerResult, launchCameraAsync, launchImageLibraryAsync, requestCameraPermissionsAsync } from 'expo-image-picker';
-import { FlatList, Ionicons, Text, View } from '@app/components/elements';
-import { StyleSheet } from 'react-native';
+import { FlatList, Ionicons, View } from '@app/components/elements';
 import { OptionButtons } from '@app/components/elements/optionButtons';
 import { openSettings } from 'react-native-permissions';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
@@ -80,8 +79,8 @@ export default function ImagePicker(props) {
     <View {...props.viewProps}>
       <OptionButtons
         options={[
-          { key: 'select_photos', label: <View style={pageStyles.buttonText}><Ionicons name="image" size={20} /><Text style={pageStyles.buttonText}> Select</Text></View> },
-          { key: 'take_photo', label: <View style={pageStyles.buttonText}><Ionicons name="camera" size={20} /><Text style={pageStyles.buttonText}> Take</Text></View> },
+          { key: 'select_photos', icon: <Ionicons name="image" size={20} />, label: 'Select' },
+          { key: 'take_photo', icon: <Ionicons name="camera" size={20} />, label: 'Take' },
         ]}
         direction='horizontal'
         onSelect={(key, callback) => {
@@ -91,6 +90,7 @@ export default function ImagePicker(props) {
             takePhoto(callback);
           }
         }}
+        highlightAll={true}
       />
       <FlatList
         horizontal={true}
@@ -101,10 +101,3 @@ export default function ImagePicker(props) {
     </View>
   );
 }
-
-const pageStyles = StyleSheet.create({
-  buttonText: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-});

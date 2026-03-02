@@ -1,16 +1,17 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Alert, Keyboard, StyleSheet } from 'react-native';
-import { View, Text, Pressable } from '@app/components/elements';
+import { View } from '@app/components/elements';
 import { useCell, useRow, useSetRowCallback, useSliceRowIds, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { getDateString, provideDateObj, formatNumberForSave } from '@app/helpers/numbers';
 import { router, useLocalSearchParams } from 'expo-router';
-import CallbackButton from '@app/components/elements/callbackButton';
 import { MergeableStore } from 'tinybase';
 import { deleteRecord } from '@app/helpers/delete';
 import ImagePicker from '@app/components/elements/imagePicker';
 import { v7 } from 'uuid';
+import { OptionButtons } from '../elements/optionButtons';
+import FormElement from '../elements/formElement';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
@@ -81,21 +82,21 @@ export default function RecordForm(): React.ReactElement {
 
   const isNewRecord = record_id === undefined;
   const formMetaData = {
-    type_custom: {
-      label: 'Maintenance Type',
-      input: 'text',
-      condition: {
-        formStateKey: 'new_entry',
-        value: true,
-      },
-    },
-    type: {
+    type_id: {
       label: 'Maintenance Type',
       input: 'dropdown',
       dropdownData: typesArray,
       condition: {
         formStateKey: 'new_entry',
         value: false,
+      },
+    },
+    type: {
+      label: 'Maintenance Type',
+      input: 'text',
+      condition: {
+        formStateKey: 'new_entry',
+        value: true,
       },
     },
     new_entry: {
@@ -148,6 +149,8 @@ export default function RecordForm(): React.ReactElement {
       } else {
         state[key] = provideDateObj('');
       }
+    } else if (key === 'type_id') {
+      state[key] = { value: record[key.substring(0, key.length - 3)], label: record[key.substring(0, key.length - 3)] };
     } else if (typeof record[key] === 'number') {
       state[key] = record[key].toString();
     } else {
@@ -155,11 +158,29 @@ export default function RecordForm(): React.ReactElement {
     }
 
     return state;
-  }, {}) as Record<string, string>);
+  }, {}) as {
+    type_id: { value: string; label: string, search: string };
+    type: string;
+    new_entry: boolean;
+    interval: string;
+    interval_unit: string;
+    cost: string;
+    odometer: string;
+    date: Date | string;
+    notes: string;
+  });
+
+  useEffect(() => {
+    if (formState.type_id.value === 'new_item') {
+      setFormState(prev => ({ ...prev, type: formState.type_id.search, new_entry: true }));
+    } else {
+      setFormState(prev => ({ ...prev, type: formState.type_id.label }));
+    }
+  }, [formState.type_id.value]);
 
   const saveFunction = () => {
     const newRow = {
-      type: undefined,
+      type: formState.type,
       date: undefined,
       interval: formatNumberForSave(`${formState.interval}`, 0),
       interval_unit: formState.interval_unit as unknown as string,
@@ -168,14 +189,6 @@ export default function RecordForm(): React.ReactElement {
       notes: formState.notes as unknown as string,
       vehicle_id: vehicle_id,
     };
-    if (formState.new_entry) {
-      newRow.type = formState.type_custom;
-    } else if (typeof formState.type === 'object') {
-      const type_dropdown = formState.type as { value: string };
-      newRow.type = type_dropdown.value;
-    } else {
-      newRow.type = formState.type;
-    }
 
     if (formState.date as unknown as Date | string instanceof Date) {
       newRow.date = getDateString((formState.date as unknown) as Date);
@@ -222,32 +235,30 @@ export default function RecordForm(): React.ReactElement {
       ],
     );
   };
+  const finalOptions = [
+    { label: 'Save', key: 'save' },
+  ];
+  if (!isNewRecord) {
+    finalOptions.unshift({ label: 'Delete', key: 'delete' });
+  }
   return (
     <View style={ pageStyles.container }>
       <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ setFormState } />
-      <View style={ pageStyles.view }>
-        {
-          !isNewRecord &&
-            <Pressable
-              key='delete'
-              onPress={ confirmDelete.bind(this) }
-              style={[
-                pageStyles.pressable,
-              ]}>
-              <Text style={pageStyles.text}>Delete</Text>
-            </Pressable>
-        }
-        <CallbackButton
-          pressable={{ style: pageStyles.pressable }}
-          text={{ style: pageStyles.text }}
-          title="Save"
-          onPress={(callback) => {
+      <FormElement>
+        <OptionButtons
+          options={finalOptions}
+          onSelect={(key, callback) => {
+            if (key === 'delete') {
+              confirmDelete();
+            } else if (key === 'save') {
+              updateRecord();
+              goBack();
+            }
             callback();
-            updateRecord();
-            goBack();
           }}
+          highlightAll={true}
         />
-      </View>
+      </FormElement>
     </View>
   );
 }

@@ -1,17 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Keyboard, Alert } from 'react-native';
-import { Pressable, View, Text, Ionicons } from '@app/components/elements';
+import { View, Ionicons } from '@app/components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
 import { useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
 import { makes, models, vinDecode } from '@app/helpers/nhtsa';
 import { router, useLocalSearchParams } from 'expo-router';
-import CallbackButton from '@app/components/elements/callbackButton';
 import VinScanner from '@app/components/elements/vinScanner';
 import { deleteVehicle } from '@app/helpers/delete';
-import { Cell, MergeableStore } from 'tinybase';
+import { MergeableStore } from 'tinybase';
 import { v7 } from 'uuid';
+import { OptionButtons } from '../elements/optionButtons';
+import FormElement from '../elements/formElement';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
@@ -224,6 +225,13 @@ export default function VehicleForm(): React.ReactElement {
     );
   };
 
+  const finalOptions = [
+    { label: 'Save', key: 'save' },
+  ];
+  if (!isNewVehicle) {
+    finalOptions.unshift({ label: 'Delete', key: 'delete' });
+  }
+
   return (
     <View style={ pageStyles.container }>
       {
@@ -249,42 +257,45 @@ export default function VehicleForm(): React.ReactElement {
                 }
               });
             } } />
-            <Pressable style={pageStyles.pressable} onPress={() => {
-              setScanVin(false);
-            }}>
-              <Text>Cancel</Text>
-            </Pressable>
+            <OptionButtons
+              options={[
+                { label: 'Cancel', key: 'cancel' },
+              ]}
+              onSelect={ (newValue: string, callback: () => void) => {
+                callback();
+                setScanVin(false);
+              } }
+              highlightAll={true}
+            />
           </>
           :
-          <Pressable style={pageStyles.pressable} onPress={() => setScanVin(true)}>
-            <Ionicons name="camera" size={30} />
-            <Text style={pageStyles.text}>Scan VIN</Text>
-          </Pressable>
+          <OptionButtons
+            options={[
+              { label: 'Scan VIN', key: 'scan_vin', icon: <Ionicons name="camera" size={20} /> },
+            ]}
+            onSelect={ (newValue: string, callback: () => void) => {
+              callback();
+              setScanVin(true);
+            } }
+            highlightAll={true}
+          />
       }
       <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ setFormState } />
-      <View style={ pageStyles.view }>
-        {
-          !isNewVehicle &&
-            <Pressable
-              key='delete'
-              onPress={ confirmDelete.bind(this) }
-              style={[
-                pageStyles.pressable,
-                pageStyles.flex,
-              ]}>
-              <Text style={pageStyles.text}>Delete</Text>
-            </Pressable>
-        }
-        <CallbackButton
-          pressable={{ style: [pageStyles.pressable, pageStyles.flex] }}
-          text={{ style: pageStyles.text }}
-          title="Save"
-          onPress={(callback) => {
-            updateRecord();
+      <FormElement>
+        <OptionButtons
+          options={finalOptions}
+          onSelect={(key, callback) => {
+            if (key === 'delete') {
+              confirmDelete();
+            } else if (key === 'save') {
+              updateRecord();
+              goBack();
+            }
             callback();
           }}
+          highlightAll={true}
         />
-      </View>
+      </FormElement>
     </View>
   );
 }

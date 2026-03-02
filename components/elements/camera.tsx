@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
-import { Pressable, Text, View } from '@app/components/elements';
+import { Text, View } from '@app/components/elements';
 import { Camera as CameraPkg, useCameraPermission } from 'react-native-vision-camera';
 import { openSettings } from 'react-native-permissions';
+import { OptionButtons } from './optionButtons';
 
 export default function Camera(props) {
   const { hasPermission, requestPermission } = useCameraPermission();
@@ -18,9 +19,13 @@ export default function Camera(props) {
           :
           <>
             <Text> Camera permission is required to use this feature. Please grant camera access in your device settings.</Text>
-            <Pressable style={pageStyles.pressable} onPress={() => openSettings()}>
-              <Text style={pageStyles.text}>Open Settings</Text>
-            </Pressable>
+            <OptionButtons
+              options={[{ label: 'Open Settings', key: 'settings' }]}
+              onSelect={ (value: string, callback: () => void) => {
+                openSettings();
+                callback();
+              } }
+              highlightAll={true} />
           </>
       }
     </View>

@@ -1,9 +1,8 @@
 import React from 'react';
-import { DateTimePicker, Dropdown, Ionicons, Pressable, Text, TextInput, View } from '@app/components/elements';
+import { DateTimePicker, Dropdown, Ionicons, Text, TextInput, View } from '@app/components/elements';
 import { KeyboardType, Platform, StyleSheet } from 'react-native';
 import { OptionButtons } from '@app/components/elements/optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useTheme } from '@react-navigation/native';
 import { formatDate, provideDateObj } from '@app/helpers/numbers';
 
 interface FormStateGeneratorType {
@@ -21,7 +20,6 @@ interface FormStateGeneratorType {
 };
 
 const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) => {
-  const theme = useTheme();
   switch (element.input) {
     case 'custom':
       return element.element;
@@ -59,20 +57,18 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
         direction="vertical"
       />;
     case 'toggle':
-      return <Pressable
-        style={ pageStyles.togglePressable }
-        onPress={() => {
+      return <OptionButtons
+        options={[
+          { label: element.toggleLabel, icon: formState[formStateKey]
+            ? <Ionicons name="checkmark-circle-outline" size={15} />
+            : <Ionicons name="ellipse-outline" size={15} />, key: 'toggle' },
+        ]}
+        onSelect={ (newValue: string, callback: () => void) => {
           onFormStateChange(prev => ({ ...prev, [formStateKey]: !prev[formStateKey] }));
-        }}
-      >
-        <Text style={ pageStyles.toggleText }>
-          {
-            formState[formStateKey] ?
-              <Ionicons size={15} name="checkmark-circle-outline"/> :
-              <Ionicons size={15} name="ellipse-outline"/>
-          } { element.toggleLabel }
-        </Text>
-      </Pressable>;
+          callback();
+        } }
+        highlightAll={true}
+      />;
     case 'date':
       if (Platform.OS === 'ios') {
         return <DateTimePicker
@@ -84,20 +80,23 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
           }}
         />;
       } else {
-        return <Pressable
-          style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
-          onPress={ () => DateTimePickerAndroid.open({
-            mode: 'date',
-            value: provideDateObj(formState[formStateKey]),
-            display: 'spinner',
-            onChange: (event, date) => {
-              onFormStateChange(prev => ({ ...prev, [formStateKey]: date }));
-            },
-          }) }>
-          <Text style={ pageStyles.toggleText }>
-            { formatDate(formState[formStateKey]) }
-          </Text>
-        </Pressable>;
+        return <OptionButtons
+          options={[
+            { label: formatDate(formState[formStateKey]), key: 'open_picker' },
+          ]}
+          onSelect={ (newValue: string, callback: () => void) => {
+            callback();
+            DateTimePickerAndroid.open({
+              mode: 'date',
+              value: provideDateObj(formState[formStateKey]),
+              display: 'spinner',
+              onChange: (event, date) => {
+                onFormStateChange(prev => ({ ...prev, [formStateKey]: date }));
+              },
+            });
+          } }
+          highlightAll={true}
+        />;
       }
     default:
       return <TextInput
@@ -183,11 +182,6 @@ const pageStyles = StyleSheet.create({
     marginVertical: 5,
     paddingLeft: 4,
     paddingVertical: 5,
-  },
-  togglePressable: {
-    borderRadius: 3,
-    flexDirection: 'row',
-    alignContent: 'center',
   },
   toggleText: {
     marginLeft: 10,

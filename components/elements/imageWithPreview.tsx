@@ -41,11 +41,12 @@ export default function ImageWithPreview(props) {
                   props.onDelete(props.data.fileId);
                 }
               } else if (newValue === 'download') {
-                shareAsFile({ file: props.data.local_path }, { mimeType: 'image/jpeg', dialogTitle: 'Download Image' });
+                shareAsFile({ file: props.data.local_path }, { mimeType: 'image/jpeg', dialogTitle: 'Download Image', UTI: 'public.jpeg' });
               }
               callback();
               close();
             } }
+            highlightAll={true}
             />
           </View>
         </View>

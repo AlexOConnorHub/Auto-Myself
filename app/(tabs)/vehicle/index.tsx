@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, FlatList, TextInput, Dropdown } from '@app/components/elements';
+import { View, Text, FlatList, TextInput, Dropdown, Ionicons } from '@app/components/elements';
 import { useCell, useSetCellCallback, useTable } from 'tinybase/ui-react';
 import { router } from 'expo-router';
 import VehicleCard from '@app/components/cards/vehicle';
-import CallbackButton from '@app/components/elements/callbackButton';
 import { tables } from '@app/database/schema';
 import { useTheme } from '@react-navigation/native';
+import { OptionButtons } from '@app/components/elements/optionButtons';
 
 export default function Tab(): React.ReactElement {
   const theme = useTheme();
@@ -24,11 +24,11 @@ export default function Tab(): React.ReactElement {
     });
     filteredVehicles = filteredVehicles.filter((vehicle) => {
       const searchLower = search.toLowerCase();
-      const nickname = (vehicle).nickname.toLowerCase();
-      const make = (vehicle).make.toLowerCase();
-      const model = (vehicle).model.toLowerCase();
-      const year = (vehicle).year.toString();
-      const notes = (vehicle).notes.toLowerCase();
+      const nickname = `${vehicle.nickname}`.toLowerCase();
+      const make = `${vehicle.make}`.toLowerCase();
+      const model = `${vehicle.model}`.toLowerCase();
+      const year = `${vehicle.year}`.toString();
+      const notes = `${vehicle.notes}`.toLowerCase();
       return (
         nickname.includes(searchLower) ||
         make.includes(searchLower) ||
@@ -73,14 +73,15 @@ export default function Tab(): React.ReactElement {
         renderItem={ ({ item }) => <VehicleCard key={ (item as { id: string }).id } vehicle={ item } /> }
         ListEmptyComponent={ <Text style={ pageStyles.emptyText }>Add a vehicle to get started!</Text> }
       />
-      <CallbackButton
-        text={{ style: pageStyles.addVehicleText }}
-        title="Add Vehicle"
-        pressable={{ style: pageStyles.addVehicleButton }}
-        onPress={(callback) => {
+      <OptionButtons
+        options={[
+          { label: 'Add Vehicle', key: 'add', icon: <Ionicons name="add-circle" size={20} /> },
+        ]}
+        onSelect={ (value, enable) => {
           router.push('/vehicle/add');
-          callback();
-        }}
+          enable();
+        } }
+        highlightAll={true}
       />
     </View>
   );

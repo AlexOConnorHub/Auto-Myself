@@ -3,13 +3,13 @@ import { createIndexes, Row, Store } from 'tinybase';
 import { Directory, File, Paths } from 'expo-file-system';
 import { zip } from 'react-native-zip-archive';
 import { setStringAsync } from 'expo-clipboard';
-import { isAvailableAsync, shareAsync } from 'expo-sharing';
+import { isAvailableAsync, shareAsync, SharingOptions } from 'expo-sharing';
 import { Alert } from 'react-native';
 import { getDateString, provideDateObj } from './numbers';
 const exportDir = new Directory(Paths.cache, 'export');
 const filesDir = new Directory(exportDir, 'files');
 
-export async function shareAsFile(data: {data?: string, file: string}, shareData: { mimeType: string, dialogTitle: string }) {
+export async function shareAsFile(data: {data?: string, file: string}, shareData: SharingOptions) {
   if (await isAvailableAsync()) {
     let filename = data.file;
     if (data.data) {
@@ -95,7 +95,7 @@ const exportData = (data: object, includeFiles: boolean, exportBaseName: string)
   jsonFile.write(JSON.stringify(data, null, 4));
 
   if (!includeFiles) {
-    shareAsFile({ file: jsonFile.uri }, { mimeType: 'application/json', dialogTitle: `Export ${exportBaseName}` });
+    shareAsFile({ file: jsonFile.uri }, { mimeType: 'application/json', dialogTitle: `Export ${exportBaseName}`, UTI: 'public.json' });
     cleanupExportDirectory();
     return;
   }
@@ -107,7 +107,7 @@ const exportData = (data: object, includeFiles: boolean, exportBaseName: string)
 
   zip(exportDir.uri, zipFile.uri)
     .then(() => {
-      shareAsFile({ file: zipFile.uri }, { mimeType: 'application/zip', dialogTitle: `Export ${exportBaseName}` });
+      shareAsFile({ file: zipFile.uri }, { mimeType: 'application/zip', dialogTitle: `Export ${exportBaseName}`, UTI: 'public.zip-archive' });
     })
     .catch((error) => {
       console.error(error);
