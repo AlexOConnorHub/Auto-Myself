@@ -42,3 +42,8 @@ cert-auto-myself.json
 
 # Coverage
 coverage/*
+
+# Builds
+*.aab
+*.apk
+*.ipa
