@@ -5,7 +5,7 @@
 - Photos can now be added to maintenance records!
 - When photos are not attached to a record, the settings page will have an "Abandoned Photos" section to view, download, and delete these items.
 - Exported data is now in `.zip` format. Photos are located in the contained `files` directory and `data.json` contains all the data for vehicles and maintenance records, with references to the photo files.
-- Imporved UX for adding items not preexisting in dropdowns by adding "New Item" option, which when selected toggles the "Manual Entry" button and pre-fills the text input with the data from the serach text input.
+- Improved UX for adding items not preexisting in dropdowns by adding "New Item" option, which when selected toggles the "Manual Entry" button and pre-fills the text input with the data from the search text input.
 
 ## 1.3.4
 
