@@ -1,11 +1,10 @@
 import React from 'react';
-import { View } from '@app/components/elements';
+import { FlatList, KeyboardAwareScrollView } from '@app/components/elements';
 import { OptionButtons } from '@app/components/elements/optionButtons';
 import FormElement from '@app/components/elements/formElement';
-import { useCell, useSetCellCallback, useStore } from 'tinybase/ui-react';
+import { useCell, useRowIds, useSetCellCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import { Alert } from 'react-native';
-import { router } from 'expo-router';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { getDocumentAsync } from 'expo-document-picker';
 import { File } from 'expo-file-system';
@@ -13,6 +12,9 @@ import { MergeableStore } from 'tinybase/mergeable-store';
 import { exportAllVehicles } from '@app/helpers/export';
 import { formatNumberForSave, kilosToMiles, milesToKilos } from '@app/helpers/numbers';
 import { importData } from '@app/helpers/import';
+import Accordion from '@app/components/elements/accordion';
+import ImageWithPreview from '@app/components/elements/imageWithPreview';
+import ConditionalView from '@app/components/elements/conditionalView';
 
 export default function Tab(): React.JSX.Element {
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
@@ -39,7 +41,6 @@ export default function Tab(): React.JSX.Element {
                 }
               }
             });
-            router.navigate('/');
           },
         },
         {
@@ -48,6 +49,10 @@ export default function Tab(): React.JSX.Element {
       ],
     );
   };
+
+  const AllMaintenanceRecordIds = useRowIds(tables.maintenance_records);
+  const filesMapped = useRowIds(tables.files).map((id) => ({ fileId: id, local_path: store.getCell(tables.files, id, 'local_path'), related_table: store.getCell(tables.files, id, 'related_table'), related_id: store.getCell(tables.files, id, 'related_id') }))
+    .filter((file_data) => (!file_data.related_table && !file_data.related_id) || (file_data.related_table === tables.maintenance_records && !AllMaintenanceRecordIds.includes(`${file_data.related_id}`)));
 
   const importHelper = () => {
     getDocumentAsync({
@@ -67,7 +72,7 @@ export default function Tab(): React.JSX.Element {
   };
 
   return (
-    <View>
+    <KeyboardAwareScrollView>
       <FormElement label="Distance Unit">
         <OptionButtons
           options={[
@@ -150,6 +155,18 @@ export default function Tab(): React.JSX.Element {
           }}
         />
       </FormElement>
-    </View>
+      <ConditionalView condition={filesMapped.length > 0}>
+        <FormElement>
+          <Accordion title="Abandoned Photos">
+            <FlatList
+              horizontal={true}
+              keyExtractor={(_, index) => `${index}`}
+              data={filesMapped}
+              renderItem={({ item }) => <ImageWithPreview data={item} />}
+            />
+          </Accordion>
+        </FormElement>
+      </ConditionalView>
+    </KeyboardAwareScrollView>
   );
 }

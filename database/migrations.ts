@@ -113,7 +113,7 @@ export const migrations = [
     incrementSchemaVersion(store);
   },
   /**
-   * Updating all verbage from "car" to "vehicle".
+   * Updating all verbiage from "car" to "vehicle".
    * Also, migrating to uuids instead of sequential ids for all records.
    */
   async (persister: ExpoSqlitePersister) => {
