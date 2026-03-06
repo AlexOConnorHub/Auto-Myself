@@ -173,7 +173,18 @@ export default function RecordForm(): React.ReactElement {
     if (formState.type_id.value === 'new_item') {
       setFormState(prev => ({ ...prev, type: formState.type_id.search, new_entry: true }));
     } else {
-      setFormState(prev => ({ ...prev, type: formState.type_id.label }));
+      setFormState((prev) => {
+        const netState = { ...prev, type: formState.type_id.label };
+        if (typesObj[formState.type_id.value]) {
+          if (!prev.interval || prev.interval.length === 0) {
+            netState.interval = `${typesObj[formState.type_id.value].interval}`;
+          }
+          if (!prev.interval_unit || prev.interval_unit.length === 0) {
+            netState.interval_unit = `${typesObj[formState.type_id.value].interval_unit}`;
+          }
+        }
+        return netState;
+      });
     }
   }, [formState.type_id.value]);
 
