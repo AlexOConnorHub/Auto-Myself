@@ -127,21 +127,13 @@ export const migrations = [
       const newVehicleId = getId(store.getRowIds(tables.vehicles));
       store.setRow(tables.vehicles, newVehicleId, row);
       store.delRow(tables.vehicles, id);
-      store.getRowIds(tables.maintenance_records).forEach((recordId) => {
-        const vehicle_id = store.getCell(tables.maintenance_records, recordId, 'vehicle_id') as string;
-        if (vehicle_id === id) {
-          store.setCell(tables.maintenance_records, recordId, 'car_id', newVehicleId);
-        }
+      store.getRowIds(tables.maintenance_records).filter((recordId) => store.getCell(tables.maintenance_records, recordId, 'car_id') === id).forEach((recordId) => {
+        const row = store.getRow(tables.maintenance_records, recordId) as Record<string, string>;
+        delete row.car_id;
+        const newMaintenanceRecordId = getId(store.getRowIds(tables.maintenance_records));
+        store.setRow(tables.maintenance_records, newMaintenanceRecordId, { ...row, vehicle_id: newVehicleId });
+        store.delRow(tables.maintenance_records, recordId);
       });
-    });
-
-    store.getRowIds(tables.maintenance_records).forEach((id) => {
-      const row = store.getRow(tables.maintenance_records, id) as Record<string, string>;
-      row.vehicle_id = row.car_id;
-      delete row.car_id;
-      const newMaintenanceRecordId = getId(store.getRowIds(tables.maintenance_records));
-      store.setRow(tables.maintenance_records, newMaintenanceRecordId, row);
-      store.delRow(tables.maintenance_records, id);
     });
     incrementSchemaVersion(store);
   },
