@@ -57,7 +57,6 @@ const prepRecordFiles = (store: Store, recordId: string) => {
       const source = new File(`${file.local_path}`);
       if (source.exists) {
         const destination = new File(filesDir, `${fileId}.jpg`);
-        console.log(exportDir.exists, filesDir.exists, destination.exists);
         source.copy(destination);
         final.push(`files/${fileId}.jpg`);
       }
@@ -91,7 +90,7 @@ const getVehicleObject = (store: Store, id: string, includeFiles: boolean) => {
 };
 
 const exportData = (data: object, includeFiles: boolean, exportBaseName: string) => {
-  const jsonFile = exportDir.createFile('data.json', 'application/json');
+  const jsonFile = new File(exportDir, 'data.json');
   jsonFile.write(JSON.stringify(data, null, 4));
 
   if (!includeFiles) {
@@ -107,12 +106,11 @@ const exportData = (data: object, includeFiles: boolean, exportBaseName: string)
 
   zip(exportDir.uri, zipFile.uri)
     .then(() => {
-      shareAsFile({ file: zipFile.uri }, { mimeType: 'application/zip', dialogTitle: `Export ${exportBaseName}`, UTI: 'public.zip-archive' });
-    })
-    .catch((error) => {
-      console.error(error);
-    })
-    .finally(() => {
+      shareAsFile({ file: zipFile.uri }, { mimeType: 'application/zip', dialogTitle: `Export ${exportBaseName}`, UTI: 'public.zip-archive' }).finally(() => {
+        cleanupExportDirectory();
+      });
+    }).catch((error) => {
+      console.error('Error creating zip file:', error);
       cleanupExportDirectory();
     });
 };

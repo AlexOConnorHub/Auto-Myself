@@ -4,11 +4,11 @@ import { OptionButtons } from '@app/components/elements/optionButtons';
 import { openSettings } from 'react-native-permissions';
 import { ImageManipulator, SaveFormat } from 'expo-image-manipulator';
 import { useStore } from 'tinybase/ui-react';
-import { v7 } from 'uuid';
 import { tables } from '@app/database/schema';
 import { Directory, File, Paths } from 'expo-file-system';
 import ImageWithPreview from '@app/components/elements/imageWithPreview';
 import { MergeableStore } from 'tinybase';
+import { getId } from '@app/helpers/tinybase';
 
 export default function ImagePicker(props) {
   const store = useStore() as MergeableStore;
@@ -25,7 +25,7 @@ export default function ImagePicker(props) {
       });
 
       const currentFile = new File(result.uri);
-      const fileID = v7();
+      const fileID = getId(store.getRowIds(tables.files));
       const directory = new Directory(Paths.document, 'files');
       if (!directory.exists) {
         directory.create();

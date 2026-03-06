@@ -7,18 +7,17 @@ import Form from '@app/components/form';
 import { getDateString, provideDateObj, formatNumberForSave } from '@app/helpers/numbers';
 import { router, useLocalSearchParams } from 'expo-router';
 import { MergeableStore } from 'tinybase';
-import { deleteRecord } from '@app/helpers/delete';
+import { deleteRecord, getId } from '@app/helpers/tinybase';
 import ImagePicker from '@app/components/elements/imagePicker';
-import { v7 } from 'uuid';
 import { OptionButtons } from '../elements/optionButtons';
 import FormElement from '../elements/formElement';
 
 export default function RecordForm(): React.ReactElement {
   const { vehicle_id, record_id } = useLocalSearchParams<{ vehicle_id: string; record_id: string }>();
-  const random_id = v7();
-  const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const store = useStore() as MergeableStore;
 
+  const random_id = getId(store.getRowIds(tables.maintenance_records));
+  const distanceUnit = useCell(tables.settings, 'local', 'distanceUnit');
   const record = useRow(tables.maintenance_records, record_id);
 
   const fileIds = useSliceRowIds('byRecord', record_id);

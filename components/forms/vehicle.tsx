@@ -8,16 +8,17 @@ import Form from '@app/components/form';
 import { makes, models, vinDecode } from '@app/helpers/nhtsa';
 import { router, useLocalSearchParams } from 'expo-router';
 import VinScanner from '@app/components/elements/vinScanner';
-import { deleteVehicle } from '@app/helpers/delete';
+import { deleteVehicle, getId } from '@app/helpers/tinybase';
 import { MergeableStore } from 'tinybase';
-import { v7 } from 'uuid';
 import { OptionButtons } from '../elements/optionButtons';
 import FormElement from '../elements/formElement';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
-  const random_id = v7();
   const store = useStore() as MergeableStore;
+
+  const random_id = getId(store.getRowIds(tables.vehicles));
+
   const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
@@ -106,7 +107,6 @@ export default function VehicleForm(): React.ReactElement {
   const row = useRow(tables.vehicles, vehicle_id) as Record<string, (string | number)>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
-      console.log(row);
       state[key] = (
         (`${row.make}`.length > 0 && row.make_id === null) ||
         (`${row.model}`.length > 0 && row.model_id === null)
@@ -199,12 +199,12 @@ export default function VehicleForm(): React.ReactElement {
     return newRow;
   };
 
-  const updateRecord = useSetRowCallback(tables.vehicles, isNewVehicle ? random_id : vehicle_id, saveFunction, [formState], store, () => goBack(), []);
-
   const goBack = () => {
     Keyboard.dismiss();
     router.back();
   };
+
+  const updateRecord = useSetRowCallback(tables.vehicles, isNewVehicle ? random_id : vehicle_id, saveFunction, [formState], store, goBack, []);
 
   const confirmDelete = () => {
     return Alert.alert(
@@ -269,16 +269,18 @@ export default function VehicleForm(): React.ReactElement {
             />
           </>
           :
-          <OptionButtons
-            options={[
-              { label: 'Scan VIN', key: 'scan_vin', icon: <Ionicons name="camera" size={20} /> },
-            ]}
-            onSelect={ (newValue: string, callback: () => void) => {
-              callback();
-              setScanVin(true);
-            } }
-            highlightAll={true}
-          />
+          <FormElement>
+            <OptionButtons
+              options={[
+                { label: 'Scan VIN', key: 'scan_vin', icon: <Ionicons name="camera" size={20} /> },
+              ]}
+              onSelect={ (newValue: string, callback: () => void) => {
+                callback();
+                setScanVin(true);
+              } }
+              highlightAll={true}
+            />
+          </FormElement>
       }
       <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ setFormState } />
       <FormElement>
@@ -289,7 +291,6 @@ export default function VehicleForm(): React.ReactElement {
               confirmDelete();
             } else if (key === 'save') {
               updateRecord();
-              goBack();
             }
             callback();
           }}

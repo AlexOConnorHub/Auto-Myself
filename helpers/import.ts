@@ -4,11 +4,11 @@ import { Directory, File, Paths } from 'expo-file-system';
 import { Alert } from 'react-native';
 import { unzip } from 'react-native-zip-archive';
 import { createIndexes, createMergeableStore, Store } from 'tinybase';
-import { v7 } from 'uuid';
+import { getId } from './tinybase';
 
 const importVehicle = (store: Store, vehicleData: Record<string, string|object[]>, importDirectory: Directory) => {
   const { records, ...vehicle } = vehicleData;
-  const vehicle_id = v7();
+  const vehicle_id = getId(store.getRowIds(tables.vehicles));
   store.setRow(tables.vehicles, vehicle_id, vehicle as Record<string, string>);
   const destinationDirectory = new Directory(Paths.document, 'files');
   if (!destinationDirectory.exists) {
@@ -16,11 +16,11 @@ const importVehicle = (store: Store, vehicleData: Record<string, string|object[]
   }
   for (const maintenance_record of records) {
     const { files, ...record } = maintenance_record as Record<string, string|string[]>;
-    const record_id = v7();
+    const record_id = getId(store.getRowIds(tables.maintenance_records));
     store.setRow(tables.maintenance_records, record_id, { ...record, vehicle_id: vehicle_id });
     for (const file of files as string[]) {
       const fileFromImport = new File(importDirectory, file);
-      const fileID = v7();
+      const fileID = getId(store.getRowIds(tables.files));
       const fileFinalPath = new File(destinationDirectory, `${fileID}.${fileFromImport.extension}`);
       fileFromImport.copy(fileFinalPath);
       store.setRow(tables.files, fileID, {
@@ -60,10 +60,10 @@ const legacyImportFullDatabase = (store, toImport) => {
 
 const legacyImportVehicle = (store, toImport) => {
   const { records, ...vehicle } = toImport;
-  const vehicle_id = v7();
+  const vehicle_id = getId(store.getRowIds(tables.vehicles));
   store.setRow(tables.vehicles, vehicle_id, vehicle as Record<string, string>);
   for (const maintenance_record of records) {
-    const record_id = v7();
+    const record_id = getId(store.getRowIds(tables.maintenance_records));
     store.setRow(tables.maintenance_records, record_id, { ...maintenance_record, vehicle_id: vehicle_id });
   }
 };
@@ -82,16 +82,16 @@ export const importData = (store: Store, file: File) => {
       unzipDir.delete();
     }
     unzipDir.create();
-    unzip(file.uri, unzipDir.uri).then((path) => {
-      const directory = new Directory(path);
-      const dataFile = new File(directory, 'data.json');
+    unzip(file.uri, unzipDir.uri).then(() => {
+      const dataFile = new File(unzipDir, 'data.json');
       const parsed = JSON.parse(dataFile.textSync());
+      console.log('Parsed data from zip:', parsed);
       if (Array.isArray(parsed)) {
         parsed.forEach((vehicle) => {
-          importVehicle(store, vehicle, directory);
+          importVehicle(store, vehicle, unzipDir);
         });
       } else {
-        importVehicle(store, parsed, directory);
+        importVehicle(store, parsed, unzipDir);
       }
     });
   }

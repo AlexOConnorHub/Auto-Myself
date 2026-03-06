@@ -6,7 +6,7 @@ import { captureEvent } from '@sentry/react-native';
 import { Paths, File } from 'expo-file-system';
 import { Alert } from 'react-native';
 import { formatNumberForSave } from '@app/helpers/numbers';
-import { v7 } from 'uuid';
+import { getId } from '@app/helpers/tinybase';
 
 function incrementSchemaVersion(store: MergeableStore) {
   const currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
@@ -124,7 +124,7 @@ export const migrations = [
 
     store.getRowIds(tables.vehicles).forEach((id) => {
       const row = store.getRow(tables.vehicles, id) as Record<string, string>;
-      const newVehicleId = v7();
+      const newVehicleId = getId(store.getRowIds(tables.vehicles));
       store.setRow(tables.vehicles, newVehicleId, row);
       store.delRow(tables.vehicles, id);
       store.getRowIds(tables.maintenance_records).forEach((recordId) => {
@@ -139,7 +139,7 @@ export const migrations = [
       const row = store.getRow(tables.maintenance_records, id) as Record<string, string>;
       row.vehicle_id = row.car_id;
       delete row.car_id;
-      const newMaintenanceRecordId = v7();
+      const newMaintenanceRecordId = getId(store.getRowIds(tables.maintenance_records));
       store.setRow(tables.maintenance_records, newMaintenanceRecordId, row);
       store.delRow(tables.maintenance_records, id);
     });

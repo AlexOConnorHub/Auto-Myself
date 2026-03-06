@@ -1,6 +1,15 @@
 import { tables } from '@app/database/schema';
 import { File } from 'expo-file-system';
 import { createIndexes, Store } from 'tinybase';
+import { v7 } from 'uuid';
+
+export const getId = (currentIds: string[]) => {
+  let tmp_v7_id;
+  do {
+    tmp_v7_id = v7();
+  } while (currentIds.includes(tmp_v7_id));
+  return tmp_v7_id;
+};
 
 export const deleteFile = (store: Store, fileId: string) => {
   const row = store.getRow(tables.files, fileId);

@@ -7,7 +7,7 @@ import {
 } from 'react-native';
 import { View } from '@app/components/elements';
 import { OptionButtons } from '@app/components/elements/optionButtons';
-import { deleteFile } from '@app/helpers/delete';
+import { deleteFile } from '@app/helpers/tinybase';
 import { useStore } from 'tinybase/ui-react';
 import { shareAsFile } from '@app/helpers/export';
 import { MergeableStore } from 'tinybase';
