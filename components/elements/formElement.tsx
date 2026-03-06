@@ -1,6 +1,6 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text } from './elements';
+import { View, Text } from '@app/components/elements';
 
 export default function FormElement(props): React.ReactElement {
   return (

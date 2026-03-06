@@ -16,7 +16,8 @@
       "bundleIdentifier": "com.automyself.ios",
       "buildNumber": "7",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera"
       },
       "icon": {
         "dark": "./assets/app-icon-ios.png",
@@ -64,7 +65,28 @@
           "resizeMode": "contain"
         }
       ],
-      "expo-router"
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera"
+        }
+      ],
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.5"
+          }
+        }
+      ]
     ]
   }
 }

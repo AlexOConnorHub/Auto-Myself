@@ -1,8 +1,8 @@
 import { createExpoSqlitePersister } from 'tinybase/persisters/persister-expo-sqlite';
-import { migrations } from './migrations';
+import { migrations } from '@app/database/migrations';
 import { openDatabaseSync } from 'expo-sqlite';
 import { MergeableStore } from 'tinybase';
-import { tables } from './schema';
+import { tables } from '@app/database/schema';
 import { captureMessage } from '@sentry/react-native';
 
 export async function setupDatabase(store: MergeableStore): Promise<void> {

@@ -1,42 +1,44 @@
 import { router } from 'expo-router';
-import { View } from '../elements';
-import ConditionalText from '../conditionalText';
+import { Text, View } from '@app/components/elements';
+import ConditionalView from '@app/components/elements/conditionalView';
 import { StyleSheet } from 'react-native';
-import Accordion from '../accordion';
-import { OptionButtons } from '../optionButtons';
+import Accordion from '@app/components/elements/accordion';
+import { OptionButtons } from '@app/components/elements/optionButtons';
 import { useStore } from 'tinybase/ui-react';
-import { exportVehicle } from '@app/helpers/vehicleExport';
+import { exportVehicle } from '@app/helpers/export';
+import { MergeableStore } from 'tinybase';
 
-export function VehicleCard({ car }): React.ReactElement {
-  const store = useStore();
+export default function VehicleCard({ vehicle }): React.ReactElement {
+  const store = useStore() as MergeableStore;
 
-  const firstRow = [car.color, car.year, car.make, car.model].filter(Boolean).join(' ');
+  const firstRow = [vehicle.color, vehicle.year, vehicle.make, vehicle.model].filter(Boolean).join(' ');
 
   return (
-    <Accordion title={car.nickname || firstRow}>
+    <Accordion title={vehicle.nickname || firstRow}>
       <View style={pageStyles.cardRow}>
-        <ConditionalText condition={car.nickname && firstRow}>{firstRow}</ConditionalText>
-        <ConditionalText condition={car.license_plate}>LPN: {car.license_plate}</ConditionalText>
-        <ConditionalText condition={car.vin}>VIN: {car.vin}</ConditionalText>
-        <ConditionalText condition={car.notes}>{car.notes}</ConditionalText>
+        <ConditionalView condition={vehicle.nickname && firstRow}><Text>{firstRow}</Text></ConditionalView>
+        <ConditionalView condition={vehicle.license_plate}><Text>LPN: {vehicle.license_plate}</Text></ConditionalView>
+        <ConditionalView condition={vehicle.vin}><Text>VIN: {vehicle.vin}</Text></ConditionalView>
+        <ConditionalView condition={vehicle.notes}><Text>{vehicle.notes}</Text></ConditionalView>
         <OptionButtons
           options={[
             { label: 'Edit', key: 'edit' },
             { label: 'Export', key: 'export' },
             { label: 'Records', key: 'records' },
           ]}
-          onSelect={(value) => {
+          onSelect={(value, enable) => {
             switch (value) {
               case 'edit':
-                router.push(`/vehicle/${car.id}/edit`);
+                router.push(`/vehicle/${vehicle.id}/edit`);
                 break;
               case 'records':
-                router.push(`/vehicle/${car.id}`);
+                router.push(`/vehicle/${vehicle.id}`);
                 break;
               case 'export':
-                exportVehicle(store, car.id);
+                exportVehicle(store, vehicle.id, true, (vehicle.nickname || firstRow).replaceAll(/\s/g, '_'));
                 break;
             }
+            enable();
           }}
           highlightAll={true}
         />

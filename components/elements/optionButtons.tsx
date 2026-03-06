@@ -1,8 +1,8 @@
 import React from 'react';
-import { View } from './elements';
+import { View } from '@app/components/elements';
 import { StyleSheet } from 'react-native';
 import { useTheme } from '@react-navigation/native';
-import CallbackButton from './callbackButton';
+import CallbackButton from '@app/components/elements/callbackButton';
 
 export function OptionButtons(props): React.ReactElement {
   const theme = useTheme();
@@ -10,7 +10,7 @@ export function OptionButtons(props): React.ReactElement {
   return (
     <View style={[pageStyles.view, { flexDirection: props.direction === 'vertical' ? 'column' : 'row' }]}>
       {
-        props.options.map((option: { key: string; label: string; label_style?: object }) => {
+        props.options.map((option: { key: string; label: string; label_style?: object; icon?: React.ReactNode }) => {
           return (
             <CallbackButton
               key={option.key}
@@ -24,6 +24,8 @@ export function OptionButtons(props): React.ReactElement {
                   width: `${props.direction === 'vertical' ? 95 : (100 / props.options.length) - 2}%`,
                 },
               }}
+              text={{ style: { ...pageStyles.text } }}
+              icon={option.icon}
               title={option.label}
             />
           );
@@ -41,5 +43,10 @@ const pageStyles = StyleSheet.create({
     padding: 10,
     margin: 5,
     borderRadius: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  text: {
+    paddingLeft: 5,
   },
 });

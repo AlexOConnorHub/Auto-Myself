@@ -1,4 +1,4 @@
-import { tables } from './schema';
+import { tables } from '@app/database/schema';
 import { ExpoSqlitePersister } from 'tinybase/persisters/persister-expo-sqlite';
 import { openDatabaseSync } from 'expo-sqlite';
 import { MergeableStore } from 'tinybase/mergeable-store';
@@ -6,6 +6,7 @@ import { captureEvent } from '@sentry/react-native';
 import { Paths, File } from 'expo-file-system';
 import { Alert } from 'react-native';
 import { formatNumberForSave } from '@app/helpers/numbers';
+import { getId } from '@app/helpers/tinybase';
 
 function incrementSchemaVersion(store: MergeableStore) {
   const currentVersion = store.getCell(tables.schema_version, 'local', 'version') as number || 0;
@@ -13,11 +14,17 @@ function incrementSchemaVersion(store: MergeableStore) {
 }
 
 export const migrations = [
+  /**
+   * Initial state of database. This is where fresh installs get their default settings.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
-    store.setRow(tables.settings, 'local', { distanceUnit: 'Miles', theme: 'auto', analyticsEnabled: false });
+    store.setRow(tables.settings, 'local', { distanceUnit: 'Miles', theme: 'auto', analyticsEnabled: false, sort: 'nickname' });
     incrementSchemaVersion(store);
   },
+  /**
+   * Migrate from WatermelonDB. Likely no longer needed as all known users have updated.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     try {
@@ -39,7 +46,7 @@ export const migrations = [
         for (const car of cars) {
           const oldId = (car as Record<string, string>).id;
           delete (car as Record<string, string>).id;
-          const newId = store.addRow(tables.cars, (car as Record<string, string>));
+          const newId = store.addRow(tables.vehicles, (car as Record<string, string>));
           car_mapping[oldId] = newId;
         }
         for (const maintenance_record of maintenance_records) {
@@ -53,8 +60,12 @@ export const migrations = [
     }
     incrementSchemaVersion(store);
   },
+  /**
+   * Introducing analytics with opt-in model.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
+    store.setCell(tables.settings, 'local', 'analyticsEnabled', false);
     Alert.alert('Anonymous Reporting', 'Allowing anonymous analytics can be helpful for improving the app and fixing issues. This can be changed at any time in the settings.', [
       {
         text: 'No',
@@ -71,11 +82,17 @@ export const migrations = [
     ]);
     incrementSchemaVersion(store);
   },
+  /**
+   * Set default sort order for vehicles.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
     store.setCell(tables.settings, 'local', 'sort', 'nickname');
     incrementSchemaVersion(store);
   },
+  /**
+   * Introduced stricter number formatting on save. Update all records in database to conform to new formatting.
+   */
   async (persister: ExpoSqlitePersister) => {
     const store = persister.getStore() as MergeableStore;
 
@@ -93,6 +110,33 @@ export const migrations = [
       const intervalToSave = formatNumberForSave(interval, 0);
       store.setCell(tables.maintenance_records, id, 'interval', intervalToSave);
     }
+    incrementSchemaVersion(store);
+  },
+  /**
+   * Updating all verbiage from "car" to "vehicle".
+   * Also, migrating to uuids instead of sequential ids for all records.
+   */
+  async (persister: ExpoSqlitePersister) => {
+    const store = persister.getStore() as MergeableStore;
+    const vehicles_data = store.getTable('cars');
+    store.setTable(tables.vehicles, vehicles_data);
+    store.delTable('cars');
+
+    store.getRowIds(tables.vehicles).forEach((id) => {
+      const row = store.getRow(tables.vehicles, id) as Record<string, string>;
+      const newVehicleId = getId(store.getRowIds(tables.vehicles));
+      store.setRow(tables.vehicles, newVehicleId, row);
+      store.delRow(tables.vehicles, id);
+      store.getRowIds(tables.maintenance_records).filter((recordId) => store.getCell(tables.maintenance_records, recordId, 'car_id') === id
+        || store.getCell(tables.maintenance_records, recordId, 'vehicle_id') === id).forEach((recordId) => {
+        const row = store.getRow(tables.maintenance_records, recordId) as Record<string, string>;
+        delete row.car_id;
+        row.vehicle_id = newVehicleId;
+        const newMaintenanceRecordId = getId(store.getRowIds(tables.maintenance_records));
+        store.setRow(tables.maintenance_records, newMaintenanceRecordId, row);
+        store.delRow(tables.maintenance_records, recordId);
+      });
+    });
     incrementSchemaVersion(store);
   },
 ];
