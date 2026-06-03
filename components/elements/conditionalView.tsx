@@ -1,15 +1,15 @@
 import React from 'react';
-import { Text } from './elements';
+import { View } from '@app/components/elements';
 
-export default function ConditionalText(props): React.ReactElement {
+export default function ConditionalView(props): React.ReactElement {
   if (!props.condition) {
     return <></>;
   }
   const localProps = { ...props };
   delete localProps.condition;
   return (
-    <Text { ...localProps }>
+    <View { ...localProps }>
       { localProps.children }
-    </Text>
+    </View>
   );
 }

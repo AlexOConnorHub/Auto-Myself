@@ -2,7 +2,7 @@
   "expo": {
     "name": "Auto Myself",
     "slug": "MyCar-TotalControl",
-    "version": "1.4.4",
+    "version": "2.0.0",
     "newArchEnabled": true,
     "orientation": "portrait",
     "icon": "./assets/app-icon-android.png",
@@ -14,9 +14,10 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.automyself.ios",
-      "buildNumber": "7",
+      "buildNumber": "8",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera"
       },
       "icon": {
         "dark": "./assets/app-icon-ios.png",
@@ -26,7 +27,7 @@
     },
     "android": {
       "package": "com.anonymous.MyCarTotalControl",
-      "versionCode": 12,
+      "versionCode": 13,
       "edgeToEdgeEnabled": true
     },
     "web": {
@@ -64,7 +65,28 @@
           "resizeMode": "contain"
         }
       ],
-      "expo-router"
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "Allow $(PRODUCT_NAME) to access your camera"
+        }
+      ],
+      "expo-router",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow $(PRODUCT_NAME) to access your photos",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "deploymentTarget": "15.5"
+          }
+        }
+      ]
     ]
   }
 }

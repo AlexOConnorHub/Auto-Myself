@@ -6,6 +6,7 @@ import {
 import { useTheme } from '@react-navigation/native';
 import {
   FlatList as FlatListPkg,
+  Image as ImagePkg,
   Modal as ModalPkg,
   Pressable as PressablePkg,
   Text as TextPkg,
@@ -69,6 +70,12 @@ export function FontAwesome(props: Readonly<React.ComponentProps<typeof FontAwes
   const theme = useTheme();
   return (
     <FontAwesomePkg color={ theme.colors.text } size={40} { ...props }/>
+  );
+}
+
+export function Image(props: Readonly<React.ComponentProps<typeof ImagePkg>>): React.ReactElement {
+  return (
+    <ImagePkg { ...props } />
   );
 }
 

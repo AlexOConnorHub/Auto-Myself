@@ -1,25 +1,20 @@
 import React from 'react';
-import { View } from '@app/components/elements';
-import { OptionButtons } from '@app/components/optionButtons';
-import FormElement from '@app/components/formElement';
-import { useCell, useSetCellCallback, useStore } from 'tinybase/ui-react';
+import { FlatList, KeyboardAwareScrollView } from '@app/components/elements';
+import { OptionButtons } from '@app/components/elements/optionButtons';
+import FormElement from '@app/components/elements/formElement';
+import { useCell, useRowIds, useSetCellCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import { Alert } from 'react-native';
-import { router } from 'expo-router';
 import { showFeedbackWidget } from '@sentry/react-native';
 import { getDocumentAsync } from 'expo-document-picker';
-import { readAsStringAsync } from 'expo-file-system';
-import { createMergeableStore, MergeableStore } from 'tinybase/mergeable-store';
-import { exportAsFile } from '@app/helpers/fileExport';
-import { getDateString, provideDateObj } from '@app/helpers/numbers';
-
-const milesToKilos = (miles) => {
-  return Math.floor(miles * 1.60934);
-};
-
-const kilosToMiles = (kilos) => {
-  return Math.floor(kilos / 1.60934);
-};
+import { File } from 'expo-file-system';
+import { MergeableStore } from 'tinybase/mergeable-store';
+import { exportAllVehicles } from '@app/helpers/export';
+import { formatNumberForSave, kilosToMiles, milesToKilos } from '@app/helpers/numbers';
+import { importData } from '@app/helpers/import';
+import Accordion from '@app/components/elements/accordion';
+import ImageWithPreview from '@app/components/elements/imageWithPreview';
+import ConditionalView from '@app/components/elements/conditionalView';
 
 export default function Tab(): React.JSX.Element {
   const setDistanceUnit = useSetCellCallback(tables.settings, 'local', 'distanceUnit', (newValue: string) => newValue);
@@ -40,13 +35,12 @@ export default function Tab(): React.JSX.Element {
             store.forEachRow(tables.maintenance_records, (rowId) => {
               const row = store.getRow(tables.maintenance_records, rowId);
               if (row) {
-                store.setCell(tables.maintenance_records, rowId, 'odometer', convert(row.odometer));
+                store.setCell(tables.maintenance_records, rowId, 'odometer', formatNumberForSave(`${convert(row.odometer as number)}`));
                 if (row.interval_unit === 'dist') {
-                  store.setCell(tables.maintenance_records, rowId, 'interval', convert(row.interval));
+                  store.setCell(tables.maintenance_records, rowId, 'interval', formatNumberForSave(`${convert(row.interval as number)}`));
                 }
               }
             });
-            router.navigate('/');
           },
         },
         {
@@ -56,67 +50,29 @@ export default function Tab(): React.JSX.Element {
     );
   };
 
-  const exportJson = () => {
-    exportAsFile(store.getJson(), `AutoMyself_Export_${getDateString(provideDateObj(''))}.json`);
-  };
+  const AllMaintenanceRecordIds = useRowIds(tables.maintenance_records);
+  const filesMapped = useRowIds(tables.files).map((id) => ({ fileId: id, local_path: store.getCell(tables.files, id, 'local_path'), related_table: store.getCell(tables.files, id, 'related_table'), related_id: store.getCell(tables.files, id, 'related_id') }))
+    .filter((file_data) => (!file_data.related_table && !file_data.related_id) || (file_data.related_table === tables.maintenance_records && !AllMaintenanceRecordIds.includes(`${file_data.related_id}`)));
 
   const importHelper = () => {
-    const asyncFunc = async () => {
-      const data = await getDocumentAsync({
-        type: 'application/json',
-        copyToCacheDirectory: true,
-        multiple: true,
-      });
-
+    getDocumentAsync({
+      type: ['application/json', 'application/zip'],
+      copyToCacheDirectory: true,
+      multiple: true,
+    }).then((data) => {
       if (data.canceled) {
         return;
       }
 
       for (const asset of data.assets) {
-        const toImport: object = JSON.parse(await readAsStringAsync(asset.uri));
-        let importFunction: (data: object) => void;
-        if (toImport.constructor.name === 'Array') {
-          importFunction = importFullDatabase;
-        } else {
-          importFunction = importVehicle;
-        }
-        importFunction(toImport);
+        const file = new File(asset.uri);
+        importData(store, file);
       }
-    };
-    asyncFunc();
-  };
-
-  const importFullDatabase = (toImport) => {
-    Alert.alert(
-      'Warning',
-      'Importing may overwrite existing data! ' +
-      'It is sugested to only use a full export when setting up a new device.',
-      [
-        {
-          text: 'I Understand',
-          onPress: () => {
-            const tmp_store = createMergeableStore();
-            tmp_store.setJson(JSON.stringify(toImport));
-            store.merge(tmp_store);
-          },
-        },
-        {
-          text: 'Abort',
-        },
-      ],
-    );
-  };
-
-  const importVehicle = (toImport) => {
-    const { records, ...vehcle } = toImport;
-    const car_id = store.addRow(tables.cars, vehcle);
-    for (const maintenance_record of records) {
-      store.addRow(tables.maintenance_records, { ...maintenance_record, car_id: car_id });
-    }
+    });
   };
 
   return (
-    <View>
+    <KeyboardAwareScrollView>
       <FormElement label="Distance Unit">
         <OptionButtons
           options={[
@@ -193,12 +149,24 @@ export default function Tab(): React.JSX.Element {
           value='export_all'
           onSelect={ (newValue: string, enable: () => void) => {
             if (newValue === 'export_all') {
-              exportJson();
+              exportAllVehicles(store, true);
             }
             enable();
           }}
         />
       </FormElement>
-    </View>
+      <ConditionalView condition={filesMapped.length > 0}>
+        <FormElement>
+          <Accordion title="Abandoned Photos">
+            <FlatList
+              horizontal={true}
+              keyExtractor={(_, index) => `${index}`}
+              data={filesMapped}
+              renderItem={({ item }) => <ImageWithPreview data={item} />}
+            />
+          </Accordion>
+        </FormElement>
+      </ConditionalView>
+    </KeyboardAwareScrollView>
   );
 }

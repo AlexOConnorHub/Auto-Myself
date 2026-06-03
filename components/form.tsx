@@ -1,9 +1,8 @@
 import React from 'react';
-import { DateTimePicker, Dropdown, Ionicons, Pressable, Text, TextInput, View } from './elements';
+import { DateTimePicker, Dropdown, Ionicons, Text, TextInput, View } from '@app/components/elements';
 import { KeyboardType, Platform, StyleSheet } from 'react-native';
-import { OptionButtons } from './optionButtons';
+import { OptionButtons } from '@app/components/elements/optionButtons';
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
-import { useTheme } from '@react-navigation/native';
 import { formatDate, provideDateObj } from '@app/helpers/numbers';
 
 interface FormStateGeneratorType {
@@ -14,27 +13,35 @@ interface FormStateGeneratorType {
   keyboardType?: KeyboardType;
   condition?: { formStateKey: string; value: string; invert?: boolean; };
   disable?: { disable: boolean; label: string; };
-  input?: 'dropdown' | 'text' | 'optionButtons' | 'toggle' | 'date';
+  input?: 'dropdown' | 'text' | 'optionButtons' | 'toggle' | 'date' | 'photoPicker';
   optionButtonOptions?: { key: string; label: string; }[];
   textAreaOptions?: { multiline: boolean; numberOfLines: number; };
   dropdownData?: { label: string; value: string; }[];
 };
 
 const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) => {
-  const theme = useTheme();
   switch (element.input) {
+    case 'custom':
+      return element.element;
     case 'dropdown':
       // @ts-expect-error Defaults for dropdown set in abstraction, results in incomplete props here
       return <Dropdown
-        value={ formState[`${formStateKey}_id`] || formState[formStateKey] }
+        value={ formState[formStateKey] }
         onChange={(newValue) => {
-          onFormStateChange(formStateKey, newValue);
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: { ...prev[formStateKey], value: newValue.value, label: newValue.label } }));
         }}
-        searchQuery={ (keyword: string, labelValue: string) =>
-          // Case insensitive match to start of any word in label
-          labelValue.toLowerCase().split(' ').some(word => word.startsWith(keyword.toLowerCase()))
-        }
-        data={ element.dropdownData }
+        onChangeText={ (newValue) => {
+          if (newValue.length !== 0) {
+            onFormStateChange(prev => ({ ...prev, [formStateKey]: { ...prev[formStateKey], search: newValue } }));
+          }
+        }}
+        searchQuery={ (keyword: string, labelValue: string) => {
+          if (labelValue === 'New Item') {
+            return true;
+          }
+          return labelValue.toLowerCase().split(' ').some(word => word.startsWith((formState[formStateKey].search || '').toLowerCase().trim()));
+        }}
+        data={ [...element.dropdownData, { label: 'New Item', value: 'new_item' }] }
         style={ pageStyles.dropdown }
         selectedTextStyle={ pageStyles.dropdownInput }
         placeholderStyle={ pageStyles.dropdownInput }
@@ -43,27 +50,25 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
       return <OptionButtons
         value={ formState[formStateKey] }
         onSelect={(newValue, enable) => {
-          onFormStateChange(formStateKey, newValue);
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: newValue }));
           enable();
         }}
         options={ element.optionButtonOptions }
         direction="vertical"
       />;
     case 'toggle':
-      return <Pressable
-        style={ pageStyles.togglePressable }
-        onPress={() => {
-          onFormStateChange(formStateKey, !formState[formStateKey]);
-        }}
-      >
-        <Text style={ pageStyles.toggleText }>
-          {
-            formState[formStateKey] ?
-              <Ionicons size={15} name="checkmark-circle-outline"/> :
-              <Ionicons size={15} name="ellipse-outline"/>
-          } { element.toggleLabel }
-        </Text>
-      </Pressable>;
+      return <OptionButtons
+        options={[
+          { label: element.toggleLabel, icon: formState[formStateKey]
+            ? <Ionicons name="checkmark-circle-outline" size={15} />
+            : <Ionicons name="ellipse-outline" size={15} />, key: 'toggle' },
+        ]}
+        onSelect={ (newValue: string, callback: () => void) => {
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: !prev[formStateKey] }));
+          callback();
+        } }
+        highlightAll={true}
+      />;
     case 'date':
       if (Platform.OS === 'ios') {
         return <DateTimePicker
@@ -71,30 +76,33 @@ const FormSegment = ({ element, formStateKey, formState, onFormStateChange }) =>
           value={ provideDateObj(formState[formStateKey]) }
           display='compact'
           onChange={(event, date) => {
-            onFormStateChange(formStateKey, date);
+            onFormStateChange(prev => ({ ...prev, [formStateKey]: date }));
           }}
         />;
       } else {
-        return <Pressable
-          style={ { ...pageStyles.datePickerAndroid, backgroundColor: theme.colors.card } }
-          onPress={ () => DateTimePickerAndroid.open({
-            mode: 'date',
-            value: provideDateObj(formState[formStateKey]),
-            display: 'spinner',
-            onChange: (event, date) => {
-              onFormStateChange(formStateKey, date);
-            },
-          }) }>
-          <Text style={ pageStyles.toggleText }>
-            { formatDate(formState[formStateKey]) }
-          </Text>
-        </Pressable>;
+        return <OptionButtons
+          options={[
+            { label: formatDate(formState[formStateKey]), key: 'open_picker' },
+          ]}
+          onSelect={ (newValue: string, callback: () => void) => {
+            callback();
+            DateTimePickerAndroid.open({
+              mode: 'date',
+              value: provideDateObj(formState[formStateKey]),
+              display: 'spinner',
+              onChange: (event, date) => {
+                onFormStateChange(prev => ({ ...prev, [formStateKey]: date }));
+              },
+            });
+          } }
+          highlightAll={true}
+        />;
       }
     default:
       return <TextInput
         value={ formState[formStateKey] }
         onChangeText={(newValue) => {
-          onFormStateChange(formStateKey, newValue);
+          onFormStateChange(prev => ({ ...prev, [formStateKey]: newValue }));
         }}
         keyboardType={ element.keyboardType || 'default' }
         multiline={ element.textAreaOptions?.multiline || false }
@@ -174,11 +182,6 @@ const pageStyles = StyleSheet.create({
     marginVertical: 5,
     paddingLeft: 4,
     paddingVertical: 5,
-  },
-  togglePressable: {
-    borderRadius: 3,
-    flexDirection: 'row',
-    alignContent: 'center',
   },
   toggleText: {
     marginLeft: 10,

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { View, Text, FlatList, TextInput, Dropdown } from '@app/components/elements';
+import { View, Text, FlatList, TextInput, Dropdown, Ionicons } from '@app/components/elements';
 import { useCell, useSetCellCallback, useTable } from 'tinybase/ui-react';
 import { router } from 'expo-router';
-import { VehicleCard } from '@app/components/cards/vehicle';
-import CallbackButton from '@app/components/callbackButton';
+import VehicleCard from '@app/components/cards/vehicle';
 import { tables } from '@app/database/schema';
 import { useTheme } from '@react-navigation/native';
+import { OptionButtons } from '@app/components/elements/optionButtons';
 
 export default function Tab(): React.ReactElement {
   const theme = useTheme();
@@ -15,20 +15,20 @@ export default function Tab(): React.ReactElement {
   const sort = useCell(tables.settings, 'local', 'sort') as string;
   const setSort = useSetCellCallback(tables.settings, 'local', 'sort', (newValue: { value: string }) => newValue.value);
 
-  const cars = useTable('cars');
-  const [carsToList, setCarsToList] = useState<Record<string, string | number>[]>([]);
+  const vehicles = useTable(tables.vehicles);
+  const [vehiclesToList, setVehiclesToList] = useState<Record<string, string | number>[]>([]);
 
   useEffect(() => {
-    let filteredCars = Object.keys(cars).map((key) => {
-      return { ...cars[key], id: key } as Record<string, string>;
+    let filteredVehicles = Object.keys(vehicles).map((key) => {
+      return { ...vehicles[key], id: key } as Record<string, string>;
     });
-    filteredCars = filteredCars.filter((car) => {
+    filteredVehicles = filteredVehicles.filter((vehicle) => {
       const searchLower = search.toLowerCase();
-      const nickname = (car).nickname.toLowerCase();
-      const make = (car).make.toLowerCase();
-      const model = (car).model.toLowerCase();
-      const year = (car).year.toString();
-      const notes = (car).notes.toLowerCase();
+      const nickname = `${vehicle.nickname}`.toLowerCase();
+      const make = `${vehicle.make}`.toLowerCase();
+      const model = `${vehicle.model}`.toLowerCase();
+      const year = `${vehicle.year}`.toString();
+      const notes = `${vehicle.notes}`.toLowerCase();
       return (
         nickname.includes(searchLower) ||
         make.includes(searchLower) ||
@@ -37,7 +37,7 @@ export default function Tab(): React.ReactElement {
         notes.includes(searchLower)
       );
     });
-    filteredCars.sort((a, b) => {
+    filteredVehicles.sort((a, b) => {
       if (sort === 'year-asc') {
         return a.year.localeCompare(b.year);
       } else if (sort === 'year-desc') {
@@ -46,8 +46,8 @@ export default function Tab(): React.ReactElement {
         return a.nickname.localeCompare(b.nickname);
       }
     });
-    setCarsToList(filteredCars);
-  }, [cars, search, sort]);
+    setVehiclesToList(filteredVehicles);
+  }, [vehicles, search, sort]);
 
   return (
     <View style={ pageStyles.container }>
@@ -69,17 +69,19 @@ export default function Tab(): React.ReactElement {
       </View>
       <TextInput value={ search } onChangeText={ setSearch } placeholder="Search" style={ pageStyles.searchText } />
       <FlatList
-        data={ carsToList }
-        renderItem={ ({ item }) => <VehicleCard key={ (item as { id: string }).id } car={ item } /> }
-        ListEmptyComponent={ <Text style={ pageStyles.emptyText }>Add a car to get started!</Text> }
+        data={ vehiclesToList }
+        renderItem={ ({ item }) => <VehicleCard key={ (item as { id: string }).id } vehicle={ item } /> }
+        ListEmptyComponent={ <Text style={ pageStyles.emptyText }>Add a vehicle to get started!</Text> }
       />
-      <CallbackButton
-        text={{ style: pageStyles.addCarText }}
-        title="Add Car"
-        pressable={{ style: pageStyles.addCarButton }}
-        onPress={() => {
+      <OptionButtons
+        options={[
+          { label: 'Add Vehicle', key: 'add', icon: <Ionicons name="add-circle" size={20} /> },
+        ]}
+        onSelect={ (value, enable) => {
           router.push('/vehicle/add');
-        }}
+          enable();
+        } }
+        highlightAll={true}
       />
     </View>
   );
@@ -108,14 +110,14 @@ const pageStyles = StyleSheet.create({
   emptyText: {
     alignSelf: 'center',
   },
-  addCarButton: {
+  addVehicleButton: {
     alignSelf: 'center',
     paddingHorizontal: 10,
     paddingVertical: 5,
     marginVertical: 10,
     width: '95%',
   },
-  addCarText: {
+  addVehicleText: {
     paddingLeft: 10,
   },
 });

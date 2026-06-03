@@ -1,20 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, Keyboard, Alert } from 'react-native';
-import { Pressable, View, Text } from '@app/components/elements';
+import { View, Ionicons } from '@app/components/elements';
 import { useNetInfo } from '@react-native-community/netinfo';
-import { useAddRowCallback, useDelRowCallback, useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
+import { useRow, useSetRowCallback, useStore } from 'tinybase/ui-react';
 import { tables } from '@app/database/schema';
 import Form from '@app/components/form';
-import { makes, models } from '@app/helpers/nhtsa';
+import { makes, models, vinDecode } from '@app/helpers/nhtsa';
 import { router, useLocalSearchParams } from 'expo-router';
-import CallbackButton from '../callbackButton';
+import VinScanner from '@app/components/elements/vinScanner';
+import { deleteVehicle, getId } from '@app/helpers/tinybase';
+import { MergeableStore } from 'tinybase';
+import { OptionButtons } from '../elements/optionButtons';
+import FormElement from '../elements/formElement';
 
 export default function VehicleForm(): React.ReactElement {
   const { vehicle_id } = useLocalSearchParams<{ vehicle_id: string }>();
+  const store = useStore() as MergeableStore;
+
+  const random_id = getId(store.getRowIds(tables.vehicles));
+
   const netInfo = useNetInfo();
   const [makeArray, setMakeArray] = useState([]);
   const [modelArray, setModelArray] = useState([]);
-  const isNewCar = vehicle_id === undefined;
+  const [scanVin, setScanVin] = useState(false);
+  const isNewVehicle = vehicle_id === undefined;
   const formMetaData = {
     nickname: {
       label: 'Nickname',
@@ -95,20 +104,34 @@ export default function VehicleForm(): React.ReactElement {
       },
     },
   };
-  const row = useRow(tables.cars, vehicle_id) as Record<string, string>;
+  const row = useRow(tables.vehicles, vehicle_id) as Record<string, (string | number)>;
   const [formState, setFormState] = useState(() => Object.keys(formMetaData).reduce((state, key) => {
     if (key === 'manual_entry') {
       state[key] = (
-        (row.make?.length > 0 && row.make_id?.toString().length === 0) ||
-        (row.model?.length > 0 && row.model_id?.toString().length === 0)
+        (`${row.make}`.length > 0 && row.make_id === null) ||
+        (`${row.model}`.length > 0 && row.model_id === null)
       );
+    } else if (['make_id', 'model_id'].includes(key)) {
+      state[key] = { value: row[key], label: row[key.substring(0, key.length - 3)] };
     } else {
       state[key] = row[key] || '';
     }
     return state;
-  }, {}) as Record<string, string>);
+  }, {} as {
+    nickname: string,
+    year: string,
+    make: string,
+    make_id: { value: number, label: string },
+    model: string,
+    model_id: { value: number, label: string },
+    color: string,
+    vin: string,
+    license_plate: string,
+    notes: string,
+    manual_entry: boolean,
+  }));
 
-  useEffect(() => {
+  useMemo(() => {
     const doAsync = async () => {
       const theMakes = await makes();
       setMakeArray(theMakes.Results.map((item) => ({
@@ -119,73 +142,70 @@ export default function VehicleForm(): React.ReactElement {
     doAsync();
   }, []);
 
-  useEffect(() => {
-    if (typeof formState.make_id === 'object') {
-      const make_obj = formState.make_id as { label: string };
-      setFormState(prev => ({ ...prev, make: make_obj.label }));
-    }
-  }, [formState.make_id]);
-
-  useEffect(() => {
-    if (typeof formState.model_id === 'object') {
-      const model_obj = formState.model_id as { label: string };
-      setFormState(prev => ({ ...prev, model: model_obj.label }));
-    }
-  }, [formState.model_id]);
-
-  useEffect(() => {
+  useMemo(() => {
     const doAsync = async () => {
-      let id_for_uri;
-      if (typeof formState.make_id === 'object') {
-        const make_obj = formState.make_id as { label: string, value: number };
-        id_for_uri = make_obj.value;
-      } else {
-        id_for_uri = formState.make_id;
-      }
+      const make_obj = formState.make_id as unknown as { label: string, value: number };
 
-      setModelArray((await models({ make_id: id_for_uri, modelyear: parseInt(formState.year) })).Results.map((item) => ({
+      setModelArray((await models({ make_id: make_obj.value, modelyear: Number.parseInt(`${formState.year}`) })).Results.map((item) => ({
         value: item.Model_ID,
         label: item.Model_Name,
       })));
     };
     doAsync();
-  }, [formState.make_id, (formState.year.toString().length === 4 ? formState.year : null)]);
+  }, [formState.make_id.value, (formState.year.toString().length === 4 ? formState.year : null)]);
 
-  const store = useStore();
+  useEffect(() => {
+    const makeObj = formState.make_id as unknown as Record<string, string>;
+    if (makeObj.value === 'new_item') {
+      setFormState(prev => ({ ...prev, make: makeObj.search, manual_entry: true }));
+    } else {
+      setFormState(prev => ({ ...prev, make: makeObj.label }));
+    }
+  }, [formState.make_id.value]);
+
+  useEffect(() => {
+    const modelObj = formState.model_id as unknown as Record<string, string>;
+    if (modelObj.value === 'new_item') {
+      setFormState(prev => ({ ...prev, model: modelObj.search, manual_entry: true }));
+    } else {
+      setFormState(prev => ({ ...prev, model: modelObj.label }));
+    }
+  }, [formState.model_id.value]);
+
   const saveFunction = () => {
     const newRow = {
       nickname: formState.nickname,
       year: formState.year,
-      make: formState.make.toUpperCase(),
-      make_id: formState.make_id,
-      model: formState.model.toUpperCase(),
-      model_id: formState.model_id,
       color: formState.color,
+      make: null,
+      make_id: null,
+      model: null,
+      model_id: null,
       vin: formState.vin,
       license_plate: formState.license_plate,
       notes: formState.notes,
     };
 
-    if (typeof formState.make_id === 'object') {
-      const make_obj = formState.make_id as { value: string };
-      newRow.make_id = make_obj.value;
+    if (formState.manual_entry) {
+      newRow.make = formState.make;
+      newRow.model = formState.model;
+    } else {
+      newRow.make = formState.make_id.label;
+      newRow.make_id = formState.make_id.value;
+      newRow.model = formState.model_id.label;
+      newRow.model_id = formState.model_id.value;
     }
-    if (typeof formState.model_id === 'object') {
-      const model_obj = formState.model_id as { value: string };
-      newRow.model_id = model_obj.value;
-    };
 
     return newRow;
   };
-
-  const addRecord = useAddRowCallback(tables.cars, saveFunction, [formState], store, () => goBack(), []);
-  const updateRecord = useSetRowCallback(tables.cars, vehicle_id, saveFunction, [formState], store, () => goBack(), []);
 
   const goBack = () => {
     Keyboard.dismiss();
     router.back();
   };
-  const remove = useDelRowCallback(tables.cars, vehicle_id, store, () => goBack(), []);
+
+  const updateRecord = useSetRowCallback(tables.vehicles, isNewVehicle ? random_id : vehicle_id, saveFunction, [formState], store, goBack, []);
+
   const confirmDelete = () => {
     return Alert.alert(
       'Delete Vehicle',
@@ -194,7 +214,8 @@ export default function VehicleForm(): React.ReactElement {
         {
           text: 'Yes',
           onPress: () => {
-            remove();
+            deleteVehicle(store, vehicle_id);
+            goBack();
           },
         },
         {
@@ -204,30 +225,78 @@ export default function VehicleForm(): React.ReactElement {
     );
   };
 
+  const finalOptions = [
+    { label: 'Save', key: 'save' },
+  ];
+  if (!isNewVehicle) {
+    finalOptions.unshift({ label: 'Delete', key: 'delete' });
+  }
+
   return (
     <View style={ pageStyles.container }>
-      <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ (key: string, value: string) => {
-        setFormState(prev => ({ ...prev, [key]: value }));
-      } } />
-      <View style={ pageStyles.view }>
-        {
-          !isNewCar &&
-            <Pressable
-              key='delete'
-              onPress={ confirmDelete.bind(this) }
-              style={[
-                pageStyles.pressable,
-              ]}>
-              <Text style={pageStyles.text}>Delete</Text>
-            </Pressable>
-        }
-        <CallbackButton
-          pressable={{ style: pageStyles.pressable }}
-          text={{ style: pageStyles.text }}
-          title="Save"
-          onPress={isNewCar ? addRecord : updateRecord}
+      {
+        scanVin ?
+          <>
+            <VinScanner callback={ (vin: string) => {
+              setFormState(prev => ({ ...prev, vin }));
+              setScanVin(false);
+              vinDecode(vin).then((data) => {
+                if (data.Count > 0) {
+                  const result = data.Results[0];
+                  const newData = {
+                    make_id: { value: Number.parseInt(result.MakeID), label: result.Make },
+                    make: result.Make,
+                    model_id: { value: Number.parseInt(result.ModelID), label: result.Model },
+                    model: result.Model,
+                    year: result.ModelYear,
+                  };
+                  setFormState(prev => ({
+                    ...prev,
+                    ...newData,
+                  }));
+                }
+              });
+            } } />
+            <OptionButtons
+              options={[
+                { label: 'Cancel', key: 'cancel' },
+              ]}
+              onSelect={ (newValue: string, callback: () => void) => {
+                callback();
+                setScanVin(false);
+              } }
+              highlightAll={true}
+            />
+          </>
+          :
+          <FormElement>
+            <OptionButtons
+              options={[
+                { label: 'Scan VIN', key: 'scan_vin', icon: <Ionicons name="camera" size={20} /> },
+              ]}
+              onSelect={ (newValue: string, callback: () => void) => {
+                callback();
+                setScanVin(true);
+              } }
+              highlightAll={true}
+            />
+          </FormElement>
+      }
+      <Form formState={ formState } formMetaData={ formMetaData } onFormStateChange={ setFormState } />
+      <FormElement>
+        <OptionButtons
+          options={finalOptions}
+          onSelect={(key, callback) => {
+            if (key === 'delete') {
+              confirmDelete();
+            } else if (key === 'save') {
+              updateRecord();
+            }
+            callback();
+          }}
+          highlightAll={true}
         />
-      </View>
+      </FormElement>
     </View>
   );
 }
@@ -240,13 +309,18 @@ const pageStyles = StyleSheet.create({
     justifyContent: 'center',
     flexDirection: 'row',
   },
-  pressable: {
+  flex: {
     flex: 1,
+  },
+  pressable: {
     padding: 10,
     margin: 5,
     borderRadius: 5,
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   text: {
     textAlign: 'center',
+    margin: 5,
   },
 });

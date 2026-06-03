@@ -2,7 +2,7 @@ export const schema = {
   'schema_version': {
     'version': { 'type': 'number' },
   },
-  'cars': {
+  'vehicles': {
     'make': { 'type': 'string' },
     'make_id': { 'type': 'number' },
     'model': { 'type': 'string' },
@@ -22,7 +22,7 @@ export const schema = {
     'notes': { 'type': 'string' },
     'cost': { 'type': 'string' },
     'created_at': { 'type': 'number' },
-    'car_id': { 'type': 'string' },
+    'vehicle_id': { 'type': 'string' },
     'type': { 'type': 'string' },
     'interval': { 'type': 'number' },
     'interval_unit': { 'type': 'string' },
@@ -31,6 +31,12 @@ export const schema = {
   'settings': {
     'distance_unit': { 'type': 'string', 'default': 'Miles' },
     'theme': { 'type': 'string', 'default': 'dark' },
+    'analyticsEnabled': { 'type': 'string', 'default': 'disabled' },
+  },
+  'files': {
+    'local_path': { 'type': 'string' },
+    'related_table': { 'type': 'string' },
+    'related_id': { 'type': 'string' },
   },
   // 'users': {
   //   'name': { 'type': 'string' },
@@ -40,10 +46,11 @@ export const schema = {
 };
 
 export const tables = {
-  'cars': 'cars',
+  'vehicles': 'vehicles',
   'maintenance_records': 'maintenance_records',
   // 'permissions': 'permissions',
   'settings': 'settings',
   // 'users': 'users',
   'schema_version': 'schema_version',
+  'files': 'files',
 };
